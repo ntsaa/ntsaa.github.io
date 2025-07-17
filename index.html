@@ -1,33 +1,68 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NTSAA</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>NTSAA Screenshot Viewer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header, footer {
+            background: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #content {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <img src="logo.png" alt="Logo" class="logo" />
-            <span class="app-title">NTSAA</span>
-            <nav>
-                <a href="/">Giới thiệu</a>
-                <a href="#huong-dan">Hướng dẫn</a>
-                <a href="#tai-ve">Tải về</a>
-                <button class="donate-btn">Donate</button>
-            </nav>
-        </div>
-    </header>
+        <h1>NTSAA Screenshot Viewer</h1>
+        <ul>
+            <li><a href="/">Giới thiệu</a></li>
+        </ul>
 
-    <main id="main-content">
-        <!-- nội dung sẽ được chèn động ở đây -->
-    </main>
+</header>
+
+    <div id="content">Đang tải...</div>
 
     <footer>
-        <div class="footer-ads">[Chỗ quảng cáo dưới]</div>
+        &copy; 2025 NTSAA Tools
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        function getQueryParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+
+        async function loadPage(url, callback) {
+            try {
+                const res = await fetch(url);
+                const html = await res.text();
+                document.getElementById("content").innerHTML = html;
+                if (callback) callback();
+            } catch (err) {
+                document.getElementById("content").innerHTML = "Không thể tải nội dung.";
+            }
+        }
+
+        const img = getQueryParam("img");
+        if (img) {
+            loadPage("pages/viewer.html", () => {
+                const imageEl = document.getElementById("screenshot-image");
+                if (imageEl) imageEl.src = "https://i.ibb.co/" + decodeURIComponent(img);
+            });
+        } else {
+            loadPage("pages/introduce.html");
+        }
+    </script>
 </body>
 </html>
