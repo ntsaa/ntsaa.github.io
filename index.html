@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NTSAA</title>
     <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,8 +10,9 @@
     <header>
         <div class="header-content">
             <img src="logo.png" alt="Logo" class="logo" />
-            <span class="app-title">Tên Ứng Dụng</span>
+            <span class="app-title">NTSAA</span>
             <nav>
+                <a href="/">Giới thiệu</a>
                 <a href="#huong-dan">Hướng dẫn</a>
                 <a href="#tai-ve">Tải về</a>
                 <button class="donate-btn">Donate</button>
@@ -19,36 +20,14 @@
         </div>
     </header>
 
-    <main>
-        <aside class="left-ads">[Quảng cáo trái]</aside>
-
-        <section class="image-container">
-            <img id="screenshot" src="hello world" alt="Ảnh chính" />
-        </section>
-
-        <aside class="right-ads">[Quảng cáo phải]</aside>
+    <main id="main-content">
+        <!-- nội dung sẽ được chèn động ở đây -->
     </main>
 
     <footer>
         <div class="footer-ads">[Chỗ quảng cáo dưới]</div>
     </footer>
-    <script>
-        const path = window.location.pathname.substring(1);
-        const img = document.getElementById("screenshot");
 
-        if (path) {
-            const imgUrl = "https://i.ibb.co/" + path;
-            const fallbackImg = "https://dummyimage.com/600x400/333/fff&text=Image+not+found";
-
-            img.src = imgUrl;
-            console.log("imgUrl", imgUrl);
-
-            img.onerror = function () {
-                img.src = fallbackImg;
-                img.alt = "Image not found";
-                document.title = "Ảnh không tồn tại";
-            };
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
