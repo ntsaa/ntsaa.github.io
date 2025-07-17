@@ -23,7 +23,7 @@
         <aside class="left-ads">[Quảng cáo trái]</aside>
 
         <section class="image-container">
-            <img id="screenshot" src="https://i.ibb.co/N2XfPTsB/NTSAA-screenshot-5784ef04-37d3-43bc-a6e3-e038e9cded0a.png" alt="Ảnh chính" />
+            <img id="screenshot" src="hello world" alt="Ảnh chính" />
         </section>
 
         <aside class="right-ads">[Quảng cáo phải]</aside>
@@ -41,15 +41,13 @@
             const fallbackImg = "https://dummyimage.com/600x400/333/fff&text=Image+not+found";
 
             img.src = imgUrl;
+            console.log("imgUrl", imgUrl);
 
             img.onerror = function () {
                 img.src = fallbackImg;
                 img.alt = "Image not found";
                 document.title = "Ảnh không tồn tại";
             };
-        } else {
-            document.body.innerHTML = "<div class='error-text'><h2>Không tìm thấy ảnh</h2></div>";
-            document.title = "Không có đường dẫn";
         }
     </script>
 </body>
