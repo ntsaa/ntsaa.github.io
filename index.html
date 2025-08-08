@@ -2,67 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NTSAA Screenshot Viewer</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        header, footer {
-            background: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-
-        #content {
-            padding: 20px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTSAA</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="js/main.js"></script>
 </head>
 <body>
     <header>
-        <h1>NTSAA Screenshot Viewer</h1>
-        <ul>
-            <li><a href="/">Giới thiệu</a></li>
-        </ul>
+        <div class="header-container">
+            <div class="left">
+                <a class="logo-link" href="#" id="home-link" title="Home">
+                    <img src="images/logo.png" alt="Logo" class="logo" />
+                    <span class="site-title">NTSAA</span>
+                </a>
+            </div>
+            <div class="right">
+                <a id="downloadBtn" class="download-button" href="#">
+                    <span class="full-text">Download latest version</span>
+                    <span class="short-text">Download</span>
+                </a>
+                <a id="bmcBtn" class="download-button" href="https://buymeacoffee.com/ntsaa" target="_blank">
+                    <span class="full-text">☕ Buy me a coffee</span>
+                    <span class="short-text">☕</span>
+                </a>
+                <button id="lang-vn" class="lang-toggle">VN</button>
+                <button id="lang-en" class="lang-toggle">EN</button>
+            </div>
+        </div>
+    </header>
 
-</header>
-
-    <div id="content">Đang tải...</div>
+    <div id="content">Loading...</div>
 
     <footer>
         &copy; 2025 NTSAA Tools
     </footer>
-
-    <script>
-        function getQueryParam(name) {
-            const url = new URL(window.location.href);
-            return url.searchParams.get(name);
-        }
-
-        async function loadPage(url, callback) {
-            try {
-                const res = await fetch(url);
-                const html = await res.text();
-                document.getElementById("content").innerHTML = html;
-                if (callback) callback();
-            } catch (err) {
-                document.getElementById("content").innerHTML = "Không thể tải nội dung.";
-            }
-        }
-
-        const img = getQueryParam("img");
-        if (img) {
-            loadPage("pages/viewer.html", () => {
-                const imageEl = document.getElementById("screenshot-image");
-                if (imageEl) imageEl.src = "https://i.ibb.co/" + decodeURIComponent(img);
-            });
-        } else {
-            loadPage("pages/introduce.html");
-        }
-    </script>
 </body>
 </html>
