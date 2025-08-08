@@ -3,12 +3,14 @@ const translations = {
         download_full: "Download latest version",
         download_short: "Download",
         coffee_full: "☕ Buy me a coffee",
+        image_loading: "Loading image...",
         error: "Cannot load content."
     },
     vn: {
         download_full: "Tải phiên bản mới nhất",
         download_short: "Tải xuống",
         coffee_full: "☕ Mời tôi ly cà phê",
+        image_loading: "Đang tải ảnh...",
         error: "Không thể tải nội dung."
     }
 };
@@ -64,7 +66,25 @@ document.addEventListener("DOMContentLoaded", () => {
         if (img) {
             loadPage("pages/viewer.html", () => {
                 const imageEl = document.getElementById("screenshot-image");
-                if (imageEl) imageEl.src = "https://i.ibb.co/" + decodeURIComponent(img);
+                const loadingEl = document.getElementById("loading-text");
+
+                if (imageEl && loadingEl) {
+                    loadingEl.textContent = translations[lang].image_loading;
+                    loadingEl.style.display = "block";
+                    imageEl.style.display = "none";
+                    requestAnimationFrame(() => {
+                        imageEl.onload = () => {
+                            loadingEl.style.display = "none";
+                            imageEl.style.display = "block";
+                        };
+
+                        imageEl.onerror = () => {
+                            loadingEl.textContent = "Failed to load image!";
+                        };
+
+                        imageEl.src = "https://i.ibb.co/" + decodeURIComponent(img);
+                    });
+                }
             });
         } else {
             loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html");
