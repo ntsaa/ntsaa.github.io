@@ -118,6 +118,10 @@ footer {
     text-align: center;
     font-size: 14px;
 }
+footer a {
+    color: #1877f2;
+    text-decoration: none;
+}
 
 /* --- HELP CONTENT --- */
 .help-content {
