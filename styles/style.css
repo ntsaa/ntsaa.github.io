@@ -99,7 +99,7 @@ header {
 /* --- CONTENT --- */
 #content {
     background-color: #333;
-    padding: 66px 20px 56px;
+    padding: 75px 20px 60px;
     min-height: 100%;
     box-sizing: border-box;
     color: #ffffff;
@@ -118,19 +118,21 @@ footer {
     text-align: center;
     font-size: 14px;
 }
+footer a {
+    color: #1877f2;
+    text-decoration: none;
+}
 
 /* --- HELP CONTENT --- */
 .help-content {
-    padding: 20px;
     font-family: sans-serif;
     color: #f0f0f0;
     background-color: #333;
 }
 
 .help-content h2 {
-    margin-top: 0;
+    margin: 5px 0px;
     color: #d35cf1;
-    margin-bottom: 5px;
 }
 
 .section-subtitle {
