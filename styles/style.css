@@ -35,7 +35,7 @@ header {
 }
 
 .lang-toggle {
-    margin-left: 5px;
+    margin-left: 10px;
     background: none;
     border: 1px solid #ccc;
     padding: 4px 8px;
@@ -91,7 +91,7 @@ header {
     border-radius: 4px;
     text-decoration: none;
     transition: background-color 0.2s;
-    margin-right: 5px;
+    margin-left: 10px;
 }
 
 .right .download-button:hover {
@@ -154,7 +154,6 @@ footer a {
   font-weight: bold;
 }
 
-
 hr {
     border: none;
     border-top: 2px solid #555; /* hoặc giữ nguyên style hiện tại */
@@ -165,6 +164,10 @@ hr {
     font-size: 18px;
     margin-top: 20px;
     margin-bottom: 10px;
+}
+
+.help-content section h3 {
+  margin: 20px 0px !important;
 }
 
 .help-content code,
@@ -215,29 +218,26 @@ kbd img.logo-kbd {
 
 /* --- RESPONSIVE --- */
 @media (max-width: 800px) {
-    .download-button .full-text {
+    .download-button .full-text,
+    .download-button .icon {
         display: none;
     }
     .download-button .short-text {
         display: inline;
-    }
-    .download-button .icon {
-        display: none;
     }
 }
 
 @media (max-width: 700px) {
-    .download-button .full-text {
-        display: none;
+    .right .download-button, .lang-toggle {
+        margin-left: 8px;
     }
+    .site-title,
+    .download-button .full-text,
     .download-button .short-text {
         display: none;
     }
     .download-button .icon {
-        display: inline;
-    }
-    .site-title
-    {
-      display: none;
+        width: 1em;
+        display: inline-block;
     }
 }
