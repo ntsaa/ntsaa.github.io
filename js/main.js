@@ -1,15 +1,19 @@
 const translations = {
     en: {
-        download_full: "Download latest version",
-        download_short: "Download",
+        download_full: "⬇️ Download latest version",
+        download_short: "⬇️ Download",
+        versions_full: "🕒 Versions",
         coffee_full: "☕ Buy me a coffee",
+        coffee_short: "☕ Buy me",
         image_loading: "Loading image...",
         error: "Cannot load content."
     },
     vn: {
-        download_full: "Tải phiên bản mới nhất",
-        download_short: "Tải xuống",
+        download_full: "⬇️ Tải phiên bản mới nhất",
+        download_short: "⬇️ Tải xuống",
+        versions_full: "🕒 Phiên bản",
         coffee_full: "☕ Mời tôi ly cà phê",
+        coffee_short: "☕ Mời tôi",
         image_loading: "Đang tải ảnh...",
         error: "Không thể tải nội dung."
     }
@@ -44,7 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#downloadBtn .full-text").textContent = translations[lang].download_full;
         document.querySelector("#downloadBtn .short-text").textContent = translations[lang].download_short;
 
+        document.querySelector("#versionsBtn .full-text").textContent = translations[lang].versions_full;
+        document.querySelector("#versionsBtn .short-text").textContent = translations[lang].versions_full;
+
         document.querySelector("#bmcBtn .full-text").textContent = translations[lang].coffee_full;
+        document.querySelector("#bmcBtn .short-text").textContent = translations[lang].coffee_short;
     };
 
     const highlightLangButton = (lang) => {
@@ -62,6 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const renderPageFromHash = () => {
         const lang = getCurrentLang();
         const img = getHashParam("img");
+        const versions = window.location.hash === "#versions";
+        // alert(window.location.hash)
 
         if (img) {
             loadPage("pages/viewer.html", () => {
@@ -86,7 +96,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
                 }
             });
-        } else {
+        } else if (versions) {
+            loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html");
+        }
+        else {
             loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html");
         }
     };
@@ -112,7 +125,13 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.hash = "";
     });
 
+    document.getElementById("versionsBtn")?.addEventListener("click", (e) => 
+    {
+        e.preventDefault();
+        window.location.hash = "versions";
+        renderPageFromHash();
+    });
+
     document.getElementById("lang-vn")?.addEventListener("click", () => setLanguage("vn"));
     document.getElementById("lang-en")?.addEventListener("click", () => setLanguage("en"));
-
 });
