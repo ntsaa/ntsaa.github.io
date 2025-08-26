@@ -143,13 +143,6 @@ footer a {
     margin-bottom: 10px;
 }
 
-.help-content section .section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-}
-
 .help-content section > div {
   font-weight: bold;
 }
@@ -217,7 +210,7 @@ kbd img.logo-kbd {
 }
 
 /* --- RESPONSIVE --- */
-@media (max-width: 800px) {
+@media (max-width: 830px) {
     .download-button .full-text,
     .download-button .icon {
         display: none;
@@ -231,7 +224,6 @@ kbd img.logo-kbd {
     .right .download-button, .lang-toggle {
         margin-left: 8px;
     }
-    .site-title,
     .download-button .full-text,
     .download-button .short-text {
         display: none;
@@ -239,5 +231,11 @@ kbd img.logo-kbd {
     .download-button .icon {
         width: 1em;
         display: inline-block;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-title {
+        display: none;
     }
 }
