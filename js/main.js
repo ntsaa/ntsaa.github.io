@@ -1,26 +1,20 @@
 const translations = {
     en: {
-        download_full: "⬇️ Download latest version",
-        download_short: "⬇️ Download",
-        versions_full: "🕒 Versions",
+        download_full: "📦 Get it",
         coffee_full: "☕ Buy me a coffee",
-        coffee_short: "☕ Buy me",
         image_loading: "Loading image...",
         error: "Cannot load content."
     },
     vn: {
-        download_full: "⬇️ Tải phiên bản mới nhất",
-        download_short: "⬇️ Tải xuống",
-        versions_full: "🕒 Phiên bản",
+        download_full: "📦 Dùng ngay",
         coffee_full: "☕ Mời tôi ly cà phê",
-        coffee_short: "☕ Mời tôi",
         image_loading: "Đang tải ảnh...",
         error: "Không thể tải nội dung."
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-
+    var ver = {};
     const getHashParam = (name) => {
         const params = new URLSearchParams(window.location.hash.slice(1));
         return params.get(name);
@@ -46,13 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateDownloadText = (lang) => {
         document.querySelector("#downloadBtn .full-text").textContent = translations[lang].download_full;
-        document.querySelector("#downloadBtn .short-text").textContent = translations[lang].download_short;
-
-        document.querySelector("#versionsBtn .full-text").textContent = translations[lang].versions_full;
-        document.querySelector("#versionsBtn .short-text").textContent = translations[lang].versions_full;
-
         document.querySelector("#bmcBtn .full-text").textContent = translations[lang].coffee_full;
-        document.querySelector("#bmcBtn .short-text").textContent = translations[lang].coffee_short;
     };
 
     const highlightLangButton = (lang) => {
@@ -67,11 +55,20 @@ document.addEventListener("DOMContentLoaded", () => {
         renderPageFromHash();
     };
 
+    const updateUrl = () => {
+        [
+            ["download_x64", ver.url],
+            ["download_x86", ver.url_x86]
+        ].forEach(([id, url]) => {
+            const el = document.getElementById(id);
+            if (el && url) el.href = url;
+        });
+    };
+
     const renderPageFromHash = () => {
         const lang = getCurrentLang();
         const img = getHashParam("img");
-        const versions = window.location.hash === "#versions";
-        // alert(window.location.hash)
+        const versions = window.location.hash === "#download";
 
         if (img) {
             loadPage("pages/viewer.html", () => {
@@ -97,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         } else if (versions) {
-            loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html");
+            loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html", updateUrl);
         }
         else {
             loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html");
@@ -116,19 +113,20 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("api/version/index.json")
         .then(res => res.json())
         .then(data => {
-            if (data.url) document.getElementById("downloadBtn").href = data.url;
-        })
-        .catch(err => console.error("Không tải được dữ liệu version:", err));
+            ver = data;
+            updateUrl();
+     })
+    .catch(err => console.error("Không tải được dữ liệu version:", err));
 
     document.getElementById("home-link")?.addEventListener("click", (e) => {
         e.preventDefault();
         window.location.hash = "";
     });
 
-    document.getElementById("versionsBtn")?.addEventListener("click", (e) => 
+    document.getElementById("downloadBtn")?.addEventListener("click", (e) => 
     {
         e.preventDefault();
-        window.location.hash = "versions";
+        window.location.hash = "download";
         renderPageFromHash();
     });
 
