@@ -14,7 +14,7 @@ const translations = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    var versionInfo = {};
+    var ver = {};
     const getHashParam = (name) => {
         const params = new URLSearchParams(window.location.hash.slice(1));
         return params.get(name);
@@ -56,9 +56,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const updateUrl = () => {
-        if (versionInfo.url) document.getElementById("download_x64").href = versionInfo.url;
-        if (versionInfo.url_x86) document.getElementById("download_x86").href = versionInfo.url_x86;
-    }
+        [
+            ["download_x64", ver.url],
+            ["download_x86", ver.url_x86]
+        ].forEach(([id, url]) => {
+            const el = document.getElementById(id);
+            if (el && url) el.href = url;
+        });
+    };
 
     const renderPageFromHash = () => {
         const lang = getCurrentLang();
@@ -96,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-
     // --- Khởi tạo ---
     const initialLang = getCurrentLang();
     updateDownloadText(initialLang);
@@ -107,10 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("hashchange", renderPageFromHash);
 
     fetch("api/version/index.json")
-     .then(res => res.json())
-     .then(data => {
-        versionInfo = data;
-        updateUrl();
+        .then(res => res.json())
+        .then(data => {
+            ver = data;
+            updateUrl();
      })
     .catch(err => console.error("Không tải được dữ liệu version:", err));
 
