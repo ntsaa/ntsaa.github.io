@@ -1,11 +1,13 @@
 const translations = {
     en: {
         download_full: "📦 Get it",
+        help_full: "📝 User Guide",
         image_loading: "Loading image...",
         error: "Cannot load content."
     },
     vn: {
         download_full: "📦 Dùng ngay",
+        help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
         error: "Không thể tải nội dung."
     }
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const getCurrentLang = () => detectLanguage();
 
     const updateDownloadText = (lang) => {
-        document.querySelector("#downloadBtn .full-text").textContent = translations[lang].download_full;
+        document.querySelector("#download .full-text").textContent = isDldPage() ? translations[lang].help_full : translations[lang].download_full;
     };
 
     const highlightLangButton = (lang) => {
@@ -52,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderPageFromHash();
     };
 
+    const isDldPage = () => window.location.hash === "#download";
+
     const updateUrl = () => {
         [
             ["download_x64", ver.url],
@@ -65,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const renderPageFromHash = () => {
         const lang = getCurrentLang();
         const img = getHashParam("img");
-        const versions = window.location.hash === "#download";
+        const versions = isDldPage();
 
         if (img) {
             loadPage("pages/viewer.html", () => {
@@ -91,10 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         } else if (versions) {
-            loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html", updateUrl);
+            loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html", () => {
+                updateDownloadText(lang); updateUrl(); window.scrollTo({ top: 0 });
+            });
         }
         else {
-            loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html");
+            loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html", () => {
+                updateDownloadText(lang);
+            });
         }
     };
 
@@ -120,10 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.hash = "";
     });
 
-    document.getElementById("downloadBtn")?.addEventListener("click", (e) => 
+    document.getElementById("download")?.addEventListener("click", (e) => 
     {
         e.preventDefault();
-        window.location.hash = "download";
+        window.location.hash = isDldPage() ? "" : "download";
         renderPageFromHash();
     });
 

@@ -256,3 +256,8 @@ kbd img.logo-kbd {
         line-height: 1;
     }
 }
+@media (max-width: 360px) {
+    .site-title {
+        display: none;
+    }
+}
