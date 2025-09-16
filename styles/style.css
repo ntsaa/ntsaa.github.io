@@ -1,3 +1,16 @@
+/* --- VARIABLES --- */
+:root {
+  --color-bg-dark: #111;
+  --color-bg-mid: #333;
+  --color-border: #555;
+  --color-text-light: #ffffff;
+  --color-text-muted: #f0f0f0;
+  --color-link: #4da6ff;
+  --color-link-hover: #d35cf1;
+  --color-accent: #d35cf1;
+  --color-accent-alt: #a64ce6;
+}
+
 /* --- RESET --- */
 html, body {
     margin: 0;
@@ -8,8 +21,8 @@ html, body {
 
 /* --- HEADER --- */
 header {
-    background-color: #111;
-    color: #ffffff;
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-light);
     position: fixed;
     top: 0;
     left: 0;
@@ -20,18 +33,18 @@ header {
 }
 
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     height: 100%;
     padding: 0 20px;
 }
-/* Ẩn nút chữ rút gọn mặc định */
 
-.download-button .short-text {
-    display: none;
+.flex-between-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+/* Ẩn nút chữ rút gọn mặc định */
+.download-button .short-text,
 .download-button .icon {
     display: none;
 }
@@ -52,9 +65,10 @@ header {
 }
 
 .lang-toggle.active-lang {
-    color: #a64ce6; /* tím */
+    color: var(--color-accent-alt);
     font-weight: bold;
 }
+
 /* --- LEFT: Logo + Site Title --- */
 .left {
     display: flex;
@@ -81,13 +95,13 @@ header {
 }
 
 .logo-link:hover .site-title {
-    color: #d35cf1;
+    color: var(--color-accent);
 }
 
 /* --- RIGHT: Download Button --- */
 .right .download-button {
-    background-color: #555;
-    color: white;
+    background-color: var(--color-border);
+    color: var(--color-text-light);
     padding: 8px 16px;
     font-size: 15px;
     border-radius: 4px;
@@ -97,23 +111,23 @@ header {
 }
 
 .right .download-button:hover {
-    background-color: #222;
-    color: #d35cf1;
+    background-color: var(--color-bg-dark);
+    color: var(--color-accent);
 }
 
 /* --- CONTENT --- */
 #content {
-    background-color: #333;
+    background-color: var(--color-bg-mid);
     padding: 75px 20px 60px;
     min-height: 100%;
     box-sizing: border-box;
-    color: #ffffff;
+    color: var(--color-text-light);
 }
 
 /* --- FOOTER --- */
 footer {
-    background-color: #111;
-    color: #ffffff;
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-light);
     position: fixed;
     bottom: 0;
     left: 0;
@@ -123,19 +137,21 @@ footer {
     text-align: center;
     font-size: 14px;
 }
+
 a {
-    color: #4da6ff;
+    color: var(--color-link);
     text-decoration: none;
 }
+
 .section-detail a:hover {
-    color: #d35cf1;
+    color: var(--color-link-hover);
     text-decoration: underline;
 }
 
 /* --- HELP CONTENT --- */
 .help-content {
-    color: #f0f0f0;
-    background-color: #333;
+    color: var(--color-text-muted);
+    background-color: var(--color-bg-mid);
 }
 
 .help-content .section-detail {
@@ -146,29 +162,26 @@ a {
 }
 
 .help-content .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     height: 100%;
 }
 
 .help-content h2 {
     margin: 5px 0px;
-    color: #d35cf1;
+    color: var(--color-accent);
 }
 
 .help-content section > div {
-    color: #d35cf1;
+    color: var(--color-accent);
     margin: 20px 0px -10px 0px;
 }
 
 hr {
     border: none;
-    border-top: 2px solid #555;
+    border-top: 2px solid var(--color-border);
 }
 
 .help-content h3 {
-    color: #d35cf1;
+    color: var(--color-accent);
     font-size: 18px;
     margin-top: 20px;
     margin-bottom: 10px;
@@ -218,23 +231,17 @@ kbd img.logo-kbd {
 .donate-info {
     font-size: 15px;
     line-height: 1.6;
-    color: #f0f0f0;
+    color: var(--color-text-muted);
 }
 
 .donate-international {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0 20px !important;
+    margin: 20px 0 !important;
 }
 
 .section-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  margin: -10px 0 !important;
-  color: #f0f0f0 !important;
+    font-size: 14px;
+    margin: -10px 0 !important;
+    color: var(--color-text-muted) !important;
 }
 
 /* --- RESPONSIVE --- */
@@ -248,7 +255,6 @@ kbd img.logo-kbd {
     .donate-container {
         flex-direction: column;
         align-items: center;
-        /* text-align: center; */
         margin: 0px;
         gap: 0px;
     }
@@ -256,6 +262,7 @@ kbd img.logo-kbd {
         line-height: 1;
     }
 }
+
 @media (max-width: 360px) {
     .site-title {
         display: none;
