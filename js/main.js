@@ -1,13 +1,11 @@
 const translations = {
     en: {
         download_full: "📦 Get it",
-        coffee_full: "☕ Buy me a coffee",
         image_loading: "Loading image...",
         error: "Cannot load content."
     },
     vn: {
         download_full: "📦 Dùng ngay",
-        coffee_full: "☕ Mời tôi ly cà phê",
         image_loading: "Đang tải ảnh...",
         error: "Không thể tải nội dung."
     }
@@ -40,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateDownloadText = (lang) => {
         document.querySelector("#downloadBtn .full-text").textContent = translations[lang].download_full;
-        document.querySelector("#bmcBtn .full-text").textContent = translations[lang].coffee_full;
     };
 
     const highlightLangButton = (lang) => {

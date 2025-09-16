@@ -159,7 +159,6 @@ a {
 
 .help-content section > div {
     color: #d35cf1;
-    /* font-weight: bold; */
     margin: 20px 0px -10px 0px;
 }
 
@@ -186,7 +185,7 @@ li {
 
 .help-content .img-demo {
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .help-content .img-demo img {
@@ -209,25 +208,51 @@ kbd img.logo-kbd {
     margin-right: 4px;
 }
 
+.donate-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin: 10px 0 20px;
+}
+
+.donate-info {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #f0f0f0;
+}
+
+.donate-international {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0 20px !important;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin: -10px 0 !important;
+  color: #f0f0f0 !important;
+}
+
 /* --- RESPONSIVE --- */
 @media (max-width: 600px) {
     .right .download-button, .lang-toggle {
         margin-left: 8px;
     }
-    .download-button .full-text {
-        display: none;
+    .help-content .img-demo {
+       text-align: center;
     }
-    .download-button .short-text {
-        display: inline-block;
+    .donate-container {
+        flex-direction: column;
+        align-items: center;
+        /* text-align: center; */
+        margin: 0px;
+        gap: 0px;
     }
-    .download-button .icon {
-        width: 1em;
-        display: inline-block;
-    }
-}
-
-@media (max-width: 360px) {
-    .site-title {
-        display: none;
+    .donate-info {
+        line-height: 1;
     }
 }
