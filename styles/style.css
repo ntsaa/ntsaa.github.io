@@ -2,6 +2,7 @@
 :root {
   --color-bg-dark: #111;
   --color-bg-mid: #333;
+  --color-btn-dark: #222;
   --color-border: #555;
   --color-text-light: #ffffff;
   --color-text-muted: #f0f0f0;
@@ -111,7 +112,7 @@ header {
 }
 
 .right .download-button:hover {
-    background-color: var(--color-bg-dark);
+    background-color: var(--color-btn-dark);
     color: var(--color-accent);
 }
 
