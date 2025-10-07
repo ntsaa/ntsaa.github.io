@@ -3,5 +3,6 @@
   "url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.3.3.x/NTSAA.zip",
   "sha256": "679a4dbeb37d08596c3c99173a8faad911ea65eeb6fe72c038f47dc624ccb55e",
   "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.3.3.x/NTSAA_x86.zip",
-  "sha256_x86": "ffc6370410d243089f523f0ccdb6dfb4d743f2b4c3b37cd59dcf8abf2c1e5b42"
+  "sha256_x86": "ffc6370410d243089f523f0ccdb6dfb4d743f2b4c3b37cd59dcf8abf2c1e5b42",
+  "pw": "ntsaa"
 }
