@@ -56,13 +56,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const isDldPage = () => window.location.hash === "#download";
 
-    const updateUrl = () => {
-        [
-            ["download_x64", ver.url],
-            ["download_x86", ver.url_x86]
-        ].forEach(([id, url]) => {
-            const el = document.getElementById(id);
-            if (el && url) el.href = url;
+    const updateUrl = (all) => {
+        if (all)
+        {
+            [
+                ["download_x64", ver.url],
+                ["download_x86", ver.url_x86]
+            ].forEach(([id, url]) => {
+                const el = document.getElementById(id);
+                if (el && url) el.href = url;
+            });
+        }
+        
+        document.querySelectorAll('[data-role="pw"]').forEach(elpw => elpw.textContent = ver.pw || '');
+        document.querySelectorAll('[data-role="pw-container"]').forEach(cont => {
+            cont.style.display = ver.pw ? '' : 'none';
         });
     };
 
@@ -96,12 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } else if (versions) {
             loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html", () => {
-                updateDownloadText(lang); updateUrl(); window.scrollTo({ top: 0 });
+                updateDownloadText(lang); updateUrl(true); window.scrollTo({ top: 0 });
             });
         }
         else {
             loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html", () => {
-                updateDownloadText(lang);
+                updateDownloadText(lang); updateUrl(false);
             });
         }
     };
