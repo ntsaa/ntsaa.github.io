@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Streaks</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000; /* nền đen để vệt sáng nổi bật */
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+
+class Particle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 5 + 2;
+    this.speedX = Math.random() * 4 - 2;
+    this.speedY = Math.random() * 4 - 2;
+    this.color = `rgba(255, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.8)`;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.size > 0.1) this.size -= 0.05;
+  }
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// Tạo particle khi di chuyển chuột
+canvas.addEventListener('mousemove', (e) => {
+  for(let i=0;i<5;i++){
+    particles.push(new Particle(e.x, e.y));
+  }
+});
+
+// Vẽ animation
+function animate() {
+  // Nền mờ để tạo trail effect
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  for(let i=0;i<particles.length;i++){
+    particles[i].update();
+    particles[i].draw();
+
+    // Xóa particle nhỏ
+    if(particles[i].size <= 0.1){
+      particles.splice(i,1);
+      i--;
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+// Resize canvas khi đổi kích thước window
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>

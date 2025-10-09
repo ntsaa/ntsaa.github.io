@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Blast</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+let mouseMultiplier = 1;
+
+class Particle {
+  constructor() {
+    this.x = centerX;
+    this.y = centerY;
+    this.size = Math.random() * 4 + 2;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 4 + 1;
+    this.speedX = Math.cos(angle) * speed;
+    this.speedY = Math.sin(angle) * speed;
+    this.color = `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 255, 0.8)`;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.size > 0.1) this.size -= 0.05;
+  }
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// Tạo particle
+function spawnParticles(count = 3) {
+  for(let i=0;i<count;i++){
+    particles.push(new Particle());
+  }
+}
+
+// Bắn nhiều hơn khi di chuột
+canvas.addEventListener('mousemove', () => {
+  mouseMultiplier = 5;
+});
+
+canvas.addEventListener('mouseout', () => {
+  mouseMultiplier = 1;
+});
+
+// Animation
+function animate() {
+  ctx.fillStyle = 'rgba(0,0,0,0.2)'; // trail
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  spawnParticles(mouseMultiplier);
+
+  for(let i=0;i<particles.length;i++){
+    particles[i].update();
+    particles[i].draw();
+    if(particles[i].size <= 0.1){
+      particles.splice(i,1);
+      i--;
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+// Resize canvas
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>
