@@ -3,14 +3,14 @@ const translations = {
         download_full: "📦 Get it",
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
-        effect: "Toggle effect On/Off",
+        effect: "Switch effect",
         error: "Cannot load content."
     },
     vn: {
         download_full: "📦 Dùng ngay",
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
-        effect: "Tắt/Bật hiệu ứng",
+        effect: "Chuyển hiệu ứng",
         error: "Không thể tải nội dung."
     }
 };
@@ -137,14 +137,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("home-link")?.addEventListener("click", (e) => {
         e.preventDefault();
-        EffectController.nextEffect();
         window.location.hash = "";
     });
 
     document.getElementById("download")?.addEventListener("click", (e) => 
     {
         e.preventDefault();
-        EffectController.nextEffect();
         window.location.hash = isDldPage() ? "" : "download";
         renderPageFromHash();
     });
@@ -152,10 +150,27 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("lang-vn")?.addEventListener("click", () => setLanguage("vn"));
     document.getElementById("lang-en")?.addEventListener("click", () => setLanguage("en"));
 
-    const btn = document.getElementById('toggle-ld-effect');
-    btn.addEventListener('click', () => {
-        const enabled = EffectController.getCurrent() !== null;
-        EffectController.toggleEffects(!enabled);
-        btn.textContent = !enabled ? "💫" : "⚡";
+    const toggleBtn  = document.getElementById('toggle-ld-effect');
+    const effects = ['particles', 'starfield', 'ld-effect', 'off'];
+    const icons   = { 
+        'particles': '💠', 
+        'starfield': '✨', 
+        'ld-effect': '💫', 
+        'off': '🚫' 
+    };
+    let current = 0;
+    function updateIcon(name) {
+        toggleBtn.textContent = icons[name] || '✨';
+    }
+    toggleBtn.addEventListener('click', () => {
+        const name = effects[current];
+        if (name === 'off') {
+            EffectController.toggleEffects(false);
+        } else {
+            EffectController.toggleEffects(true);
+            EffectController.loadEffect(effects.indexOf(name));
+        }
+        current = (current + 1) % effects.length;
+        updateIcon(effects[current]);
     });
 });
