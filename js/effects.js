@@ -34,9 +34,4 @@
         toggleEffects,
         getCurrent: () => enabled ? effects[currentIndex]?.name : null
     };
-
-    // Khởi tạo ngẫu nhiên
-    loadEffect(currentIndex);
-
-
 })(window);

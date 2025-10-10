@@ -211,7 +211,14 @@ footer {
 
 .footer-text {
     flex: 1;
-    text-align: center; /* text căn giữa */
+    text-align: center;
+}
+.footer-text:hover{
+    text-shadow: 
+        0 0 6px rgba(255,255,255,0.5),
+        0 0 12px rgba(255,255,255,0.3),
+        0 0 18px rgba(255,255,255,0.2);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 .footer-toggle {

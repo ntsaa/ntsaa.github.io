@@ -3,14 +3,14 @@ const translations = {
         download_full: "📦 Get it",
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
-        effect: "Switch effect",
+        effect: "Effect",
         error: "Cannot load content."
     },
     vn: {
         download_full: "📦 Dùng ngay",
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
-        effect: "Chuyển hiệu ứng",
+        effect: "Hiệu ứng",
         error: "Không thể tải nội dung."
     }
 };
@@ -158,10 +158,12 @@ document.addEventListener("DOMContentLoaded", () => {
         'ld-effect': '💫', 
         'off': '🚫' 
     };
-    let current = 0;
+
+    let current = Math.floor(Math.random() * effects.length);
     function updateIcon(name) {
         toggleBtn.textContent = icons[name] || '✨';
     }
+
     toggleBtn.addEventListener('click', () => {
         const name = effects[current];
         if (name === 'off') {
@@ -173,4 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         current = (current + 1) % effects.length;
         updateIcon(effects[current]);
     });
+
+    toggleBtn.click();
 });
