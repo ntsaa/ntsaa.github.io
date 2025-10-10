@@ -198,7 +198,6 @@ footer {
     right: 0;
     height: 40px;
     line-height: 40px;
-    text-align: center;
     font-size: 14px;
     z-index: 10;
 }
@@ -210,12 +209,13 @@ footer {
     padding: 0 20px;
 }
 
-.footer-left {
-    text-align: left;
+.footer-text {
+    flex: 1;
+    text-align: center; /* text căn giữa */
 }
 
-.footer-right {
-    text-align: right;
+.footer-toggle {
+    cursor: pointer;
 }
 
 #toggle-ld-effect {
