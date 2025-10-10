@@ -7,7 +7,7 @@ function initParticles() {
   const DPR = window.devicePixelRatio || 1;
   let w = window.innerWidth, h = window.innerHeight;
 
-  const num = 190;
+  const num = window.innerWidth < 600 ? 80 : 190;
   const maxDist = 110;
   const particles = [];
   let animationId;

@@ -11,7 +11,7 @@ function initLDEffect() {
   canvas.width = w;
   canvas.height = h;
 
-  const numParticles = 500;
+  const numParticles = window.innerWidth < 600 ? 150 : 500;
   const particles = [];
   let animationId;
 
@@ -40,7 +40,7 @@ function initLDEffect() {
       const hue = (Date.now() / 50 + this.hueOffset) % 360;
       const color = `hsla(${hue}, 80%, 70%, 0.5)`; // nhạt vừa đủ
       ctx.fillStyle = color;
-      ctx.shadowBlur = this.size * 2;       // glow nhẹ
+      ctx.shadowBlur = window.innerWidth < 600 ? this.size : this.size * 2;
       ctx.shadowColor = color;
 
       ctx.beginPath();
@@ -62,7 +62,7 @@ function initLDEffect() {
     if (window._stopLDEffect) return;
 
     // trail nhẹ, giữ hạt nổi bật
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillStyle = window.innerWidth < 600 ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.05)';
     ctx.fillRect(0, 0, w, h);
 
     particles.forEach(p => {
