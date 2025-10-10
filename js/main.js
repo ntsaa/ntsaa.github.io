@@ -3,17 +3,20 @@ const translations = {
         download_full: "📦 Get it",
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
+        effect: "Toggle effect On/Off",
         error: "Cannot load content."
     },
     vn: {
         download_full: "📦 Dùng ngay",
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
+        effect: "Tắt/Bật hiệu ứng",
         error: "Không thể tải nội dung."
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    const EC = window.EffectController;
     var ver = {};
     const getHashParam = (name) => {
         const params = new URLSearchParams(window.location.hash.slice(1));
@@ -40,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateDownloadText = (lang) => {
         document.querySelector("#download .full-text").textContent = isDldPage() ? translations[lang].help_full : translations[lang].download_full;
+        document.getElementById('toggle-ld-effect').title = translations[lang].effect;
     };
 
     const highlightLangButton = (lang) => {
@@ -133,16 +137,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("home-link")?.addEventListener("click", (e) => {
         e.preventDefault();
+        EffectController.nextEffect();
         window.location.hash = "";
     });
 
     document.getElementById("download")?.addEventListener("click", (e) => 
     {
         e.preventDefault();
+        EffectController.nextEffect();
         window.location.hash = isDldPage() ? "" : "download";
         renderPageFromHash();
     });
 
     document.getElementById("lang-vn")?.addEventListener("click", () => setLanguage("vn"));
     document.getElementById("lang-en")?.addEventListener("click", () => setLanguage("en"));
+
+    const btn = document.getElementById('toggle-ld-effect');
+    btn.addEventListener('click', () => {
+        const enabled = EffectController.getCurrent() !== null;
+        EffectController.toggleEffects(!enabled);
+        btn.textContent = !enabled ? "💫" : "⚡";
+    });
 });

@@ -1,14 +1,16 @@
-(function () {
+// particles.js
+function initParticles() {
   const canvas = document.getElementById('network');
   if (!canvas) return;
-
   const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
   const DPR = window.devicePixelRatio || 1;
   let w = window.innerWidth, h = window.innerHeight;
 
   const num = 190;
   const maxDist = 110;
   const particles = [];
+  let animationId;
 
   function resize() {
     canvas.style.width = window.innerWidth + 'px';
@@ -21,7 +23,7 @@
   }
   window.addEventListener('resize', resize);
 
-  function initParticles() {
+  function init() {
     particles.length = 0;
     for (let i = 0; i < num; i++) {
       particles.push({
@@ -46,7 +48,6 @@
 
   function animate() {
     ctx.clearRect(0, 0, w, h);
-
     const hue = (Date.now() / 50) % 360;
 
     for (const p of particles) {
@@ -69,18 +70,17 @@
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${hue}, 80%, 70%, 0.5)`; // rõ hơn
+      ctx.fillStyle = `hsla(${hue}, 80%, 70%, 0.5)`;
       ctx.fill();
     }
 
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
-        if (num > 300 && (i % 3 === 0 || j % 3 === 0)) continue;
         const a = particles[i], b = particles[j];
         const dx = a.x - b.x, dy = a.y - b.y;
         const d = Math.hypot(dx, dy);
         if (d < maxDist) {
-          const alpha = (1 - d / maxDist) * 0.3; // đường sáng hơn chút
+          const alpha = (1 - d / maxDist) * 0.3;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -90,11 +90,23 @@
         }
       }
     }
-    requestAnimationFrame(animate);
-    // setTimeout(() => requestAnimationFrame(animate), 10);
+
+    animationId = requestAnimationFrame(animate);
   }
 
   resize();
-  initParticles();
+  init();
   animate();
-})();
+
+  window._particlesCleanup = () => {
+    cancelAnimationFrame(animationId);
+    ctx.clearRect(0, 0, w, h);
+  };
+}
+
+function destroyParticles() {
+  if (window._particlesCleanup) {
+    window._particlesCleanup();
+    delete window._particlesCleanup;
+  }
+}
