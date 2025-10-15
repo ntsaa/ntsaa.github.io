@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(res => res.json())
         .then(data => {
             ver = data;
-            updateUrl();
+            updateUrl(true);
      })
     .catch(err => console.error("Không tải được dữ liệu version:", err));
 
