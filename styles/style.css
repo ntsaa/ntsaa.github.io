@@ -51,6 +51,29 @@ header {
     display: none;
 }
 
+.alt-link {
+  display: inline-flex;
+  align-items: center;
+  margin: -3px 0 0 6px;
+  color: var(--color-link);
+  text-decoration: none !important; /* bỏ gạch chân */
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.alt-link:hover {
+  transform: scale(1.2);
+  color: var(--color-accent);
+  text-decoration: none; /* vẫn không gạch chân khi hover */
+}
+
+.download-button.disabled-temp,
+.alt-link.disabled-temp {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+  transition: opacity 0.2s ease;
+}
+
 .lang-toggle {
     margin-left: 10px;
     background: none;
