@@ -236,6 +236,7 @@ footer {
     flex: 1;
     text-align: center;
 }
+
 .footer-text:hover{
     text-shadow: 
         0 0 6px rgba(255,255,255,0.5),
@@ -246,16 +247,13 @@ footer {
 
 .footer-toggle {
     cursor: pointer;
-}
-
-#toggle-ld-effect {
     display: inline-block;
     font-size: 18px;
     vertical-align: middle;
     transition: transform 0.2s;
 }
 
-#toggle-ld-effect:hover {
+.footer-toggle:hover {
     transform: scale(1.2);
     color: var(--color-accent);
 }

@@ -3,14 +3,16 @@ const translations = {
         download_full: "📦 Get it",
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
-        effect: "Effect",
+        effect: "Change effect",
+        effect_off: "Turn off effects",
         error: "Cannot load content."
     },
     vn: {
         download_full: "📦 Dùng ngay",
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
-        effect: "Hiệu ứng",
+        effect: "Chuyển hiệu ứng",
+        effect_off: "Tắt hiệu ứng",
         error: "Không thể tải nội dung."
     }
 };
@@ -47,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const updateDownloadText = (lang) => {
         document.querySelector("#download .full-text").textContent =
             isDldPage() ? translations[lang].help_full : translations[lang].download_full;
-        document.getElementById('toggle-ld-effect').title = translations[lang].effect;
+        document.getElementById('toggle-effect').title = translations[lang].effect;
+        document.getElementById('toggle-off').title = translations[lang].effect_off;
     };
 
     const highlightLangButton = (lang) => {
@@ -181,30 +184,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("lang-vn")?.addEventListener("click", () => setLanguage("vn"));
     document.getElementById("lang-en")?.addEventListener("click", () => setLanguage("en"));
 
-    const toggleBtn = document.getElementById('toggle-ld-effect');
-    const effects = ['particles', 'starfield', 'ld-effect', 'off'];
-    const icons = {
-        'particles': '💠',
-        'starfield': '✨',
-        'ld-effect': '💫',
-        'off': '🚫'
-    };
+    const toggleBtn = document.getElementById('toggle-effect');
+    const offBtn = document.getElementById('toggle-off');
 
-    let current = Math.floor(Math.random() * effects.length);
-    function updateIcon(name) {
-        toggleBtn.textContent = icons[name] || '✨';
+    const effects = ['particles', 'starfield', 'ld-effect'];
+    const icons = ['💠', '✨','💫'];
+    let current = 0;
+
+    function applyEffect(index) {
+        EC.toggleEffects(true);
+        EC.loadEffect(index);
+        toggleBtn.textContent = icons[index];
     }
 
     toggleBtn.addEventListener('click', () => {
-        const name = effects[current];
-        if (name === 'off') {
-            EC.toggleEffects(false);
-        } else {
-            EC.toggleEffects(true);
-            EC.loadEffect(effects.indexOf(name));
-        }
         current = (current + 1) % effects.length;
-        updateIcon(effects[current]);
+        applyEffect(current);
+    });
+
+    offBtn.addEventListener('click', () => {
+        EC.toggleEffects(false);
     });
 
     toggleBtn.click();
