@@ -16,6 +16,10 @@ const translations = {
         error: "Không thể tải nội dung."
     }
 };
+const IMAGE_PROVIDERS = {
+    imgbb: "https://i.ibb.co/",
+    anhmoe: "https://cdn.save.moe/"
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const EC = window.EffectController;
@@ -90,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const versions = isDldPage();
 
         if (img) {
+            const srcType = getHashParam("src") || "imgbb";
             loadPage("pages/viewer.html", () => {
                 const imageEl = document.getElementById("screenshot-image");
                 const loadingEl = document.getElementById("loading-text");
@@ -108,7 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             loadingEl.textContent = "Failed to load image!";
                         };
 
-                        imageEl.src = "https://i.ibb.co/" + decodeURIComponent(img);
+                        const baseUrl = IMAGE_PROVIDERS[srcType.toLowerCase()];
+                        imageEl.src = baseUrl + decodeURIComponent(img);
                     });
                 }
             });
@@ -189,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const effects = ['particles', 'starfield', 'ld-effect'];
     const icons = ['💠', '✨','💫'];
-    let current = 0;
+    let current = Math.floor(Math.random() * effects.length);
 
     function applyEffect(index) {
         EC.toggleEffects(true);
