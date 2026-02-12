@@ -26,7 +26,7 @@
     ],
 
     start() {
-
+      if (this.animationId) return;
       this.canvas = document.getElementById('network');
       if (!this.canvas) return;
 
@@ -56,7 +56,10 @@
 
     stop() {
 
-      cancelAnimationFrame(this.animationId);
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;   // bắt buộc reset
+      }
 
       if (this.resizeHandler) {
         window.removeEventListener('resize', this.resizeHandler);

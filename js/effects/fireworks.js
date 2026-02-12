@@ -37,6 +37,7 @@
     /* ================= START ================= */
 
     start() {
+      if (this.animationId) return;
 
       this.canvas = document.getElementById("network");
       if (!this.canvas) return;
@@ -62,11 +63,25 @@
 
     stop() {
 
-      cancelAnimationFrame(this.animationId);
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;   // bắt buộc reset
+      }
 
-      window.removeEventListener("resize", this.resizeHandler);
-      document.removeEventListener("mousemove", this.moveHandler);
-      document.removeEventListener("click", this.clickHandler);
+      if (this.resizeHandler) {
+        window.removeEventListener("resize", this.resizeHandler);
+        this.resizeHandler = null;
+      }
+
+      if (this.moveHandler) {
+        document.removeEventListener("mousemove", this.moveHandler);
+        this.moveHandler = null;
+      }
+
+      if (this.clickHandler) {
+        document.removeEventListener("click", this.clickHandler);
+        this.clickHandler = null;
+      }
 
       this.ctx.globalCompositeOperation = "source-over";
       this.ctx.globalAlpha = 1;

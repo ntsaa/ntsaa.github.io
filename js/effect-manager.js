@@ -75,6 +75,7 @@
         bindEvents() {
 
             this.toggleBtn?.addEventListener("click", () => {
+                this.EC.toggleEffects(true);
                 this.next();
             });
 
