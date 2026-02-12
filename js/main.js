@@ -16,24 +16,26 @@ const translations = {
         error: "Không thể tải nội dung."
     }
 };
+
 const IMAGE_PROVIDERS = {
     imgbb: "https://i.ibb.co/",
     anhmoe: "https://cdn.save.moe/"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    const EC = window.EffectController;
-    var ver = {};
 
-    const getHashParam = (name) => {
-        const params = new URLSearchParams(window.location.hash.slice(1));
-        return params.get(name);
-    };
+    let ver = {};
 
-    const detectLanguage = () => {
-        return localStorage.getItem("lang")
-            || ((navigator.language || "").toLowerCase().startsWith("vi") ? "vn" : "en");
-    };
+    /* ============================= */
+    /*  HELPERS                      */
+    /* ============================= */
+
+    const getHashParam = (name) =>
+        new URLSearchParams(window.location.hash.slice(1)).get(name);
+
+    const detectLanguage = () =>
+        localStorage.getItem("lang") ||
+        ((navigator.language || "").toLowerCase().startsWith("vi") ? "vn" : "en");
 
     const getCurrentLang = () => detectLanguage();
 
@@ -44,7 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("content").innerHTML = html;
             callback?.();
         } catch {
-            document.getElementById("content").textContent = translations[getCurrentLang()].error;
+            document.getElementById("content").textContent =
+                translations[getCurrentLang()].error;
         }
     };
 
@@ -52,14 +55,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateDownloadText = (lang) => {
         document.querySelector("#download .full-text").textContent =
-            isDldPage() ? translations[lang].help_full : translations[lang].download_full;
-        document.getElementById('toggle-effect').title = translations[lang].effect;
-        document.getElementById('toggle-off').title = translations[lang].effect_off;
+            isDldPage()
+                ? translations[lang].help_full
+                : translations[lang].download_full;
+
+        const toggleBtn = document.getElementById('toggle-effect');
+        const offBtn = document.getElementById('toggle-off');
+
+        if (toggleBtn) toggleBtn.title = translations[lang].effect;
+        if (offBtn) offBtn.title = translations[lang].effect_off;
     };
 
     const highlightLangButton = (lang) => {
-        document.querySelectorAll(".lang-toggle").forEach(btn => btn.classList.remove("active-lang"));
-        document.getElementById(`lang-${lang}`)?.classList.add("active-lang");
+        document.querySelectorAll(".lang-toggle")
+            .forEach(btn => btn.classList.remove("active-lang"));
+
+        document.getElementById(`lang-${lang}`)
+            ?.classList.add("active-lang");
     };
 
     const setLanguage = (lang) => {
@@ -82,85 +94,117 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        document.querySelectorAll('[data-role="pw"]').forEach(elpw => elpw.textContent = ver.pw || '');
-        document.querySelectorAll('[data-role="pw-container"]').forEach(cont => {
-            cont.style.display = ver.pw ? '' : 'none';
-        });
+        document.querySelectorAll('[data-role="pw"]')
+            .forEach(elpw => elpw.textContent = ver.pw || '');
+
+        document.querySelectorAll('[data-role="pw-container"]')
+            .forEach(cont => cont.style.display = ver.pw ? '' : 'none');
     };
 
+    /* ============================= */
+    /*  DOWNLOAD COOLDOWN            */
+    /* ============================= */
+
+    function attachDownloadCooldown() {
+
+        const dldButtons = document.querySelectorAll('.download-button, .alt-link');
+
+        dldButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+
+                if (btn.dataset.cooling === "1") {
+                    e.preventDefault();
+                    return;
+                }
+
+                btn.dataset.cooling = "1";
+
+                const href = btn.getAttribute('href');
+                if (href && href !== '#') {
+                    setTimeout(() => window.open(href, '_blank'), 50);
+                }
+
+                setTimeout(() => {
+                    btn.dataset.cooling = "0";
+                }, 3000);
+
+            }, { passive: true });
+        });
+    }
+
+    /* ============================= */
+    /*  PAGE RENDER                  */
+    /* ============================= */
+
     const renderPageFromHash = () => {
+
         const lang = getCurrentLang();
         const img = getHashParam("img");
         const versions = isDldPage();
 
         if (img) {
+
             const srcType = getHashParam("src") || "imgbb";
+
             loadPage("pages/viewer.html", () => {
+
                 const imageEl = document.getElementById("screenshot-image");
                 const loadingEl = document.getElementById("loading-text");
 
-                if (imageEl && loadingEl) {
-                    loadingEl.textContent = translations[lang].image_loading;
-                    loadingEl.style.display = "block";
-                    imageEl.style.display = "none";
-                    requestAnimationFrame(() => {
-                        imageEl.onload = () => {
-                            loadingEl.style.display = "none";
-                            imageEl.style.display = "block";
-                        };
+                if (!imageEl || !loadingEl) return;
 
-                        imageEl.onerror = () => {
-                            loadingEl.textContent = "Failed to load image!";
-                        };
+                loadingEl.textContent = translations[lang].image_loading;
+                loadingEl.style.display = "block";
+                imageEl.style.display = "none";
 
-                        const baseUrl = IMAGE_PROVIDERS[srcType.toLowerCase()];
-                        imageEl.src = baseUrl + decodeURIComponent(img);
-                    });
-                }
+                requestAnimationFrame(() => {
+
+                    imageEl.onload = () => {
+                        loadingEl.style.display = "none";
+                        imageEl.style.display = "block";
+                    };
+
+                    imageEl.onerror = () => {
+                        loadingEl.textContent = "Failed to load image!";
+                    };
+
+                    const baseUrl = IMAGE_PROVIDERS[srcType.toLowerCase()];
+                    imageEl.src = baseUrl + decodeURIComponent(img);
+                });
             });
+
         } else if (versions) {
-            loadPage(lang === "vn" ? "pages/versions-vn.html" : "pages/versions-en.html", () => {
-                updateDownloadText(lang);
-                updateUrl(true);
-                window.scrollTo({ top: 0 });
-                attachDownloadCooldown(); // Gắn chống spam click cho tất cả nút download
-            });
+
+            loadPage(
+                lang === "vn"
+                    ? "pages/versions-vn.html"
+                    : "pages/versions-en.html",
+                () => {
+                    updateDownloadText(lang);
+                    updateUrl(true);
+                    window.scrollTo({ top: 0 });
+                    attachDownloadCooldown();
+                }
+            );
+
         } else {
-            loadPage(lang === "vn" ? "pages/help-vn.html" : "pages/help-en.html", () => {
-                updateDownloadText(lang);
-                updateUrl(false);
-            });
+
+            loadPage(
+                lang === "vn"
+                    ? "pages/help-vn.html"
+                    : "pages/help-en.html",
+                () => {
+                    updateDownloadText(lang);
+                    updateUrl(false);
+                }
+            );
         }
     };
 
-    // --- Chống click liên tục (3 giây) cho tất cả .download-button ---
-    function attachDownloadCooldown() {
-        const dldButtons = document.querySelectorAll('.download-button, .alt-link');
-        dldButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (btn.disabled) {
-                    e.preventDefault();
-                    return;
-                }
+    /* ============================= */
+    /*  INIT BASIC                   */
+    /* ============================= */
 
-                btn.disabled = true;
-                btn.classList.add('disabled-temp');
-
-                const href = btn.getAttribute('href');
-                if (href && href !== '#') {
-                    setTimeout(() => window.open(href, '_blank'), 100);
-                }
-
-                // Bật lại sau 3 giây
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.classList.remove('disabled-temp');
-                }, 3000);
-            });
-        });
-    }
-
-    // --- Khởi tạo ---
     const initialLang = getCurrentLang();
     updateDownloadText(initialLang);
     highlightLangButton(initialLang);
@@ -174,43 +218,33 @@ document.addEventListener("DOMContentLoaded", () => {
             ver = data;
             updateUrl(true);
         })
-        .catch(err => console.error("Không tải được dữ liệu version:", err));
+        .catch(() => { });
 
-    document.getElementById("home-link")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        window.location.hash = "";
-    });
+    document.getElementById("home-link")
+        ?.addEventListener("click", e => {
+            e.preventDefault();
+            window.location.hash = "";
+        });
 
-    document.getElementById("download")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        window.location.hash = isDldPage() ? "" : "download";
-        renderPageFromHash();
-    });
+    document.getElementById("download")
+        ?.addEventListener("click", e => {
+            e.preventDefault();
+            window.location.hash = isDldPage() ? "" : "download";
+            renderPageFromHash();
+        });
 
-    document.getElementById("lang-vn")?.addEventListener("click", () => setLanguage("vn"));
-    document.getElementById("lang-en")?.addEventListener("click", () => setLanguage("en"));
+    document.getElementById("lang-vn")
+        ?.addEventListener("click", () => setLanguage("vn"));
 
-    const toggleBtn = document.getElementById('toggle-effect');
-    const offBtn = document.getElementById('toggle-off');
+    document.getElementById("lang-en")
+        ?.addEventListener("click", () => setLanguage("en"));
 
-    const effects = ['particles', 'starfield', 'ld-effect'];
-    const icons = ['💠', '✨','💫'];
-    let current = Math.floor(Math.random() * effects.length);
+    /* ============================= */
+    /*  INIT EFFECT SYSTEM           */
+    /* ============================= */
 
-    function applyEffect(index) {
-        EC.toggleEffects(true);
-        EC.loadEffect(index);
-        toggleBtn.textContent = icons[index];
+    if (window.initEffectManager) {
+        window.initEffectManager();
     }
 
-    toggleBtn.addEventListener('click', () => {
-        current = (current + 1) % effects.length;
-        applyEffect(current);
-    });
-
-    offBtn.addEventListener('click', () => {
-        EC.toggleEffects(false);
-    });
-
-    toggleBtn.click();
 });

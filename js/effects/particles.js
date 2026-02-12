@@ -1,112 +1,178 @@
 // particles.js
-function initParticles() {
-  const canvas = document.getElementById('network');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = true;
-  const DPR = window.devicePixelRatio || 1;
-  let w = window.innerWidth, h = window.innerHeight;
+(function () {
 
-  const num = window.innerWidth < 600 ? 80 : 190;
-  const maxDist = window.innerWidth < 600 ? 70 : 110;
-  const particles = [];
-  let animationId;
+  const particlesEffect = {
 
-  function resize() {
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    canvas.width = Math.floor(window.innerWidth * DPR);
-    canvas.height = Math.floor(window.innerHeight * DPR);
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    w = window.innerWidth;
-    h = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
+    animationId: null,
+    canvas: null,
+    ctx: null,
+    particles: [],
+    resizeHandler: null,
+    mouseMoveHandler: null,
+    mouseLeaveHandler: null,
+    w: 0,
+    h: 0,
+    DPR: window.devicePixelRatio || 1,
+    mouse: { x: null, y: null, radius: 150 },
 
-  function init() {
-    particles.length = 0;
-    for (let i = 0; i < num; i++) {
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.9,
-        vy: (Math.random() - 0.5) * 0.9,
-        r: 1 + Math.random() * 1.2
-      });
-    }
-  }
+    start() {
 
-  const mouse = { x: null, y: null, radius: 150 };
-  window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-  window.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
-  });
+      this.canvas = document.getElementById('network');
+      if (!this.canvas) return;
 
-  function animate() {
-    ctx.clearRect(0, 0, w, h);
-    const hue = (Date.now() / 50) % 360;
+      this.ctx = this.canvas.getContext('2d');
+      this.ctx.imageSmoothingEnabled = true;
 
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x <= 0 || p.x >= w) p.vx *= -1;
-      if (p.y <= 0 || p.y >= h) p.vy *= -1;
+      // reset state
+      this.ctx.globalCompositeOperation = "source-over";
+      this.ctx.globalAlpha = 1;
+      this.ctx.shadowBlur = 0;
+      this.ctx.filter = "none";
 
-      if (mouse.x !== null) {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < mouse.radius && dist > 0.001) {
-          const ang = Math.atan2(dy, dx);
-          const push = (mouse.radius - dist) / mouse.radius;
-          p.vx += Math.cos(ang) * push * 0.1;
-          p.vy += Math.sin(ang) * push * 0.1;
+      this.resizeHandler = () => this.resize();
+      window.addEventListener('resize', this.resizeHandler);
+
+      this.mouseMoveHandler = (e) => {
+        this.mouse.x = e.clientX;
+        this.mouse.y = e.clientY;
+      };
+
+      this.mouseLeaveHandler = () => {
+        this.mouse.x = null;
+        this.mouse.y = null;
+      };
+
+      window.addEventListener('mousemove', this.mouseMoveHandler);
+      window.addEventListener('mouseleave', this.mouseLeaveHandler);
+
+      this.resize();
+      this.initParticles();
+      this.animate();
+    },
+
+    stop() {
+
+      cancelAnimationFrame(this.animationId);
+
+      if (this.resizeHandler) {
+        window.removeEventListener('resize', this.resizeHandler);
+      }
+
+      if (this.mouseMoveHandler) {
+        window.removeEventListener('mousemove', this.mouseMoveHandler);
+      }
+
+      if (this.mouseLeaveHandler) {
+        window.removeEventListener('mouseleave', this.mouseLeaveHandler);
+      }
+
+      if (this.ctx) {
+        this.ctx.clearRect(0, 0, this.w, this.h);
+      }
+
+      this.particles = [];
+      this.mouse.x = null;
+      this.mouse.y = null;
+    },
+
+    resize() {
+
+      this.canvas.style.width = window.innerWidth + 'px';
+      this.canvas.style.height = window.innerHeight + 'px';
+
+      this.canvas.width = Math.floor(window.innerWidth * this.DPR);
+      this.canvas.height = Math.floor(window.innerHeight * this.DPR);
+
+      this.ctx.setTransform(this.DPR, 0, 0, this.DPR, 0, 0);
+
+      this.w = window.innerWidth;
+      this.h = window.innerHeight;
+    },
+
+    initParticles() {
+
+      const count = window.innerWidth < 600 ? 80 : 190;
+      this.particles = [];
+
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.w,
+          y: Math.random() * this.h,
+          vx: (Math.random() - 0.5) * 0.9,
+          vy: (Math.random() - 0.5) * 0.9,
+          r: 1 + Math.random() * 1.2
+        });
+      }
+    },
+
+    animate() {
+
+      this.ctx.clearRect(0, 0, this.w, this.h);
+
+      const hue = (Date.now() / 50) % 360;
+      const maxDist = window.innerWidth < 600 ? 70 : 110;
+
+      // update + draw particles
+      for (const p of this.particles) {
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x <= 0 || p.x >= this.w) p.vx *= -1;
+        if (p.y <= 0 || p.y >= this.h) p.vy *= -1;
+
+        if (this.mouse.x !== null) {
+
+          const dx = p.x - this.mouse.x;
+          const dy = p.y - this.mouse.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < this.mouse.radius && dist > 0.001) {
+
+            const ang = Math.atan2(dy, dx);
+            const push = (this.mouse.radius - dist) / this.mouse.radius;
+
+            p.vx += Math.cos(ang) * push * 0.1;
+            p.vy += Math.sin(ang) * push * 0.1;
+          }
+        }
+
+        this.ctx.beginPath();
+        this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        this.ctx.fillStyle = `hsla(${hue}, 80%, 70%, 0.5)`;
+        this.ctx.fill();
+      }
+
+      // draw connections
+      for (let i = 0; i < this.particles.length; i++) {
+        for (let j = i + 1; j < this.particles.length; j++) {
+
+          const a = this.particles[i];
+          const b = this.particles[j];
+
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d = Math.hypot(dx, dy);
+
+          if (d < maxDist) {
+
+            const alpha = (1 - d / maxDist) * 0.3;
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(a.x, a.y);
+            this.ctx.lineTo(b.x, b.y);
+            this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, ${alpha})`;
+            this.ctx.lineWidth = 0.8;
+            this.ctx.stroke();
+          }
         }
       }
 
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${hue}, 80%, 70%, 0.5)`;
-      ctx.fill();
+      this.animationId = requestAnimationFrame(() => this.animate());
     }
 
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const a = particles[i], b = particles[j];
-        const dx = a.x - b.x, dy = a.y - b.y;
-        const d = Math.hypot(dx, dy);
-        if (d < maxDist) {
-          const alpha = (1 - d / maxDist) * 0.3;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `hsla(${hue}, 80%, 70%, ${alpha})`;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-        }
-      }
-    }
-
-    animationId = requestAnimationFrame(animate);
-  }
-
-  resize();
-  init();
-  animate();
-
-  window._particlesCleanup = () => {
-    cancelAnimationFrame(animationId);
-    ctx.clearRect(0, 0, w, h);
   };
-}
 
-function destroyParticles() {
-  if (window._particlesCleanup) {
-    window._particlesCleanup();
-    delete window._particlesCleanup;
-  }
-}
+  window.EffectController.register("particles", particlesEffect);
+
+})();

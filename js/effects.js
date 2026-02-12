@@ -1,37 +1,82 @@
-(function(global) {
-    let enabled = false;
-    let currentIndex = 0;
+// effects.js
+(function () {
 
-    const effects = [
-        { name: "particles", init: global.initParticles, destroy: global.destroyParticles },
-        { name: "starfield", init: global.initStarfield, destroy: global.destroyStarfield },
-        { name: "ld-effect", init: global.initLDEffect, destroy: global.destroyLDEffect }
-    ];
+    class EffectController {
 
-    function loadEffect(index) {
-        effects.forEach((eff, i) => {
-            if (typeof eff.destroy === "function") eff.destroy();
-        });
-        if (enabled && typeof effects[index].init === "function") effects[index].init();
-        currentIndex = index;
-    }
-
-    function toggleEffects(on) {
-        enabled = !!on;
-        if (!enabled) {
-            effects.forEach(eff => {
-                if (typeof eff.destroy === "function") eff.destroy();
-            });
-        } else {
-            loadEffect(currentIndex);
+        constructor() {
+            this.effects = {};      // { name: instance }
+            this.current = null;    // current effect name
+            this.enabled = false;   // global on/off
         }
+
+        /* ============================= */
+        /*  REGISTER                     */
+        /* ============================= */
+
+        register(name, instance) {
+            if (!name || !instance) return;
+            this.effects[name] = instance;
+        }
+
+        /* ============================= */
+        /*  SET EFFECT                   */
+        /* ============================= */
+
+        setEffect(name) {
+            if (!this.effects[name]) return;
+
+            // Stop old
+            if (this.current && this.effects[this.current]) {
+                this.effects[this.current].stop?.();
+            }
+
+            this.current = name;
+
+            // Start new if enabled
+            if (this.enabled) {
+                this.effects[name].start?.();
+            }
+        }
+
+        getCurrent() {
+            return this.current;
+        }
+
+        getAvailableEffects() {
+            return Object.keys(this.effects);
+        }
+
+        /* ============================= */
+        /*  TOGGLE                       */
+        /* ============================= */
+
+        toggleEffects(state) {
+
+            this.enabled = state;
+
+            if (!this.current) return;
+
+            if (state) {
+                this.effects[this.current]?.start?.();
+            } else {
+                this.effects[this.current]?.stop?.();
+            }
+        }
+
+        /* ============================= */
+        /*  DESTROY (optional)           */
+        /* ============================= */
+
+        destroyAll() {
+            Object.values(this.effects).forEach(effect => {
+                effect.stop?.();
+            });
+            this.enabled = false;
+            this.current = null;
+        }
+
     }
 
-    global.EffectController = {
-        loadEffect,
-        nextEffect: () => loadEffect((currentIndex + 1) % effects.length),
-        randomEffect: () => loadEffect(Math.floor(Math.random() * effects.length)),
-        toggleEffects,
-        getCurrent: () => enabled ? effects[currentIndex]?.name : null
-    };
-})(window);
+    window.EffectController = new EffectController();
+
+})();
