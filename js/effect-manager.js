@@ -10,10 +10,10 @@
         starfield: "✨",
         drift: "💫",
         fireworks: "🎆",
-        sakura: "🌸"
+        peach: "🌸"
     };
 
-    const TET_EFFECTS = ["fireworks", "sakura"];
+    const TET_EFFECTS = ["fireworks", "peach"];
     const NORMAL_EFFECTS = ["particles", "starfield", "drift"];
 
     /* ============================= */
