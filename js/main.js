@@ -110,25 +110,35 @@ document.addEventListener("DOMContentLoaded", () => {
         const dldButtons = document.querySelectorAll('.download-button, .alt-link');
 
         dldButtons.forEach(btn => {
+
             btn.addEventListener('click', (e) => {
 
+                // nếu đang cooldown → bỏ qua nhưng KHÔNG chặn propagation
                 if (btn.dataset.cooling === "1") {
-                    e.preventDefault();
                     return;
                 }
 
                 btn.dataset.cooling = "1";
 
                 const href = btn.getAttribute('href');
+
                 if (href && href !== '#') {
-                    setTimeout(() => window.open(href, '_blank'), 50);
+                    // delay nhỏ để không phá chuỗi click event
+                    setTimeout(() => {
+                        window.open(href, '_blank');
+                    }, 10);
                 }
+
+                // khoá click trong 3 giây
+                btn.style.pointerEvents = "none";
 
                 setTimeout(() => {
                     btn.dataset.cooling = "0";
+                    btn.style.pointerEvents = "";
                 }, 3000);
 
-            }, { passive: true });
+            });
+
         });
     }
 
