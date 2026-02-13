@@ -26,12 +26,10 @@
         initCount: 0,
 
         mouseRadius: 120,
-
-        running: false,   // ⭐ trạng thái chạy
+        running: false,
 
         start() {
-
-            if (this.running) return;   // chống start trùng
+            if (this.running) return;
             this.running = true;
 
             this.canvas = document.getElementById('network');
@@ -59,29 +57,20 @@
         },
 
         stop() {
-
             if (!this.running) return;
             this.running = false;
 
             cancelAnimationFrame(this.animationId);
-            this.animationId = null;
 
             window.removeEventListener('resize', this.resizeHandler);
             window.removeEventListener('mousemove', this.moveHandler);
             window.removeEventListener('click', this.clickHandler);
 
-            // reset state
             this.singularities = [];
             this.fragments = [];
             this.wells = [];
 
-            this.hasMouse = false;
-            this.mouseX = 0;
-            this.mouseY = 0;
-
-            if (this.ctx) {
-                this.ctx.clearRect(0, 0, this.w, this.h);
-            }
+            if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h);
         },
 
         resize() {
@@ -98,12 +87,14 @@
             this.isMobile = this.w < 600;
         },
 
+        // ⭐ size tuned: nhỏ hơn bản mới, lớn hơn bản cũ
         createParticle() {
-            const raw = Math.random() * 1.2 + 0.3;
+            const raw = Math.random() * 1.2 + 0.35;
+
             return {
                 x: Math.random() * this.w,
                 y: Math.random() * this.h,
-                size: Math.max(raw, 1.1),
+                size: Math.max(raw, 0.65),
                 speedX: (Math.random() - 0.5) * 1.2,
                 speedY: (Math.random() - 0.5) * 1.2,
                 hueOffset: Math.random() * 360,
@@ -120,11 +111,11 @@
             else if (side === 2) { x = Math.random() * this.w; y = 0; }
             else { x = Math.random() * this.w; y = this.h; }
 
-            const raw = Math.pow(Math.random(), 0.7) * 1.2 + 0.3;
+            const raw = Math.pow(Math.random(), 0.7) * 1.2 + 0.35;
 
             return {
                 x, y,
-                size: Math.max(raw, 1.1),
+                size: Math.max(raw, 0.65),
                 speedX: (Math.random() - 0.5) * 1.2,
                 speedY: (Math.random() - 0.5) * 1.2,
                 hueOffset: Math.random() * 360,
@@ -132,15 +123,24 @@
             };
         },
 
+        // ⭐ mật độ động theo màn hình
         initSingularity() {
-            const count = Math.min(420, Math.floor(this.w * this.h / 3500));
+
+            const area = this.w * this.h;
+            const density = this.isMobile ? 1 / 4200 : 1 / 3200;
+            const count = Math.min(900, Math.floor(area * density));
+
             this.initCount = count;
             this.singularities = [];
-            for (let i = 0; i < count; i++) this.singularities.push(this.createParticle());
+
+            for (let i = 0; i < count; i++) {
+                this.singularities.push(this.createParticle());
+            }
         },
 
         createWell(x, y) {
-            this.wells.push({ x, y, life: 300, radius: 130 });
+            // ⭐ vortex hút
+            this.wells.push({ x, y, life: 320, radius: 140 });
         },
 
         updateWells() {
@@ -186,7 +186,9 @@
             this.singularities = survivors;
 
             const missing = this.initCount - this.singularities.length;
-            for (let i = 0; i < missing; i++) this.singularities.push(this.spawnFromEdge());
+            for (let i = 0; i < missing; i++) {
+                this.singularities.push(this.spawnFromEdge());
+            }
         },
 
         updateParticle(p) {
@@ -200,6 +202,7 @@
 
             let insideWell = false;
 
+            // ⭐ lực hút vortex (ưu tiên cao nhất)
             for (let w of this.wells) {
                 const dx = w.x - p.x;
                 const dy = w.y - p.y;
@@ -207,18 +210,25 @@
 
                 if (d2 < w.radius * w.radius) {
                     insideWell = true;
+
                     const dist = Math.sqrt(d2) || 1;
-                    const pull = 0.015 + (1 - dist / w.radius) * 0.035;
+
+                    // hút mạnh dần về tâm
+                    const pull = 0.02 + (1 - dist / w.radius) * 0.05;
+
                     p.x += dx * pull;
                     p.y += dy * pull;
                 }
             }
 
+            // ⭐ đẩy chuột chỉ khi không nằm trong vùng hút
             if (this.hasMouse && !insideWell) {
+
                 const dx = p.x - this.mouseX;
                 const dy = p.y - this.mouseY;
                 const r2 = this.mouseRadius * this.mouseRadius;
                 const d2 = dx * dx + dy * dy;
+
                 if (d2 < r2) {
                     const f = (r2 - d2) / r2;
                     p.x += dx * f * 0.55;
@@ -227,7 +237,9 @@
             }
 
             const depth = 0.6 + p.depth * 0.6;
-            const sizeBoost = 1 + p.size * 0.08;
+
+            // giảm boost → tránh đuôi dài
+            const sizeBoost = 1 + p.size * 0.045;
 
             p.x += p.speedX * depth * sizeBoost;
             p.y += p.speedY * depth * sizeBoost;
@@ -250,18 +262,27 @@
         drawParticle(p) {
 
             const hue = (Date.now() / 50 + p.hueOffset) % 360;
-            this.ctx.fillStyle = `hsla(${hue},80%,70%,0.65)`;
+            const color = `hsla(${hue},80%,70%,0.7)`;
+
+            this.ctx.fillStyle = color;
+            this.ctx.shadowBlur = p.size * 1.8;
+            this.ctx.shadowColor = color;
 
             const speed = Math.hypot(p.speedX, p.speedY);
-            const stretch = 1 + (speed / (speed + 1.2)) * p.size * 0.28;
+
+            // đuôi mềm như bản cũ
+            const stretch = 1 + (speed / (speed + 2.2)) * 0.18;
 
             this.ctx.save();
             this.ctx.translate(p.x, p.y);
             this.ctx.rotate(Math.atan2(p.speedY, p.speedX));
+
             this.ctx.beginPath();
             this.ctx.ellipse(0, 0, p.size * stretch, p.size, 0, 0, Math.PI * 2);
             this.ctx.fill();
+
             this.ctx.restore();
+            this.ctx.shadowBlur = 0;
         },
 
         drawFragments() {
@@ -278,7 +299,9 @@
 
             if (!this.running) return;
 
-            const fade = this.isMobile ? 0.07 : 0.04;
+            // trail mềm như bản cũ
+            const fade = this.isMobile ? 0.09 : 0.055;
+
             this.ctx.fillStyle = `rgba(0,0,0,${fade})`;
             this.ctx.fillRect(0, 0, this.w, this.h);
 
