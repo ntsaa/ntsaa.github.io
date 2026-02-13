@@ -1,12 +1,12 @@
-// particles.js
+// singularity.js
 (function () {
 
-    const particlesEffect = {
+    const singularityEffect = {
 
         animationId: null,
         canvas: null,
         ctx: null,
-        particles: [],
+        singularities: [],
         timeouts: [],
 
         resizeHandler: null,
@@ -23,6 +23,7 @@
         mouse: { x: null, y: null, radius: 110 },
 
         captureRadius: 18,
+
         burstThreshold: 100,
         burstCooldown: false,
 
@@ -50,7 +51,7 @@
 
             this.clickHandler = () => {
                 if (this.mouse.x === null || this.burstCooldown) return;
-                if (this.particles.some(p => p.captured)) {
+                if (this.singularities.some(p => p.captured)) {
                     this.triggerBurst();
                 }
             };
@@ -61,7 +62,7 @@
             window.addEventListener('click', this.clickHandler);
 
             this.resize();
-            this.initParticles();
+            this.initSingularity();
             this.animate();
         },
 
@@ -82,14 +83,13 @@
 
             this.ctx.clearRect(0, 0, this.w, this.h);
 
-            this.particles = [];
+            this.singularities = [];
             this.mouse.x = null;
             this.mouse.y = null;
             this.burstCooldown = false;
         },
 
         resize() {
-
             this.canvas.width = innerWidth * this.DPR;
             this.canvas.height = innerHeight * this.DPR;
             this.canvas.style.width = innerWidth + 'px';
@@ -101,13 +101,13 @@
             this.h = innerHeight;
         },
 
-        initParticles() {
+        initSingularity() {
 
             const count = innerWidth < 600 ? 80 : 190;
-            this.particles = [];
+            this.singularities = [];
 
             for (let i = 0; i < count; i++) {
-                this.particles.push(this.createParticle());
+                this.singularities.push(this.createParticle());
             }
         },
 
@@ -133,7 +133,7 @@
 
             if (this.burstCooldown) return;
 
-            const captured = this.particles.filter(p => p.captured);
+            const captured = this.singularities.filter(p => p.captured);
             if (!captured.length) return;
 
             this.burstCooldown = true;
@@ -186,7 +186,7 @@
 
             let capturedCount = 0;
 
-            for (const p of this.particles) {
+            for (const p of this.singularities) {
 
                 if (p.bursting) {
                     p.vx *= 0.986;
@@ -209,7 +209,6 @@
 
                     if (dist < this.mouse.radius) {
 
-                        // hút mượt hơn
                         const pull = 1 - dist / this.mouse.radius;
                         const strength = 0.001 + Math.pow(pull, 3) * 0.009;
 
@@ -242,22 +241,52 @@
                 if (p.x <= 0 || p.x >= this.w) p.vx *= -1;
                 if (p.y <= 0 || p.y >= this.h) p.vy *= -1;
 
-                this.ctx.beginPath();
-                this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                this.ctx.fillStyle = `hsla(${hue},80%,70%,0.6)`;
-                this.ctx.fill();
+                // chỉ vẽ particle khi chưa bị hút
+                if (!p.captured) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `hsla(${hue},80%,70%,0.6)`;
+                    this.ctx.fill();
+                }
             }
 
             if (capturedCount >= this.burstThreshold && !this.burstCooldown) {
                 this.triggerBurst();
             }
 
-            // connections
-            for (let i = 0; i < this.particles.length; i++) {
-                for (let j = i + 1; j < this.particles.length; j++) {
+            // ===== ENERGY CORE =====
+            if (capturedCount > 0 && this.mouse.x !== null) {
 
-                    const a = this.particles[i];
-                    const b = this.particles[j];
+                const coreRadius = Math.min(14, 2 + Math.pow(capturedCount, 0.5) * 0.45);
+                const glowRadius = coreRadius * 2.3;
+
+                const gradient = this.ctx.createRadialGradient(
+                    this.mouse.x, this.mouse.y, 0,
+                    this.mouse.x, this.mouse.y, glowRadius
+                );
+
+                gradient.addColorStop(0, `hsla(${hue},80%,80%,0.95)`);
+                gradient.addColorStop(0.4, `hsla(${hue},80%,70%,0.55)`);
+                gradient.addColorStop(1, `hsla(${hue},80%,70%,0)`);
+
+                this.ctx.fillStyle = gradient;
+                this.ctx.beginPath();
+                this.ctx.arc(this.mouse.x, this.mouse.y, glowRadius, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // lõi sáng trung tâm
+                this.ctx.beginPath();
+                this.ctx.arc(this.mouse.x, this.mouse.y, coreRadius, 0, Math.PI * 2);
+                this.ctx.fillStyle = `hsla(${hue},90%,85%,0.95)`;
+                this.ctx.fill();
+            }
+
+            // connections
+            for (let i = 0; i < this.singularities.length; i++) {
+                for (let j = i + 1; j < this.singularities.length; j++) {
+
+                    const a = this.singularities[i];
+                    const b = this.singularities[j];
                     const d = Math.hypot(a.x - b.x, a.y - b.y);
 
                     if (d < maxDist) {
@@ -276,6 +305,6 @@
 
     };
 
-    window.EffectController.register("particles", particlesEffect);
+    window.EffectController.register("singularity", singularityEffect);
 
 })();

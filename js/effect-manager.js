@@ -6,7 +6,7 @@
     /* ============================= */
 
     const ICON_MAP = {
-        particles: "💠",
+        singularity: "💠",
         starfield: "✨",
         drift: "💫",
         fireworks: "🎆",
@@ -14,7 +14,7 @@
     };
 
     const TET_EFFECTS = ["fireworks", "peach"];
-    const NORMAL_EFFECTS = ["particles", "starfield", "drift"];
+    const NORMAL_EFFECTS = ["singularity", "starfield", "drift"];
 
     /* ============================= */
     /*  SEASON CHECK                 */
@@ -33,7 +33,7 @@
             end.setFullYear(year);
         }
 
-        return (now >= start && now <= end);
+        return !(now >= start && now <= end);
     }
 
     /* ============================= */

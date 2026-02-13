@@ -7,7 +7,7 @@
         canvas: null,
         ctx: null,
 
-        particles: [],
+        singularities: [],
         fragments: [],
         wells: [],
 
@@ -27,8 +27,12 @@
 
         mouseRadius: 120,
 
+        running: false,   // ⭐ trạng thái chạy
+
         start() {
-            if (this.animationId) return;
+
+            if (this.running) return;   // chống start trùng
+            this.running = true;
 
             this.canvas = document.getElementById('network');
             if (!this.canvas) return;
@@ -50,20 +54,34 @@
             window.addEventListener('click', this.clickHandler);
 
             this.resize();
-            this.initParticles();
+            this.initSingularity();
             this.animate();
         },
 
         stop() {
+
+            if (!this.running) return;
+            this.running = false;
+
             cancelAnimationFrame(this.animationId);
+            this.animationId = null;
 
             window.removeEventListener('resize', this.resizeHandler);
             window.removeEventListener('mousemove', this.moveHandler);
             window.removeEventListener('click', this.clickHandler);
 
-            this.particles = [];
+            // reset state
+            this.singularities = [];
             this.fragments = [];
             this.wells = [];
+
+            this.hasMouse = false;
+            this.mouseX = 0;
+            this.mouseY = 0;
+
+            if (this.ctx) {
+                this.ctx.clearRect(0, 0, this.w, this.h);
+            }
         },
 
         resize() {
@@ -114,19 +132,15 @@
             };
         },
 
-        initParticles() {
+        initSingularity() {
             const count = Math.min(420, Math.floor(this.w * this.h / 3500));
             this.initCount = count;
-            this.particles = [];
-            for (let i = 0; i < count; i++) this.particles.push(this.createParticle());
+            this.singularities = [];
+            for (let i = 0; i < count; i++) this.singularities.push(this.createParticle());
         },
 
         createWell(x, y) {
-            this.wells.push({
-                x, y,
-                life: 300,
-                radius: 130
-            });
+            this.wells.push({ x, y, life: 300, radius: 130 });
         },
 
         updateWells() {
@@ -138,10 +152,11 @@
         },
 
         explodeNear(x, y, radius) {
+
             const r2 = radius * radius;
             const survivors = [];
 
-            for (let p of this.particles) {
+            for (let p of this.singularities) {
                 const dx = p.x - x;
                 const dy = p.y - y;
                 const d2 = dx * dx + dy * dy;
@@ -158,7 +173,7 @@
                             y: p.y,
                             vx: (Math.random() - 0.5) * strength,
                             vy: (Math.random() - 0.5) * strength,
-                            life: life,
+                            life,
                             lifeMax: life,
                             size: p.size * (Math.random() * 0.6 + 0.4),
                             hue: (Date.now() / 50 + p.hueOffset) % 360
@@ -168,10 +183,10 @@
                 } else survivors.push(p);
             }
 
-            this.particles = survivors;
+            this.singularities = survivors;
 
-            const missing = this.initCount - this.particles.length;
-            for (let i = 0; i < missing; i++) this.particles.push(this.spawnFromEdge());
+            const missing = this.initCount - this.singularities.length;
+            for (let i = 0; i < missing; i++) this.singularities.push(this.spawnFromEdge());
         },
 
         updateParticle(p) {
@@ -235,22 +250,17 @@
         drawParticle(p) {
 
             const hue = (Date.now() / 50 + p.hueOffset) % 360;
-            const color = `hsla(${hue},80%,70%,0.65)`;
-
-            this.ctx.fillStyle = color;
+            this.ctx.fillStyle = `hsla(${hue},80%,70%,0.65)`;
 
             const speed = Math.hypot(p.speedX, p.speedY);
-            const speedFactor = speed / (speed + 1.2);
-            const stretch = 1 + speedFactor * p.size * 0.28;
+            const stretch = 1 + (speed / (speed + 1.2)) * p.size * 0.28;
 
             this.ctx.save();
             this.ctx.translate(p.x, p.y);
             this.ctx.rotate(Math.atan2(p.speedY, p.speedX));
-
             this.ctx.beginPath();
             this.ctx.ellipse(0, 0, p.size * stretch, p.size, 0, 0, Math.PI * 2);
             this.ctx.fill();
-
             this.ctx.restore();
         },
 
@@ -266,11 +276,13 @@
 
         animate() {
 
+            if (!this.running) return;
+
             const fade = this.isMobile ? 0.07 : 0.04;
             this.ctx.fillStyle = `rgba(0,0,0,${fade})`;
             this.ctx.fillRect(0, 0, this.w, this.h);
 
-            for (let p of this.particles) {
+            for (let p of this.singularities) {
                 this.updateParticle(p);
                 this.drawParticle(p);
             }
