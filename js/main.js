@@ -4,7 +4,7 @@ const translations = {
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
         effect: "Change effect",
-        effect_off: "Turn off effects",
+        effect_off: "Turn on/off effects",
         error: "Cannot load content."
     },
     vn: {
@@ -12,7 +12,7 @@ const translations = {
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
         effect: "Chuyển hiệu ứng",
-        effect_off: "Tắt hiệu ứng",
+        effect_off: "Bật/Tắt hiệu ứng",
         error: "Không thể tải nội dung."
     }
 };

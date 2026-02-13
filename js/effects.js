@@ -51,7 +51,7 @@
         /* ============================= */
 
         toggleEffects(state) {
-
+            state = state === undefined ? !this.enabled : state;
             this.enabled = state;
 
             if (!this.current) return;

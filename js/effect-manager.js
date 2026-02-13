@@ -80,7 +80,7 @@
             });
 
             this.offBtn?.addEventListener("click", () => {
-                this.EC.toggleEffects(false);
+                this.EC.toggleEffects();
             });
         }
 
