@@ -109,6 +109,8 @@
             for (let i = 0; i < count; i++) {
                 this.singularities.push(this.createParticle());
             }
+
+            this.burstThreshold = Math.floor(count * 0.75);
         },
 
         createParticle() {
