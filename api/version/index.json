@@ -1,10 +1,10 @@
 {
-  "version": "1.4.0.6",
-  "url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.4.0.x/NTSAA.zip",
-  "alterurl": "https://drive.usercontent.google.com/download?id=12hFDiOcGrYsb8nz1cVtrllgP7XxiiJxP",
-  "sha256": "23c8ced1ab3853ea331f1cfaeddc718cce7bae89266baaccf2c3d06b9f642838",
-  "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.4.0.x/NTSAA_x86.zip",
-  "alterurl_x86": "https://drive.usercontent.google.com/download?id=1UXuENex-LQfkz2JGyWkbuOKGNqu4miHm",
-  "sha256_x86": "56a1a0853d28cdc46efe9d4e94e8e6043377498cb06a59fe8253fd15ce7df745",
+  "version": "1.4.1.0",
+  "url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.4.1.x/NTSAA.zip",
+  "alterurl": "https://drive.usercontent.google.com/download?id=1sGujrFdy2uBnczLmor4ySLiZ0sYmJrx5",
+  "sha256": "5c9cf80516ca5410a1db92371187f6299b2527609d645f74252e80b2e35aa384",
+  "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.4.1.x/NTSAA_x86.zip",
+  "alterurl_x86": "https://drive.usercontent.google.com/download?id=1Kl_FaAY-B3m4jO9F_ljG2XZn65HR0V2f",
+  "sha256_x86": "0c9b8c226cc5b2fc0b403c0ec82c451cd151b477e7adeb07190f906baae84c97",
   "pw": "ntsaa"
 }
