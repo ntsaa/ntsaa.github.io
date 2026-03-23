@@ -45,6 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
             contentEl.classList.remove("fade-in");
             const res = await fetch(url);
             const html = await res.text();
+            
+            // Thay đổi nội dung một phát ăn ngay, không qua trung gian skeleton
             contentEl.innerHTML = html;
             contentEl.classList.add("fade-in");
             callback?.();
