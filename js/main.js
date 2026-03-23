@@ -39,14 +39,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const getCurrentLang = () => detectLanguage();
 
+    const pageCache = {};
+
     const loadPage = async (url, callback) => {
         const contentEl = document.getElementById("content");
+        
+        // Nếu đã có trong cache, dùng luôn cho nhanh
+        if (pageCache[url]) {
+            contentEl.classList.remove("fade-in");
+            contentEl.innerHTML = pageCache[url];
+            contentEl.classList.add("fade-in");
+            callback?.();
+            return;
+        }
+
         try {
             contentEl.classList.remove("fade-in");
             const res = await fetch(url);
             const html = await res.text();
             
-            // Thay đổi nội dung một phát ăn ngay, không qua trung gian skeleton
+            // Lưu vào cache
+            pageCache[url] = html;
+            
             contentEl.innerHTML = html;
             contentEl.classList.add("fade-in");
             callback?.();
@@ -150,11 +164,17 @@ document.addEventListener("DOMContentLoaded", () => {
     /*  PAGE RENDER                  */
     /* ============================= */
 
+    let lastHash = window.location.hash;
+
     const renderPageFromHash = () => {
 
         const lang = getCurrentLang();
         const img = getHashParam("img");
         const versions = isDldPage();
+        
+        const currentHash = window.location.hash;
+        const shouldScroll = currentHash !== lastHash;
+        lastHash = currentHash;
 
         if (img) {
 
@@ -175,7 +195,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     imageEl.onload = () => {
                         loadingEl.style.display = "none";
+                        imageEl.style.opacity = 0;
                         imageEl.style.display = "block";
+                        // Thêm hiệu ứng hiện ảnh mượt mà
+                        setTimeout(() => { imageEl.style.transition = "opacity 0.3s"; imageEl.style.opacity = 1; }, 10);
                     };
 
                     imageEl.onerror = () => {
@@ -196,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 () => {
                     updateDownloadText(lang);
                     updateUrl(true);
-                    window.scrollTo({ top: 0 });
+                    if (shouldScroll) window.scrollTo({ top: 0 });
                     attachDownloadCooldown();
                 }
             );
@@ -210,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 () => {
                     updateDownloadText(lang);
                     updateUrl(false);
+                    if (shouldScroll) window.scrollTo({ top: 0 });
                 }
             );
         }
