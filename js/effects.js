@@ -5,8 +5,32 @@
 
         constructor() {
             this.effects = {};      // { name: instance }
+            this.loadedScripts = {}; // { name: Promise }
             this.current = null;    // current effect name
             this.enabled = false;   // global on/off
+        }
+
+        /* ============================= */
+        /*  LAZY LOAD                    */
+        /* ============================= */
+
+        async loadEffect(name) {
+            if (this.effects[name]) return true;
+            if (this.loadedScripts[name]) return this.loadedScripts[name];
+
+            this.loadedScripts[name] = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = `js/effects/${name}.js`;
+                script.async = true;
+                script.onload = () => resolve(true);
+                script.onerror = () => {
+                    delete this.loadedScripts[name];
+                    reject(new Error(`Failed to load effect: ${name}`));
+                };
+                document.body.appendChild(script);
+            });
+
+            return this.loadedScripts[name];
         }
 
         /* ============================= */
@@ -22,7 +46,14 @@
         /*  SET EFFECT                   */
         /* ============================= */
 
-        setEffect(name) {
+        async setEffect(name) {
+            try {
+                await this.loadEffect(name);
+            } catch (err) {
+                console.error(err);
+                return;
+            }
+
             if (!this.effects[name]) return;
 
             // Stop old
