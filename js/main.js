@@ -40,13 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const getCurrentLang = () => detectLanguage();
 
     const loadPage = async (url, callback) => {
+        const contentEl = document.getElementById("content");
         try {
+            contentEl.classList.remove("fade-in");
             const res = await fetch(url);
             const html = await res.text();
-            document.getElementById("content").innerHTML = html;
+            contentEl.innerHTML = html;
+            contentEl.classList.add("fade-in");
             callback?.();
         } catch {
-            document.getElementById("content").textContent =
+            contentEl.textContent =
                 translations[getCurrentLang()].error;
         }
     };
@@ -54,6 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const isDldPage = () => window.location.hash === "#download";
 
     const updateDownloadText = (lang) => {
+        document.documentElement.lang = (lang === "vn" ? "vi" : "en");
+        
         document.querySelector("#download .full-text").textContent =
             isDldPage()
                 ? translations[lang].help_full
@@ -123,10 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const href = btn.getAttribute('href');
 
                 if (href && href !== '#') {
-                    // delay nhỏ để không phá chuỗi click event
-                    setTimeout(() => {
-                        window.open(href, '_blank');
-                    }, 10);
+                    window.open(href, '_blank');
                 }
 
                 // khoá click trong 3 giây
