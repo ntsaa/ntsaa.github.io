@@ -1,0 +1,59 @@
+{
+  "Version": "1.0.1",
+  "Scripts": {
+    "GetText": [
+      "(function () {",
+      "  const images = document.querySelectorAll('img[loading=\"lazy\"]');",
+      "  if (images.length === 0) return { status: 'PENDING' };",
+      "  const texts = Array.from(images).map(img => (img.alt || '').trim()).filter(t => t !== '');",
+      "  if (texts.length > 0) return { status: 'SUCCESS', texts };",
+      "  return { status: 'NO_TEXT' };",
+      "})();"
+    ],
+    "GetSecondImageBase64": [
+      "(function() {",
+      "  try {",
+      "    const img = document.querySelectorAll('img[loading=\"lazy\"]')[1];",
+      "    if (!img) return null;",
+      "    const canvas = document.createElement('canvas');",
+      "    canvas.width = img.naturalWidth;",
+      "    canvas.height = img.naturalHeight;",
+      "    canvas.getContext('2d').drawImage(img, 0, 0);",
+      "    return canvas.toDataURL('image/png');",
+      "  } catch { return null; }",
+      "})();"
+    ],
+    "ClearPreviousImage": [
+      "(() => {",
+      "  const btns = document.querySelectorAll('button[jsname=\"X5DuWc\"][data-tooltip-id]:not([data-disable-idom])');",
+      "  if (btns.length) { btns[btns.length - 1].click(); return 'ok'; }",
+      "  const alt = [...document.querySelectorAll('button')].find(b => b.getAttribute('aria-label') === 'Clear image');",
+      "  if (alt) { alt.click(); return 'ok'; }",
+      "  return 'no';",
+      "})()"
+    ],
+    "WaitForUploadCompleted": [
+      "(() => {",
+      "  const btn = document.querySelector('button[jsname=\"X5DuWc\"][data-tooltip-id]:not([data-disable-idom])');",
+      "  if (btn) return 'ok';",
+      "  const alt = [...document.querySelectorAll('button')].find(b => b.getAttribute('aria-label') === 'Clear image');",
+      "  return alt ? 'ok' : 'no';",
+      "})()"
+    ],
+    "PasteImageFromClipboard": [
+      "(() => {",
+      "  const btn = document.querySelector('button[jsname=\"xcJrbc\"]');",
+      "  if (btn) { btn.click(); return 'ok'; }",
+      "  const alt = [...document.querySelectorAll('button')].find(b => b.getAttribute('aria-label') === 'Paste an image from clipboard');",
+      "  if (alt) { alt.click(); return 'ok'; }",
+      "  return 'no';",
+      "})()"
+    ],
+    "FindFileInput": [
+      "(function() {",
+      "  const inputs = [...document.querySelectorAll('input[type=file]')];",
+      "  return inputs.find(i => i.accept && i.accept.toLowerCase().includes('image') && !i.disabled );",
+      "})()"
+    ]
+  }
+}
