@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NTSAA</title>
+    <title>NTSAA - Desktop Enhancement Tools</title>
+    <meta name="description" content="NTSAA - A collection of lightweight, powerful desktop enhancement tools.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="NTSAA - Desktop Enhancement Tools">
+    <meta property="og:description" content="Enhance your workspace with NTSAA's utility suite.">
+    <meta property="og:image" content="images/logo.png">
+
     <link rel="icon" href="images/logo.png" type="image/png">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/effects.css">
@@ -22,13 +30,17 @@
                 <a id="download" class="link-button" href="#">
                     <span class="full-text">📦 Get it</span>
                 </a>
-                <button id="lang-vn" class="lang-toggle">VN</button><!--
-                --><button id="lang-en" class="lang-toggle">EN</button>
+                <button id="lang-vn" class="lang-toggle">VN</button>
+                <button id="lang-en" class="lang-toggle">EN</button>
             </div>
         </div>
     </header>
 
-    <div id="content">Loading...</div>
+    <div id="content">
+        <div class="skeleton" style="width: 80%"></div>
+        <div class="skeleton" style="width: 60%"></div>
+        <div class="skeleton" style="width: 90%"></div>
+    </div>
 
     <footer>
         <div class="footer-container">
@@ -38,13 +50,6 @@
         </div>
     </footer>
     <script src="js/effects.js" defer></script>
-
-    <script src="js/effects/peach.js" defer></script>
-    <script src="js/effects/fireworks.js" defer></script>
-    <script src="js/effects/singularity.js" defer></script>
-    <script src="js/effects/starfield.js" defer></script>
-    <script src="js/effects/drift.js" defer></script>
-
     <script src="js/effect-manager.js" defer></script>
     <script src="js/main.js" defer></script>
 

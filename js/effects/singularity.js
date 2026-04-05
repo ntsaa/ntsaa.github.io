@@ -13,6 +13,9 @@
         mouseMoveHandler: null,
         mouseLeaveHandler: null,
         clickHandler: null,
+        touchStartHandler: null,
+        touchMoveHandler: null,
+        touchEndHandler: null,
 
         running: false,
 
@@ -24,7 +27,9 @@
 
         captureRadius: 18,
 
-        burstThreshold: 100,
+        burstRatio: 0.75, // 75% hạt bị hút thì nổ
+        dangerRatio: 0.7, // 70% là bắt đầu rung lắc
+        burstThreshold: 0,
         burstCooldown: false,
 
         start() {
@@ -49,6 +54,31 @@
                 this.mouse.y = null;
             };
 
+            this.touchStartHandler = e => {
+                if (e.touches.length > 0) {
+                    this.mouse.x = e.touches[0].clientX;
+                    this.mouse.y = e.touches[0].clientY;
+                }
+            };
+
+            this.touchMoveHandler = e => {
+                if (e.touches.length > 0) {
+                    this.mouse.x = e.touches[0].clientX;
+                    this.mouse.y = e.touches[0].clientY;
+                }
+                // Ngăn scroll khi đang nghịch hiệu ứng
+                if (e.cancelable) e.preventDefault();
+            };
+
+            this.touchEndHandler = () => {
+                // Nếu đang hút hạt, nhả tay ra là kích nổ luôn (Release to Burst)
+                if (this.singularities.some(p => p.captured)) {
+                    this.triggerBurst();
+                }
+                this.mouse.x = null;
+                this.mouse.y = null;
+            };
+
             this.clickHandler = () => {
                 if (this.mouse.x === null || this.burstCooldown) return;
                 if (this.singularities.some(p => p.captured)) {
@@ -60,6 +90,11 @@
             window.addEventListener('mousemove', this.mouseMoveHandler);
             window.addEventListener('mouseleave', this.mouseLeaveHandler);
             window.addEventListener('click', this.clickHandler);
+            
+            // Hỗ trợ Mobile
+            window.addEventListener('touchstart', this.touchStartHandler, { passive: false });
+            window.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
+            window.addEventListener('touchend', this.touchEndHandler);
 
             this.resize();
             this.initSingularity();
@@ -77,6 +112,10 @@
             window.removeEventListener('mousemove', this.mouseMoveHandler);
             window.removeEventListener('mouseleave', this.mouseLeaveHandler);
             window.removeEventListener('click', this.clickHandler);
+            
+            window.removeEventListener('touchstart', this.touchStartHandler);
+            window.removeEventListener('touchmove', this.touchMoveHandler);
+            window.removeEventListener('touchend', this.touchEndHandler);
 
             this.timeouts.forEach(t => clearTimeout(t));
             this.timeouts = [];
@@ -99,23 +138,27 @@
 
             this.w = innerWidth;
             this.h = innerHeight;
+            
+            // Re-init particles on significant resize to maintain density
+            if (this.singularities.length > 0) this.initSingularity();
         },
 
         initSingularity() {
 
-            const count = innerWidth < 600 ? 80 : 190;
+            const isMobile = this.w < 600;
+            const count = isMobile ? 60 : 160; 
             this.singularities = [];
 
             for (let i = 0; i < count; i++) {
                 this.singularities.push(this.createParticle());
             }
 
-            this.burstThreshold = Math.floor(count * 0.75);
+            this.burstThreshold = Math.floor(count * this.burstRatio);
         },
 
         createParticle() {
 
-            const baseSpeed = 0.6 + Math.random() * 0.4;
+            const baseSpeed = 0.5 + Math.random() * 0.5;
             const angle = Math.random() * Math.PI * 2;
 
             return {
@@ -124,7 +167,7 @@
                 vx: Math.cos(angle) * baseSpeed,
                 vy: Math.sin(angle) * baseSpeed,
                 baseSpeed,
-                r: 1 + Math.random() * 1.2,
+                r: 1 + Math.random() * 1.5,
                 captured: false,
                 immuneUntil: 0,
                 bursting: false
@@ -142,19 +185,19 @@
 
             captured.forEach(p => {
 
-                const delay = Math.random() * 800;
+                const delay = Math.random() * 600;
 
                 const t = setTimeout(() => {
 
                     const angle = Math.random() * Math.PI * 2;
-                    const speed = 8 + Math.random() * 6;
+                    const speed = 7 + Math.random() * 8;
 
                     p.vx = Math.cos(angle) * speed;
                     p.vy = Math.sin(angle) * speed;
 
                     p.captured = false;
                     p.bursting = true;
-                    p.immuneUntil = Date.now() + 5000;
+                    p.immuneUntil = Date.now() + 3000;
 
                 }, delay);
 
@@ -163,7 +206,7 @@
 
             this.timeouts.push(setTimeout(() => {
                 this.burstCooldown = false;
-            }, 1200));
+            }, 1000));
         },
 
         normalizeSpeed(p) {
@@ -173,8 +216,8 @@
 
             const diff = p.baseSpeed - speed;
 
-            p.vx += (p.vx / speed) * diff * 0.02;
-            p.vy += (p.vy / speed) * diff * 0.02;
+            p.vx += (p.vx / speed) * diff * 0.03;
+            p.vy += (p.vy / speed) * diff * 0.03;
         },
 
         animate() {
@@ -183,16 +226,18 @@
 
             this.ctx.clearRect(0, 0, this.w, this.h);
 
-            const hue = (Date.now() / 60) % 360;
-            const maxDist = innerWidth < 600 ? 70 : 110;
+            const now = Date.now();
+            const hue = (now / 60) % 360;
+            const maxDist = this.w < 600 ? 60 : 100;
 
             let capturedCount = 0;
 
-            for (const p of this.singularities) {
+            for (let i = 0; i < this.singularities.length; i++) {
+                const p = this.singularities[i];
 
                 if (p.bursting) {
-                    p.vx *= 0.986;
-                    p.vy *= 0.986;
+                    p.vx *= 0.982;
+                    p.vy *= 0.982;
                     if (Math.hypot(p.vx, p.vy) < p.baseSpeed * 1.2) {
                         p.bursting = false;
                     }
@@ -202,53 +247,69 @@
                     this.mouse.x !== null &&
                     !p.captured &&
                     !p.bursting &&
-                    Date.now() > p.immuneUntil &&
+                    now > p.immuneUntil &&
                     !this.burstCooldown
                 ) {
                     const dx = this.mouse.x - p.x;
                     const dy = this.mouse.y - p.y;
-                    const dist = Math.hypot(dx, dy);
+                    const distSq = dx * dx + dy * dy;
+                    const mouseRadiusSq = this.mouse.radius * this.mouse.radius;
 
-                    if (dist < this.mouse.radius) {
-
+                    if (distSq < mouseRadiusSq) {
+                        const dist = Math.sqrt(distSq);
                         const pull = 1 - dist / this.mouse.radius;
-                        const strength = 0.001 + Math.pow(pull, 3) * 0.009;
+                        const strength = 0.001 + Math.pow(pull, 3) * 0.01;
 
                         p.vx += dx * strength;
                         p.vy += dy * strength;
 
                         if (dist < this.captureRadius) {
                             p.captured = true;
-                            p.x = this.mouse.x;
-                            p.y = this.mouse.y;
-                            p.vx = 0;
-                            p.vy = 0;
+                            p.vx = 0; p.vy = 0;
                         }
                     }
                 }
 
                 if (p.captured) {
                     capturedCount++;
-                    p.x = this.mouse.x;
-                    p.y = this.mouse.y;
+                    // FIX: Chỉ gán nếu mouse khác null để tránh làm hạt bay ra ngoài vũ trụ
+                    if (this.mouse.x !== null) {
+                        p.x = this.mouse.x;
+                        p.y = this.mouse.y;
+                    }
                 } else {
                     p.x += p.vx;
                     p.y += p.vy;
-                }
 
-                if (!p.captured && !p.bursting) {
+                    if (p.x <= 0 || p.x >= this.w) p.vx *= -1;
+                    if (p.y <= 0 || p.y >= this.h) p.vy *= -1;
+
                     this.normalizeSpeed(p);
-                }
 
-                if (p.x <= 0 || p.x >= this.w) p.vx *= -1;
-                if (p.y <= 0 || p.y >= this.h) p.vy *= -1;
-
-                // chỉ vẽ particle khi chưa bị hút
-                if (!p.captured) {
                     this.ctx.beginPath();
                     this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `hsla(${hue},80%,70%,0.6)`;
+                    this.ctx.fillStyle = `hsla(${hue}, 80%, 75%, 0.7)`;
                     this.ctx.fill();
+                }
+
+                if (!p.captured) {
+                    for (let j = i + 1; j < this.singularities.length; j++) {
+                        const p2 = this.singularities[j];
+                        if (p2.captured) continue;
+
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq < maxDist * maxDist) {
+                            const dist = Math.sqrt(distSq);
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p.x, p.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, ${(1 - dist / maxDist) * 0.25})`;
+                            this.ctx.lineWidth = 0.6;
+                            this.ctx.stroke();
+                        }
+                    }
                 }
             }
 
@@ -256,50 +317,43 @@
                 this.triggerBurst();
             }
 
-            // ===== ENERGY CORE =====
             if (capturedCount > 0 && this.mouse.x !== null) {
+                
+                const isDanger = capturedCount >= (this.singularities.length * this.dangerRatio);
+                
+                let coreX = this.mouse.x;
+                let coreY = this.mouse.y;
 
-                const coreRadius = Math.min(14, 2 + Math.pow(capturedCount, 0.5) * 0.45);
-                const glowRadius = coreRadius * 2.3;
+                if (isDanger && !this.burstCooldown) {
+                    const shakeIntensity = (capturedCount / this.singularities.length) * 5;
+                    coreX += (Math.random() - 0.5) * shakeIntensity;
+                    coreY += (Math.random() - 0.5) * shakeIntensity;
+                }
+
+                const coreRadius = Math.min(16, 2 + Math.pow(capturedCount, 0.5) * 0.5);
+                const glowRadius = coreRadius * (2.5 + (isDanger ? Math.sin(now / 50) * 0.5 : 0));
+
+                const coreHue = isDanger ? 0 : hue; 
+                const coreSat = isDanger ? 100 : 80;
 
                 const gradient = this.ctx.createRadialGradient(
-                    this.mouse.x, this.mouse.y, 0,
-                    this.mouse.x, this.mouse.y, glowRadius
+                    coreX, coreY, 0,
+                    coreX, coreY, glowRadius
                 );
 
-                gradient.addColorStop(0, `hsla(${hue},80%,80%,0.95)`);
-                gradient.addColorStop(0.4, `hsla(${hue},80%,70%,0.55)`);
-                gradient.addColorStop(1, `hsla(${hue},80%,70%,0)`);
+                gradient.addColorStop(0, `hsla(${coreHue}, ${coreSat}%, 80%, 0.95)`);
+                gradient.addColorStop(0.4, `hsla(${coreHue}, ${coreSat}%, 70%, 0.6)`);
+                gradient.addColorStop(1, `hsla(${coreHue}, ${coreSat}%, 70%, 0)`);
 
                 this.ctx.fillStyle = gradient;
                 this.ctx.beginPath();
-                this.ctx.arc(this.mouse.x, this.mouse.y, glowRadius, 0, Math.PI * 2);
+                this.ctx.arc(coreX, coreY, glowRadius, 0, Math.PI * 2);
                 this.ctx.fill();
 
-                // lõi sáng trung tâm
                 this.ctx.beginPath();
-                this.ctx.arc(this.mouse.x, this.mouse.y, coreRadius, 0, Math.PI * 2);
-                this.ctx.fillStyle = `hsla(${hue},90%,85%,0.95)`;
+                this.ctx.arc(coreX, coreY, coreRadius, 0, Math.PI * 2);
+                this.ctx.fillStyle = `hsla(${coreHue}, ${coreSat}%, 90%, 0.95)`;
                 this.ctx.fill();
-            }
-
-            // connections
-            for (let i = 0; i < this.singularities.length; i++) {
-                for (let j = i + 1; j < this.singularities.length; j++) {
-
-                    const a = this.singularities[i];
-                    const b = this.singularities[j];
-                    const d = Math.hypot(a.x - b.x, a.y - b.y);
-
-                    if (d < maxDist) {
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(a.x, a.y);
-                        this.ctx.lineTo(b.x, b.y);
-                        this.ctx.strokeStyle = `hsla(${hue},80%,70%,${(1 - d / maxDist) * 0.25})`;
-                        this.ctx.lineWidth = 0.8;
-                        this.ctx.stroke();
-                    }
-                }
             }
 
             this.animationId = requestAnimationFrame(() => this.animate());
