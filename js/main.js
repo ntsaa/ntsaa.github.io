@@ -44,29 +44,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadPage = async (url, callback) => {
         const contentEl = document.getElementById("content");
         
+        // Helper để kích hoạt lại hiệu ứng fade-in
+        const triggerFadeIn = () => {
+            contentEl.classList.remove("fade-in");
+            // Force reflow
+            void contentEl.offsetWidth;
+            contentEl.classList.add("fade-in");
+        };
+
         // Nếu đã có trong cache, dùng luôn cho nhanh
         if (pageCache[url]) {
-            contentEl.classList.remove("fade-in");
             contentEl.innerHTML = pageCache[url];
-            contentEl.classList.add("fade-in");
+            triggerFadeIn();
             callback?.();
             return;
         }
 
         try {
-            contentEl.classList.remove("fade-in");
             const res = await fetch(url);
+            if (!res.ok) throw new Error("Network response was not ok");
             const html = await res.text();
             
             // Lưu vào cache
             pageCache[url] = html;
             
             contentEl.innerHTML = html;
-            contentEl.classList.add("fade-in");
+            triggerFadeIn();
             callback?.();
         } catch {
-            contentEl.textContent =
-                translations[getCurrentLang()].error;
+            contentEl.innerHTML = `<div style="text-align:center; padding: 50px;">
+                ${translations[getCurrentLang()].error}
+            </div>`;
+            triggerFadeIn();
         }
     };
 
