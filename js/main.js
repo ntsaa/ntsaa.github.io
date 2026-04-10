@@ -44,39 +44,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadPage = async (url, callback) => {
         const contentEl = document.getElementById("content");
         
-        // Helper để kích hoạt lại hiệu ứng fade-in
-        const triggerFadeIn = () => {
-            contentEl.classList.remove("fade-in");
-            // Force reflow
-            void contentEl.offsetWidth;
-            contentEl.classList.add("fade-in");
-        };
+        // Bước 1: Cho mờ dần nội dung cũ đi (Fade out)
+        contentEl.classList.remove("fade-in");
 
-        // Nếu đã có trong cache, dùng luôn cho nhanh
-        if (pageCache[url]) {
-            contentEl.innerHTML = pageCache[url];
-            triggerFadeIn();
-            callback?.();
-            return;
-        }
+        // Đợi một chút để hiệu ứng fade-out kịp diễn ra (200ms theo CSS)
+        setTimeout(async () => {
+            // Nếu đã có trong cache, dùng luôn
+            if (pageCache[url]) {
+                contentEl.innerHTML = pageCache[url];
+                contentEl.classList.add("fade-in");
+                callback?.();
+                return;
+            }
 
-        try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error("Network response was not ok");
-            const html = await res.text();
-            
-            // Lưu vào cache
-            pageCache[url] = html;
-            
-            contentEl.innerHTML = html;
-            triggerFadeIn();
-            callback?.();
-        } catch {
-            contentEl.innerHTML = `<div style="text-align:center; padding: 50px;">
-                ${translations[getCurrentLang()].error}
-            </div>`;
-            triggerFadeIn();
-        }
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Network response was not ok");
+                const html = await res.text();
+                
+                pageCache[url] = html;
+                contentEl.innerHTML = html;
+                contentEl.classList.add("fade-in");
+                callback?.();
+            } catch {
+                contentEl.innerHTML = `<div style="text-align:center; padding: 50px;">
+                    ${translations[getCurrentLang()].error}
+                </div>`;
+                contentEl.classList.add("fade-in");
+            }
+        }, 200);
     };
 
     const isDldPage = () => window.location.hash === "#download";

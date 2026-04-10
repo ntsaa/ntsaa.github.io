@@ -231,6 +231,7 @@ header {
     box-sizing: border-box;
     color: var(--color-text-light);
     opacity: 0;
+    transition: opacity 0.2s ease-in-out; /* Thêm transition mặc định để hỗ trợ fade out */
 }
 
 #content.fade-in {
