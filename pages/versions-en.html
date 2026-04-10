@@ -18,19 +18,20 @@
   <hr>
 
   <section>
-      <div class="section-title flex-between-center">
-          <h3>1.4.1</h3>
-          <div data-role="pw-container">
+      <div class="version-header-row">
+          <div class="pw-info">
               Extraction password:
               <kbd data-role="pw" style="background-color: yellow; color: black;">ntsaa</kbd>
           </div>
+          <div class="version-info">
+              1.4.2 (10 Apr 2026) <span class="new-badge">- Latest</span>
+          </div>
       </div>
-      <div class="version-line">
-          <span>1.4.1.1 (23 Mar 2026)</span>
-          <span class="new-badge">
-              - Latest
-          </span>
-      </div>
+      <ul>
+          <li>Added printing feature with print preview support</li>
+          <li>Improved image processing performance</li>
+      </ul>
+      <div>1.4.1.1 (23 Mar 2026)</div>
       <ul>
           <li>Hotfix for upload functionality</li>
       </ul>
@@ -67,9 +68,6 @@
 
   <hr>
   <section>
-      <div class="section-title flex-between-center">
-          <h3>1.4.0</h3>
-      </div>
       <div class="version-line">
           <span>1.4.0.6 (13 Feb 2026)</span>
       </div>
@@ -84,7 +82,6 @@
       <ul>
           <li>Improved processing speed for images with no detectable text.</li>
       </ul>
-      <hr>
       <div>1.4.0.3 (29 Jan 2026)</div>
       <ul>
           <li>Added "Find & Replace" support after "Image-to-Text" conversion.</li>
@@ -105,132 +102,107 @@
           <li>Added a hotkey for Color Picker and an additional hotkey for Capture.</li>
           <li>Marker line strokes are now smoother, with cleaner and more natural line ends.</li>
       </ul>
-  </section>
-  <hr>
-  <section>
-    <h3>1.3.4</h3>
-    <div>1.3.4.5 (23 Dec 2025)</div>
-     <ul>
-        <li>Fixed potential issues that could cause the application to freeze after the system wakes up from sleep.</li>
-        <li>Added a feature to temporarily prevent the screen from turning off and the system from entering sleep mode.</li>
-        <li>Added hotkeys for the Color Picker and a secondary hotkey for Capture.</li>
-    </ul>
-    <div>1.3.4.4 (2 Nov 2025)</div>
-     <ul>
-      <li>Fix potential issues that may cause the application to freeze.</li>
-    </ul>
-    <div>1.3.4.3 (18 Nov 2025)</div>
-     <ul>
-      <li>Added support for reading and copying text from QR code.</li>
-    </ul>
-    <div>1.3.4.2 (5 Nov 2025)</div>
-    <ul>
-      <li>Green Color - Press <kbd>G</kbd> to quickly select the green color.</li>
-      <li>Logs - Added Logs to make it easier to check and fix issues.</li>
-      <li>Text Box - Press <kbd>F8</kbd> to toggle stroke border shape (Square ↔ Round).</li>
-      <li>Capture Hotkey - Press the <kbd>Capture hotkey</kbd> again to stop the ongoing capture.</li>
-    </ul>
-    <div>1.3.4.1 (31 Oct 2025)</div>
-    <ul>
-      <li>Add a border to the Text Box.</li>
-       <ul>
-          <li>Right-click inside the text area and select Border.</li>
-          <li>Or press <kbd>F4</kbd> to toggle the border on and off.</li>
-        </ul>
-    </ul>
-    <div>1.3.4.0 (23 Oct 2025)</div>
-    <ul>
-      <li>New <span style="color:#d17bff;">Color Picker</span> tool - lets you pick colors directly from the screen.
-        <ul>
-          <li>Supports <kbd>Scroll</kbd> to zoom the magnifier in/out.</li>
-          <li>Supports <kbd>F8</kbd> to switch the magnifier shape (Square ↔ Round).</li>
-        </ul>
-      </li>
-      <li>Add quick color shortcuts:
-        <ul>
-          <li><kbd>R</kbd> / <kbd>B</kbd> / <kbd>Y</kbd> - Select Red / Blue / Yellow.</li>
-          <li><kbd>X</kbd> - Revert to the previous color.</li>
-        </ul>
-      </li>
-      <li>Add <kbd>1-9</kbd> to quickly select drawing tools (see guide).</li>
-      <li>Add <kbd>Enter</kbd> / <kbd>Ctrl+Enter</kbd> to complete drawing or text input.</li>
-      <li>Add <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> to switch between drawing tools.</li>
-    </ul>
 
-  </section>
-  <hr>
-  <section>
-    <h3>1.3.3</h3>
-    <div>1.3.3.3 (14 Oct 2025)</div>
-    <ul>
-      <li>Allow using the <kbd>PrintScreen</kbd> key on Windows 11 without being intercepted by Snipping Tool.</li>
-    </ul>
-    
-    <div>1.3.3.2 (6 Oct 2025)</div>
-    <ul>
-      <li>Support for customizing <kbd>F</kbd>-key shortcuts in Settings.</li>
-      <li>Language Settings now support codes longer than 2 characters.</li>
-      <li>Improved interface and user experience in the Image Translation viewer.</li>
-    </ul>
+      <hr>
+      <div>1.3.4.5 (23 Dec 2025)</div>
+      <ul>
+          <li>Fixed potential issues that could cause the application to freeze after the system wakes up from sleep.</li>
+          <li>Added a feature to temporarily prevent the screen from turning off and the system from entering sleep mode.</li>
+          <li>Added hotkeys for the Color Picker and a secondary hotkey for Capture.</li>
+      </ul>
+      <div>1.3.4.4 (2 Nov 2025)</div>
+      <ul>
+          <li>Fix potential issues that may cause the application to freeze.</li>
+      </ul>
+      <div>1.3.4.3 (18 Nov 2025)</div>
+      <ul>
+          <li>Added support for reading and copying text from QR code.</li>
+      </ul>
+      <div>1.3.4.2 (5 Nov 2025)</div>
+      <ul>
+          <li>Green Color - Press <kbd>G</kbd> to quickly select the green color.</li>
+          <li>Logs - Added Logs to make it easier to check and fix issues.</li>
+          <li>Text Box - Press <kbd>F8</kbd> to toggle stroke border shape (Square ↔ Round).</li>
+          <li>Capture Hotkey - Press the <kbd>Capture hotkey</kbd> again to stop the ongoing capture.</li>
+      </ul>
+      <div>1.3.4.1 (31 Oct 2025)</div>
+      <ul>
+          <li>Add a border to the Text Box.</li>
+          <ul>
+              <li>Right-click inside the text area and select Border.</li>
+              <li>Or press <kbd>F4</kbd> to toggle the border on and off.</li>
+          </ul>
+      </ul>
+      <div>1.3.4.0 (23 Oct 2025)</div>
+      <ul>
+          <li>New <span style="color:#d17bff;">Color Picker</span> tool - lets you pick colors directly from the screen.
+              <ul>
+                  <li>Supports <kbd>Scroll</kbd> to zoom the magnifier in/out.</li>
+                  <li>Supports <kbd>F8</kbd> to switch the magnifier shape (Square ↔ Round).</li>
+              </ul>
+          </li>
+          <li>Add quick color shortcuts:
+              <ul>
+                  <li><kbd>R</kbd> / <kbd>B</kbd> / <kbd>Y</kbd> - Select Red / Blue / Yellow.</li>
+                  <li><kbd>X</kbd> - Revert to the previous color.</li>
+              </ul>
+          </li>
+          <li>Add <kbd>1-9</kbd> to quickly select drawing tools (see guide).</li>
+          <li>Add <kbd>Enter</kbd> / <kbd>Ctrl+Enter</kbd> to complete drawing or text input.</li>
+          <li>Add <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> to switch between drawing tools.</li>
+      </ul>
 
-    <div>1.3.3.2 (6 Oct 2025)</div>
-    <ul>
-      <li>Support for customizing <kbd>F</kbd>-key shortcuts in Settings.</li>
-      <li>Language Settings now support codes longer than 2 characters.</li>
-      <li>Improved interface and user experience in the Image Translation viewer.</li>
-    </ul>
+      <hr>
+      <div>1.3.3.3 (14 Oct 2025)</div>
+      <ul>
+          <li>Allow using the <kbd>PrintScreen</kbd> key on Windows 11 without being intercepted by Snipping Tool.</li>
+      </ul>
+      <div>1.3.3.2 (6 Oct 2025)</div>
+      <ul>
+          <li>Support for customizing <kbd>F</kbd>-key shortcuts in Settings.</li>
+          <li>Language Settings now support codes longer than 2 characters.</li>
+          <li>Improved interface and user experience in the Image Translation viewer.</li>
+      </ul>
+      <div>1.3.3.1 (17 Sep 2025)</div>
+      <ul>
+          <li>TextItem improvement: supports text selection by holding Shift and using the mouse.</li>
+      </ul>
+      <div>1.3.3.0 (16 Sep 2025)</div>
+      <ul>
+          <li>Added UIA text detection and retrieval (press <kbd>F4</kbd> to copy text).</li>
+          <li>Added manual update check feature.</li>
+          <li>Changed stroke width resize shortcuts: from <kbd>F2</kbd> <kbd>F3</kbd> <kbd>F4</kbd> → to <kbd>F5</kbd> <kbd>F6</kbd> <kbd>F7</kbd></li>
+      </ul>
 
-    <div>1.3.3.1 (17 Sep 2025)</div>
-    <ul>
-      <li>TextItem improvement: supports text selection by holding Shift and using the mouse.</li>
-    </ul>
+      <hr>
+      <div>1.3.2.2 & 1.3.2.3 (3 Sep 2025)</div>
+      <ul>
+          <li>Fixed a rare issue when converting images to text.</li>
+          <li>Added Auto-Update option.</li>
+      </ul>
+      <div>1.3.2.1 (29 Aug 2025)</div>
+      <ul>
+          <li>Improved UI border detection for the browser’s first run.</li>
+      </ul>
+      <div>1.3.2.0 (24 Aug 2025)</div>
+      <ul>
+          <li>Optimized performance of automatic UI border detection when hovering the mouse.</li>
+          <li>Fixed issues with the auto-update feature, including handling and removing MOTW (Mark of the Web) from embedded files.</li>
+          <li>Fixed version-check errors when no network connection is available.</li>
+      </ul>
 
-    <div>1.3.3.0 (16 Sep 2025)</div>
-    <ul>
-      <li>Added UIA text detection and retrieval (press <kbd>F4</kbd> to copy text).</li>
-      <li>Added manual update check feature.</li>
-      <li>Changed stroke width resize shortcuts: from <kbd>F2</kbd> <kbd>F3</kbd> <kbd>F4</kbd> → to <kbd>F5</kbd> <kbd>F6</kbd> <kbd>F7</kbd></li>
-    </ul>
-  </section>
-  <hr>
-  <section>
-    <h3>1.3.2</h3>
-    <div>1.3.2.2 & 1.3.2.3 (3 Sep 2025)</div>
-    <ul>
-      <li>Fixed a rare issue when converting images to text.</li>
-      <li>Added Auto-Update option.</li>
-    </ul>
-    <div>1.3.2.1 (29 Aug 2025)</div>
-    <ul>
-      <li>Improved UI border detection for the browser’s first run.</li>
-    </ul>
-
-    <div>1.3.2.0 (24 Aug 2025)</div>
-    <ul>
-      <li>Optimized performance of automatic UI border detection when hovering the mouse.</li>
-      <li>Fixed issues with the auto-update feature, including handling and removing MOTW (Mark of the Web) from embedded files.</li>
-      <li>Fixed version-check errors when no network connection is available.</li>
-    </ul>
-  </section>
-
-  <hr>
-
-  <section>
-    <h3>1.3.1</h3>
-    <ul>
-      <li>Highlighted the borders of UI components when hovering over them, making it easier for users to recognize display boundaries on the screen.
-      <li>Further reduced line thickness when using the Blur and Highlight (Markup highlight) features.</li>
-    </ul>
-  </section>
-  <hr>
-  
-  <section>
-    <h3>1.3.0</h3>
-    <ul>
-      <li>Displayed quick guides or tooltips to help users understand how to use tools and features in the application.</li>
-      <li>Enabled customization of line thickness, providing more precise control over how bold or fine lines are drawn.</li>
-      <li>Toggle between different drawing styles, such as standard shapes or rounded shapes (e.g. rectangles with or without rounded corners).</li>
-      <li>Added automatic updating and installation of new versions, ensuring users always have the latest features and patches without manual effort.</li>
-    </ul>
+      <hr>
+      <div>1.3.1</div>
+      <ul>
+          <li>Highlighted the borders of UI components when hovering over them, making it easier for users to recognize display boundaries on the screen.</li>
+          <li>Further reduced line thickness when using the Blur and Highlight (Markup highlight) features.</li>
+      </ul>
+      <div>1.3.0</div>
+      <ul>
+          <li>Displayed quick guides or tooltips to help users understand how to use tools and features in the application.</li>
+          <li>Enabled customization of line thickness, providing more precise control over how bold or fine lines are drawn.</li>
+          <li>Toggle between different drawing styles, such as standard shapes or rounded shapes (e.g. rectangles with or without rounded corners).</li>
+          <li>Added automatic updating and installation of new versions, ensuring users always have the latest features and patches without manual effort.</li>
+      </ul>
   </section>
 </div>
