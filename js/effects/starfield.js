@@ -31,13 +31,9 @@
       if (!this.canvas) return;
 
       this.ctx = this.canvas.getContext('2d');
-      this.ctx.imageSmoothingEnabled = true;
-
-      // reset state
-      this.ctx.globalCompositeOperation = "source-over";
-      this.ctx.globalAlpha = 1;
-      this.ctx.shadowBlur = 0;
-      this.ctx.filter = "none";
+      
+      // Reset trạng thái Canvas thông qua Controller chung
+      window.EffectController.resetCanvasContext(this.ctx);
 
       this.resizeHandler = () => this.resize();
       window.addEventListener('resize', this.resizeHandler);
@@ -58,7 +54,7 @@
 
       if (this.animationId) {
         cancelAnimationFrame(this.animationId);
-        this.animationId = null;   // bắt buộc reset
+        this.animationId = null;
       }
 
       if (this.resizeHandler) {
@@ -202,6 +198,8 @@
       this.ctx.fillStyle = 'rgba(0,0,0,0.25)';
       this.ctx.fillRect(0, 0, this.w, this.h);
 
+      const isMobile = this.w < 600;
+
       this.stars.forEach(star => {
 
         const k = 500 / star.z;
@@ -212,8 +210,13 @@
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, Math.PI * 2);
         this.ctx.fillStyle = `rgba(${star.color},${star.alpha})`;
-        this.ctx.shadowBlur = radius * 1.5;
-        this.ctx.shadowColor = `rgba(${star.color},${star.alpha})`;
+        
+        // Mobile: Chỉ đổ bóng cho sao đủ lớn để tiết kiệm CPU
+        if (!isMobile || radius > 1.5) {
+            this.ctx.shadowBlur = radius * 1.5;
+            this.ctx.shadowColor = `rgba(${star.color},${star.alpha})`;
+        }
+        
         this.ctx.fill();
         this.ctx.shadowBlur = 0;
       });

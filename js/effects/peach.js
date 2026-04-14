@@ -38,7 +38,9 @@
             if (!this.canvas) return;
 
             this.ctx = this.canvas.getContext("2d");
-            this.ctx.imageSmoothingEnabled = true;
+            
+            // Reset trạng thái Canvas về mặc định thông qua Controller chung
+            window.EffectController.resetCanvasContext(this.ctx);
 
             this.resizeHandler = () => this.resize();
             window.addEventListener("resize", this.resizeHandler);
@@ -87,6 +89,16 @@
 
             this.w = window.innerWidth;
             this.h = window.innerHeight;
+
+            const area = this.w * this.h;
+            
+            // Siết chặt giới hạn:
+            // - Min: 20 đến 60 hạt (tùy diện tích)
+            // - Max: 50 đến 280 hạt (tuyệt đối không quá 280 để bảo vệ hiệu năng)
+            this.minCount = Math.max(20, Math.min(60, Math.floor(area / 40000)));
+            this.maxCount = Math.max(50, Math.min(280, Math.floor(area / 10000)));
+
+            this.targetCount = Math.max(this.minCount, Math.min(this.targetCount, this.maxCount));
         },
 
         /* ======================= */
@@ -289,7 +301,8 @@
         animate() {
 
             const now = performance.now();
-            const dt = (now - this.lastFrameTime) / 1000;
+            let dt = (now - this.lastFrameTime) / 1000;
+            if (dt > 0.1) dt = 0.1; 
             this.lastFrameTime = now;
 
             this.ctx.clearRect(0, 0, this.w, this.h);

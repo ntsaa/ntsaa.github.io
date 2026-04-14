@@ -42,6 +42,9 @@
 
             this.ctx = this.canvas.getContext('2d');
 
+            // Reset trạng thái Canvas về mặc định thông qua Controller chung
+            window.EffectController.resetCanvasContext(this.ctx);
+
             this.resizeHandler = () => this.resize();
 
             this.mouseMoveHandler = e => {

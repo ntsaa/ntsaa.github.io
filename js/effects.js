@@ -43,6 +43,21 @@
         }
 
         /* ============================= */
+        /*  HELPER                       */
+        /* ============================= */
+
+        resetCanvasContext(ctx) {
+            if (!ctx) return;
+            ctx.globalAlpha = 1;
+            ctx.globalCompositeOperation = "source-over";
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = "transparent";
+            ctx.filter = "none";
+            ctx.imageSmoothingEnabled = true;
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform về mặc định
+        }
+
+        /* ============================= */
         /*  SET EFFECT                   */
         /* ============================= */
 

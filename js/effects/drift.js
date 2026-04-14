@@ -37,6 +37,9 @@
 
             this.ctx = this.canvas.getContext('2d');
 
+            // Reset trạng thái Canvas về mặc định thông qua Controller chung
+            window.EffectController.resetCanvasContext(this.ctx);
+
             this.resizeHandler = () => this.resize();
             window.addEventListener('resize', this.resizeHandler);
 
@@ -85,6 +88,11 @@
             this.w = innerWidth;
             this.h = innerHeight;
             this.isMobile = this.w < 600;
+
+            // Cập nhật lại số lượng hạt mục tiêu khi resize
+            const area = this.w * this.h;
+            const density = this.isMobile ? 1 / 5000 : 1 / 3800;
+            this.initCount = Math.max(100, Math.min(600, Math.floor(area * density)));
         },
 
         // ⭐ size tuned: nhỏ hơn bản mới, lớn hơn bản cũ
@@ -127,8 +135,9 @@
         initSingularity() {
 
             const area = this.w * this.h;
-            const density = this.isMobile ? 1 / 4200 : 1 / 3200;
-            const count = Math.min(900, Math.floor(area * density));
+            // Mật độ an toàn: Mobile ~1 hạt/5000px, Desktop ~1 hạt/3800px
+            const density = this.isMobile ? 1 / 5000 : 1 / 3800;
+            const count = Math.max(100, Math.min(600, Math.floor(area * density)));
 
             this.initCount = count;
             this.singularities = [];
