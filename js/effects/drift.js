@@ -125,7 +125,7 @@
 
         // ⭐ size tuned: nhỏ hơn bản mới, lớn hơn bản cũ
         createParticle() {
-            const raw = Math.random() * 1.2 + 0.35;
+            const raw = Math.random() * 0.9 + 0.35;
 
             return {
                 x: Math.random() * this.w,
@@ -147,7 +147,7 @@
             else if (side === 2) { x = Math.random() * this.w; y = 0; }
             else { x = Math.random() * this.w; y = this.h; }
 
-            const raw = Math.pow(Math.random(), 0.7) * 1.2 + 0.35;
+            const raw = Math.pow(Math.random(), 0.7) * 0.9 + 0.35;
 
             return {
                 x, y,

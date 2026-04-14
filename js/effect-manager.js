@@ -6,9 +6,9 @@
     /* ============================= */
 
     const ICON_MAP = {
-        singularity: "💠",
+        singularity: "🔆",
         starfield: "✨",
-        drift: "💫",
+        drift: "🌀",
         fireworks: "🎆",
         peach: "🌸"
     };
@@ -33,7 +33,7 @@
             end.setFullYear(year);
         }
 
-        return !(now >= start && now <= end);
+        return (now >= start && now <= end);
     }
 
     /* ============================= */
