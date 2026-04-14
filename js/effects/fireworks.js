@@ -13,6 +13,7 @@
 
         rockets: [],
         particles: [],
+        particleCache: [],
 
         resizeHandler: null,
         moveHandler: null,
@@ -31,14 +32,16 @@
         RANDOM_INTERVAL: 900,
         MOVE_INTERVAL: 2000,
         CLICK_SPAM_THRESHOLD: 400,
-        MAX_ACTIVE_ROCKETS: 5,
+        MAX_ACTIVE_ROCKETS: 12,
 
         mouseX: 0,
         mouseY: 0,
+        isOverUI: false,
 
         isMobile: false,
         countMult: 1,
         spreadMult: 1,
+        resizeTimeout: null,
 
         /* ================= START ================= */
 
@@ -55,16 +58,24 @@
             
             this.ctx.globalCompositeOperation = "lighter";
 
+            this.initCache();
+
             this.resizeHandler = () => this.resize();
             window.addEventListener("resize", this.resizeHandler);
 
-            this.moveHandler = (e) => this.onMove(e);
+            this.moveHandler = (e) => {
+                this.isOverUI = window.EffectController.isUIElement(e.target);
+                this.mouseX = e.clientX;
+                this.mouseY = e.clientY;
+                this.lastMoveTime = performance.now();
+                this.hasShotAtCurrentMousePos = false;
+            };
             this.clickHandler = (e) => this.onClick(e);
 
             document.addEventListener("mousemove", this.moveHandler);
             document.addEventListener("click", this.clickHandler);
 
-            this.resize();
+            this.resize(true);
             this.animate();
         },
 
@@ -76,6 +87,8 @@
                 cancelAnimationFrame(this.animationId);
                 this.animationId = null;
             }
+
+            clearTimeout(this.resizeTimeout);
 
             if (this.resizeHandler) {
                 window.removeEventListener("resize", this.resizeHandler);
@@ -99,14 +112,15 @@
             this.rockets = [];
             this.particles = [];
             this.clickQueue = [];
+            this.particleCache = [];
         },
 
         /* ================= RESIZE ================= */
 
-        resize() {
+        resize(isInitial = false) {
 
-            this.canvas.style.width = window.innerWidth + "px";
-            this.canvas.style.height = window.innerHeight + "px";
+            this.canvas.style.width = window.innerWidth + 'px';
+            this.canvas.style.height = window.innerHeight + 'px';
 
             this.canvas.width = Math.floor(window.innerWidth * this.DPR);
             this.canvas.height = Math.floor(window.innerHeight * this.DPR);
@@ -116,6 +130,16 @@
             this.w = window.innerWidth;
             this.h = window.innerHeight;
 
+            if (isInitial) {
+                this.recalculateLimits();
+                return;
+            }
+
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = setTimeout(() => this.recalculateLimits(), 500);
+        },
+
+        recalculateLimits() {
             const area = this.w * this.h;
             this.isMobile = this.w < 600;
 
@@ -148,10 +172,31 @@
             return `hsl(${h + (Math.random() - 0.5) * 30},100%,60%)`;
         },
 
+        initCache() {
+            this.particleCache = [];
+            for (let i = 0; i < 360; i++) {
+                const canvas = document.createElement("canvas");
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext("2d");
+                const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+                gradient.addColorStop(0, `hsl(${i}, 100%, 60%)`);
+                gradient.addColorStop(1, "transparent");
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 16, 16);
+                this.particleCache.push(canvas);
+            }
+        },
+
         /* ================= PARTICLE ================= */
 
         createParticle(x, y, vx, vy, color, decay = 0.009, size = 4, split = false) {
-            return { x, y, vx, vy, alpha: 1, decay, color, size, split };
+            let hue = 0;
+            const match = color.match(/hsl\((\d+\.?\d*)/);
+            if (match) {
+                hue = Math.floor(parseFloat(match[1])) % 360;
+            }
+            return { x, y, vx, vy, alpha: 1, decay, color, size, split, hue };
         },
 
         updateParticle(p) {
@@ -191,15 +236,9 @@
 
             if (p.alpha <= 0) return;
 
-            const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-            g.addColorStop(0, p.color);
-            g.addColorStop(1, "transparent");
-
             this.ctx.globalAlpha = p.alpha;
-            this.ctx.fillStyle = g;
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            this.ctx.fill();
+            const size = p.size * 2;
+            this.ctx.drawImage(this.particleCache[p.hue], p.x - p.size, p.y - p.size, size, size);
             this.ctx.globalAlpha = 1;
         },
 
@@ -332,13 +371,14 @@
         },
 
         onClick(e) {
+            if (window.EffectController.isUIElement(e.target)) return;
             this.clickQueue.push({ x: e.clientX, y: e.clientY });
             this.lastClickTime = performance.now();
         },
 
         control(now) {
 
-            // Luật sắt: Bất kể là click hay tự động, không bao giờ quá 5 quả đang bay
+            // Luật sắt: Bất kể là click hay tự động, không bao giờ quá 12 quả đang bay
             if (this.rockets.length >= this.MAX_ACTIVE_ROCKETS) return;
 
             // 1. CHẾ ĐỘ ƯU TIÊN: Xử lý Hàng đợi Click (User)
@@ -361,7 +401,7 @@
 
                 // Nếu đang di chuyển HOẶC chưa kịp bắn "phát súng cuối cùng" vào điểm dừng
                 if (isMoving || !this.hasShotAtCurrentMousePos) {
-                    this.spawnRocket(this.mouseX, this.mouseY);
+                    if (!this.isOverUI) this.spawnRocket(this.mouseX, this.mouseY);
                     this.hasShotAtCurrentMousePos = true; // Đánh dấu đã bắn xong tại điểm này
                     this.lastProcessedClick = now;
                 } 

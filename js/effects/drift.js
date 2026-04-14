@@ -27,6 +27,7 @@
 
         mouseRadius: 120,
         running: false,
+        resizeTimeout: null,
 
         start() {
             if (this.running) return;
@@ -44,18 +45,24 @@
             window.addEventListener('resize', this.resizeHandler);
 
             this.moveHandler = e => {
-                this.mouseX = e.clientX;
-                this.mouseY = e.clientY;
-                this.hasMouse = true;
+                if (window.EffectController.isUIElement(e.target)) {
+                    this.hasMouse = false;
+                } else {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                    this.hasMouse = true;
+                }
             };
 
-            this.clickHandler = e => this.createWell(e.clientX, e.clientY);
+            this.clickHandler = e => {
+                if (window.EffectController.isUIElement(e.target)) return;
+                this.createWell(e.clientX, e.clientY);
+            };
 
             window.addEventListener('mousemove', this.moveHandler);
             window.addEventListener('click', this.clickHandler);
 
-            this.resize();
-            this.initSingularity();
+            this.resize(true);
             this.animate();
         },
 
@@ -64,6 +71,7 @@
             this.running = false;
 
             cancelAnimationFrame(this.animationId);
+            clearTimeout(this.resizeTimeout);
 
             window.removeEventListener('resize', this.resizeHandler);
             window.removeEventListener('mousemove', this.moveHandler);
@@ -76,7 +84,7 @@
             if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h);
         },
 
-        resize() {
+        resize(isInitial = false) {
             this.canvas.style.width = innerWidth + 'px';
             this.canvas.style.height = innerHeight + 'px';
 
@@ -93,6 +101,26 @@
             const area = this.w * this.h;
             const density = this.isMobile ? 1 / 5000 : 1 / 3800;
             this.initCount = Math.max(100, Math.min(600, Math.floor(area * density)));
+
+            if (isInitial) {
+                this.initSingularity();
+                return;
+            }
+
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = setTimeout(() => this.refillStep(), 500);
+        },
+
+        refillStep() {
+            if (!this.running) return;
+            const currentTotal = this.singularities.length;
+            if (currentTotal < this.initCount) {
+                const toAdd = Math.min(3, this.initCount - currentTotal);
+                for (let i = 0; i < toAdd; i++) {
+                    this.singularities.push(this.spawnFromEdge());
+                }
+                this.resizeTimeout = setTimeout(() => this.refillStep(), 800);
+            }
         },
 
         // ⭐ size tuned: nhỏ hơn bản mới, lớn hơn bản cũ
@@ -253,10 +281,15 @@
             p.x += p.speedX * depth * sizeBoost;
             p.y += p.speedY * depth * sizeBoost;
 
-            if (p.x < 0) p.x = this.w;
-            if (p.x > this.w) p.x = 0;
-            if (p.y < 0) p.y = this.h;
-            if (p.y > this.h) p.y = 0;
+            const isOutside = p.x < -50 || p.x > this.w + 50 || p.y < -50 || p.y > this.h + 50;
+            if (isOutside && this.singularities.length > this.initCount) {
+                p.toRemove = true;
+            } else {
+                if (p.x < 0) p.x = this.w;
+                if (p.x > this.w) p.x = 0;
+                if (p.y < 0) p.y = this.h;
+                if (p.y > this.h) p.y = 0;
+            }
         },
 
         updateFragments() {
@@ -314,8 +347,13 @@
             this.ctx.fillStyle = `rgba(0,0,0,${fade})`;
             this.ctx.fillRect(0, 0, this.w, this.h);
 
-            for (let p of this.singularities) {
+            for (let i = this.singularities.length - 1; i >= 0; i--) {
+                const p = this.singularities[i];
                 this.updateParticle(p);
+                if (p.toRemove) {
+                    this.singularities.splice(i, 1);
+                    continue;
+                }
                 this.drawParticle(p);
             }
 

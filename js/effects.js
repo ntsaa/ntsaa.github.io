@@ -58,6 +58,14 @@
         }
 
         /* ============================= */
+        /*  UI CHECK                     */
+        /* ============================= */
+
+        isUIElement(target) {
+            return !!(target && (target.closest('header') || target.closest('footer')));
+        }
+
+        /* ============================= */
         /*  SET EFFECT                   */
         /* ============================= */
 

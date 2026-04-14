@@ -16,6 +16,8 @@
     w: 0,
     h: 0,
     DPR: window.devicePixelRatio || 1,
+    running: false,
+    resizeTimeout: null,
 
     mouseX: 0,
     mouseY: 0,
@@ -26,7 +28,9 @@
     ],
 
     start() {
-      if (this.animationId) return;
+      if (this.running) return;
+      this.running = true;
+
       this.canvas = document.getElementById('network');
       if (!this.canvas) return;
 
@@ -39,23 +43,31 @@
       window.addEventListener('resize', this.resizeHandler);
 
       this.mouseHandler = (e) => {
-        this.mouseX = e.clientX - this.w / 2;
-        this.mouseY = e.clientY - this.h / 2;
+        if (window.EffectController.isUIElement(e.target)) {
+          this.mouseX = 0;
+          this.mouseY = 0;
+        } else {
+          this.mouseX = e.clientX - this.w / 2;
+          this.mouseY = e.clientY - this.h / 2;
+        }
       };
       document.addEventListener('mousemove', this.mouseHandler);
 
-      this.resize();
-      this.initStars();
+      this.resize(true);
       this.spawnShootingStar();
       this.animate();
     },
 
     stop() {
+      if (!this.running) return;
+      this.running = false;
 
       if (this.animationId) {
         cancelAnimationFrame(this.animationId);
         this.animationId = null;
       }
+
+      clearTimeout(this.resizeTimeout);
 
       if (this.resizeHandler) {
         window.removeEventListener('resize', this.resizeHandler);
@@ -77,7 +89,7 @@
       this.shootingStars = [];
     },
 
-    resize() {
+    resize(isInitial = false) {
 
       this.canvas.style.width = window.innerWidth + 'px';
       this.canvas.style.height = window.innerHeight + 'px';
@@ -90,7 +102,18 @@
       this.w = window.innerWidth;
       this.h = window.innerHeight;
 
-      this.initStars();
+      if (isInitial) {
+        this.initStars();
+        return;
+      }
+
+      const layersConfig = this.getLayersConfig();
+      this.stars.forEach(star => {
+        star.layer = layersConfig[star.layerIndex];
+      });
+
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => this.refillStep(), 500);
     },
 
     getLayersConfig() {
@@ -114,25 +137,50 @@
       ];
     },
 
-    initStars() {
+    createStar(layer, layerIndex, atDistance = false) {
+      return {
+        x: Math.random() * this.w,
+        y: Math.random() * this.h,
+        z: atDistance ? this.w : Math.random() * this.w,
+        radius: layer.size[0] + Math.random() * (layer.size[1] - layer.size[0]),
+        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        alpha: Math.random() * 0.5 + 0.5,
+        layer: layer,
+        layerIndex: layerIndex,
+        alphaChange: Math.random() * 0.02 + 0.005
+      };
+    },
 
+    initStars() {
       this.stars = [];
       const layersConfig = this.getLayersConfig();
 
-      layersConfig.forEach(layer => {
+      layersConfig.forEach((layer, index) => {
         for (let i = 0; i < layer.count; i++) {
-          this.stars.push({
-            x: Math.random() * this.w,
-            y: Math.random() * this.h,
-            z: Math.random() * this.w,
-            radius: layer.size[0] + Math.random() * (layer.size[1] - layer.size[0]),
-            color: this.colors[Math.floor(Math.random() * this.colors.length)],
-            alpha: Math.random() * 0.5 + 0.5,
-            layer: layer,
-            alphaChange: Math.random() * 0.02 + 0.005
-          });
+          this.stars.push(this.createStar(layer, index));
         }
       });
+    },
+
+    refillStep() {
+      if (!this.running) return;
+      const layersConfig = this.getLayersConfig();
+      let added = false;
+
+      layersConfig.forEach((layer, index) => {
+        const currentCount = this.stars.filter(s => s.layerIndex === index).length;
+        if (currentCount < layer.count) {
+          const toAdd = Math.min(3, layer.count - currentCount);
+          for (let i = 0; i < toAdd; i++) {
+            this.stars.push(this.createStar(layer, index, true));
+          }
+          added = true;
+        }
+      });
+
+      if (added) {
+        this.resizeTimeout = setTimeout(() => this.refillStep(), 800);
+      }
     },
 
     spawnShootingStar() {
@@ -159,12 +207,23 @@
     },
 
     updateStars() {
+      const layersConfig = this.getLayersConfig();
+      const layerCounts = layersConfig.map(l => l.count);
+      const totalInLayer = new Array(layersConfig.length).fill(0);
+      this.stars.forEach(s => totalInLayer[s.layerIndex]++);
 
-      this.stars.forEach(star => {
+      for (let i = this.stars.length - 1; i >= 0; i--) {
+
+        const star = this.stars[i];
 
         star.z -= star.layer.speed;
 
         if (star.z <= 0) {
+          if (totalInLayer[star.layerIndex] > layerCounts[star.layerIndex]) {
+            this.stars.splice(i, 1);
+            totalInLayer[star.layerIndex]--;
+            continue;
+          }
           star.x = Math.random() * this.w;
           star.y = Math.random() * this.h;
           star.z = this.w;
@@ -177,7 +236,7 @@
         if (star.alpha > 1 || star.alpha < 0.2) {
           star.alphaChange *= -1;
         }
-      });
+      }
 
       for (let i = this.shootingStars.length - 1; i >= 0; i--) {
 

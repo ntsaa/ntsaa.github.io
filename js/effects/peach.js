@@ -27,6 +27,7 @@
         decayDelay: 1500,
         decaySpeed: 12,
         startTime: 0,
+        resizeTimeout: null,
 
         /* ======================= */
 
@@ -48,7 +49,7 @@
             this.clickHandler = (e) => this.handleClick(e);
             window.addEventListener("pointerdown", this.clickHandler, { passive: true });
 
-            this.resize();
+            this.resize(true);
             this.startTime = performance.now();
 
             this.petals = [];
@@ -61,8 +62,8 @@
         },
 
         stop() {
-
             cancelAnimationFrame(this.animationId);
+            clearTimeout(this.resizeTimeout);
 
             if (this.resizeHandler)
                 window.removeEventListener("resize", this.resizeHandler);
@@ -77,7 +78,7 @@
             this.animationId = null;
         },
 
-        resize() {
+        resize(isInitial = false) {
 
             this.canvas.style.width = window.innerWidth + "px";
             this.canvas.style.height = window.innerHeight + "px";
@@ -90,6 +91,16 @@
             this.w = window.innerWidth;
             this.h = window.innerHeight;
 
+            if (isInitial) {
+                this.recalculateLimits();
+                return;
+            }
+
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = setTimeout(() => this.recalculateLimits(), 500);
+        },
+
+        recalculateLimits() {
             const area = this.w * this.h;
             
             // Siết chặt giới hạn:
@@ -198,6 +209,7 @@
         /* ======================= */
 
         handleClick(e) {
+            if (window.EffectController.isUIElement(e.target)) return;
 
             const rect = this.canvas.getBoundingClientRect();
             const mx = e.clientX - rect.left;
