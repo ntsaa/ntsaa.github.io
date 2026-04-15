@@ -1,5 +1,5 @@
 html, body {
-  background: radial-gradient(circle at center, #0d1b2a, #000);
+  background: radial-gradient(circle at center, #1a1a1a, #000);
 }
 
 canvas#network {
