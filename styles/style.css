@@ -1,7 +1,7 @@
 /* --- VARIABLES --- */
 :root {
   --color-bg-dark: #111;
-  --color-bg-mid: #333;
+  --color-bg-mid: #1a1a1a;
   --color-btn-dark: #222;
   --color-border: #555;
   --color-border-light: #777;
@@ -19,6 +19,7 @@ html, body {
     padding: 0;
     height: 100%;
     font-family: sans-serif;
+    background: radial-gradient(circle at center, #1c2530, #141414);
 }
 
 /* --- HEADER --- */
@@ -30,7 +31,7 @@ header {
     left: 0;
     right: 0;
     height: 56px;
-    z-index: 10;
+    z-index: 100;
     font-size: 15px;
 }
 
@@ -231,7 +232,7 @@ header {
     box-sizing: border-box;
     color: var(--color-text-light);
     opacity: 0;
-    transition: opacity 0.2s ease-in-out; /* Thêm transition mặc định để hỗ trợ fade out */
+    transition: opacity 0.2s ease-in-out;
 }
 
 #content.fade-in {
@@ -250,7 +251,7 @@ footer {
     height: 40px;
     line-height: 40px;
     font-size: 14px;
-    z-index: 10;
+    z-index: 100; /* Nâng lên cao nhất */
 }
 
 .footer-container {

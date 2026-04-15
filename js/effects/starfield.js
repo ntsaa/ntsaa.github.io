@@ -254,8 +254,11 @@
 
     drawStars() {
 
-      this.ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      // Dùng destination-out để làm mờ vệt sao mà không tích tụ màu đen/xám lên Canvas.
+      this.ctx.globalCompositeOperation = 'destination-out';
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
       this.ctx.fillRect(0, 0, this.w, this.h);
+      this.ctx.globalCompositeOperation = 'source-over';
 
       const isMobile = this.w < 600;
 
