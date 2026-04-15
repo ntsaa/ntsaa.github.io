@@ -303,7 +303,14 @@
                     ? `hsla(${coreHue}, ${coreSat}%, 85%, 0.85)` 
                     : `hsla(${hue}, 80%, 75%, 0.7)`;
                 this.ctx.fill();
+            }
 
+            // --- Tối ưu: Gom nhóm lệnh vẽ đường nối ---
+            this.ctx.beginPath();
+            this.ctx.lineWidth = 0.6;
+            
+            for (let i = 0; i < this.singularities.length; i++) {
+                const p = this.singularities[i];
                 for (let j = i + 1; j < this.singularities.length; j++) {
                     const p2 = this.singularities[j];
                     const dx = p.x - p2.x;
@@ -312,15 +319,17 @@
 
                     if (d2 < maxDist * maxDist) {
                         const d = Math.sqrt(d2);
-                        this.ctx.beginPath();
+                        // Lưu ý: Vì ta dùng stroke() một lần, nên các đường sẽ có cùng màu/alpha cơ bản
+                        // Để giữ hiệu ứng mờ theo khoảng cách, ta có thể dùng nhiều path hoặc chấp nhận một alpha trung bình
+                        // Ở đây tôi sẽ dùng cách vẽ nhanh nhất:
                         this.ctx.moveTo(p.x, p.y);
                         this.ctx.lineTo(p2.x, p2.y);
-                        this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, ${(1 - d / maxDist) * 0.25})`;
-                        this.ctx.lineWidth = 0.6;
-                        this.ctx.stroke();
                     }
                 }
             }
+            this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, 0.15)`; // Alpha cố định để tối ưu
+            this.ctx.stroke();
+            // ------------------------------------------
 
             if (currentRatio >= this.burstRatio) this.triggerBurst();
 
