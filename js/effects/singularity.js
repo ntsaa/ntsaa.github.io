@@ -305,31 +305,32 @@
                 this.ctx.fill();
             }
 
-            // --- Tối ưu: Gom nhóm lệnh vẽ đường nối ---
+            // --- Tối ưu: Gom nhóm lệnh vẽ đường nối và giới hạn liên kết (6) ---
             this.ctx.beginPath();
             this.ctx.lineWidth = 0.6;
+            this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, 0.15)`;
             
+            const maxDistSq = maxDist * maxDist;
             for (let i = 0; i < this.singularities.length; i++) {
                 const p = this.singularities[i];
+                let connections = 0;
                 for (let j = i + 1; j < this.singularities.length; j++) {
+                    if (connections >= 6) break; // Giới hạn 6 liên kết để tránh rối mắt và lag khi tụ lại
+
                     const p2 = this.singularities[j];
                     const dx = p.x - p2.x;
                     const dy = p.y - p2.y;
                     const d2 = dx * dx + dy * dy;
 
-                    if (d2 < maxDist * maxDist) {
-                        const d = Math.sqrt(d2);
-                        // Lưu ý: Vì ta dùng stroke() một lần, nên các đường sẽ có cùng màu/alpha cơ bản
-                        // Để giữ hiệu ứng mờ theo khoảng cách, ta có thể dùng nhiều path hoặc chấp nhận một alpha trung bình
-                        // Ở đây tôi sẽ dùng cách vẽ nhanh nhất:
+                    if (d2 < maxDistSq) {
                         this.ctx.moveTo(p.x, p.y);
                         this.ctx.lineTo(p2.x, p2.y);
+                        connections++;
                     }
                 }
             }
-            this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, 0.15)`; // Alpha cố định để tối ưu
             this.ctx.stroke();
-            // ------------------------------------------
+            // ----------------------------------------------------------
 
             if (currentRatio >= this.burstRatio) this.triggerBurst();
 
