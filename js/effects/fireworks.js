@@ -419,8 +419,10 @@
 
             this.control(now);
 
-            this.ctx.globalCompositeOperation = "destination-out";
-            this.ctx.fillStyle = "rgba(0,0,0,0.08)";
+            // Dùng chính màu nền xám tối (rgba(26,26,26)) để làm mờ frame cũ
+            // Giúp đuôi tan biến tự nhiên vào nền gradient mà không để lại sương mù
+            this.ctx.globalCompositeOperation = "source-over"; // Chuyển về source-over để hòa trộn màu nền
+            this.ctx.fillStyle = "rgba(26, 26, 26, 0.15)"; 
             this.ctx.fillRect(0, 0, this.w, this.h);
 
             this.ctx.globalCompositeOperation = "lighter";

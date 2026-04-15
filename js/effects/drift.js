@@ -307,8 +307,6 @@
             const color = `hsla(${hue},80%,70%,0.7)`;
 
             this.ctx.fillStyle = color;
-            this.ctx.shadowBlur = p.size * 1.8;
-            this.ctx.shadowColor = color;
 
             const speed = Math.hypot(p.speedX, p.speedY);
 
@@ -324,7 +322,6 @@
             this.ctx.fill();
 
             this.ctx.restore();
-            this.ctx.shadowBlur = 0;
         },
 
         drawFragments() {
@@ -341,11 +338,12 @@
 
             if (!this.running) return;
 
-            // trail mềm như bản cũ
-            const fade = this.isMobile ? 0.09 : 0.055;
-
-            this.ctx.fillStyle = `rgba(0,0,0,${fade})`;
+            // Tăng tỉ lệ xóa lên 0.1 để quét sạch "sương mù" tích tụ
+            this.ctx.globalCompositeOperation = 'destination-out';
+            const fade = this.isMobile ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.1)';
+            this.ctx.fillStyle = fade;
             this.ctx.fillRect(0, 0, this.w, this.h);
+            this.ctx.globalCompositeOperation = 'source-over';
 
             for (let i = this.singularities.length - 1; i >= 0; i--) {
                 const p = this.singularities[i];

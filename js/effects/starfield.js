@@ -287,10 +287,7 @@
         this.ctx.lineTo(s.x - s.length, s.y - s.length / 3);
         this.ctx.strokeStyle = `rgba(${s.color},${s.alpha})`;
         this.ctx.lineWidth = 2;
-        this.ctx.shadowBlur = 6;
-        this.ctx.shadowColor = `rgba(${s.color},${s.alpha})`;
         this.ctx.stroke();
-        this.ctx.shadowBlur = 0;
       });
     },
 
