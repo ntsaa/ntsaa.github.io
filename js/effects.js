@@ -8,23 +8,6 @@
             this.loadedScripts = {}; // { name: Promise }
             this.current = null;    // current effect name
             this.enabled = false;   // global on/off
-            this.contentVisible = true;
-        }
-
-        /* ============================= */
-        /*  CONTENT VISIBILITY           */
-        /* ============================= */
-
-        toggleContent(show) {
-            this.contentVisible = show === undefined ? !this.contentVisible : show;
-            const contentEl = document.getElementById('content');
-
-            if (contentEl) {
-                contentEl.style.display = this.contentVisible ? '' : 'none';
-            }
-            
-            // Nếu hiện lại nội dung, đảm bảo body không bị scroll lỗi (nếu có)
-            document.body.style.overflow = this.contentVisible ? '' : 'hidden';
         }
 
         /* ============================= */

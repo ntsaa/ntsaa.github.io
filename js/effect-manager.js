@@ -6,9 +6,9 @@
     /* ============================= */
 
     const ICON_MAP = {
-        singularity: "💠",
+        singularity: "🔆",
         starfield: "✨",
-        drift: "💫",
+        drift: "🌀",
         fireworks: "🎆",
         peach: "🌸"
     };
@@ -45,16 +45,14 @@
         constructor(controller, toggleBtn, offBtn) {
 
             this.EC = controller;
-            this.toggleBtn = toggleBtn; // Left: Change Effect
-            this.offBtn = offBtn;       // Right: Cycle (ON/OFF/A)
+            this.toggleBtn = toggleBtn;
+            this.offBtn = offBtn;
 
             this.pool = isTetSeason()
                 ? TET_EFFECTS
                 : NORMAL_EFFECTS;
 
             this.index = 0;
-            // 0: ON_VISIBLE, 1: OFF_VISIBLE, 2: ON_HIDDEN
-            this.cycleState = 0; 
 
             this.init();
         }
@@ -70,57 +68,20 @@
             this.randomStart();
             this.EC.toggleEffects(true);
             this.updateIcon();
-            this.updateOffIcon();
 
             this.bindEvents();
         }
 
         bindEvents() {
 
-            // Nút Trái: Chuyển hiệu ứng
             this.toggleBtn?.addEventListener("click", () => {
-                // Nếu hiệu ứng đang tắt (trạng thái 1), bật nó lên
-                if (this.cycleState === 1) {
-                    this.cycleState = 0; // Chuyển về trạng thái ON_VISIBLE
-                    this.EC.toggleEffects(true);
-                    this.updateOffIcon();
-                }
+                this.EC.toggleEffects(true);
                 this.next();
             });
 
-            // Nút Phải: Xoay vòng (Bật/Hiện) -> (Tắt/Hiện) -> (Bật/Ẩn)
             this.offBtn?.addEventListener("click", () => {
-                this.cycleState = (this.cycleState + 1) % 3;
-                this.applyState();
+                this.EC.toggleEffects();
             });
-
-            // Header actions: Hiện lại nội dung
-            const header = document.querySelector('header');
-            header?.addEventListener("click", (e) => {
-                // Nếu đang trong trạng thái A (ẩn nội dung), hiện lại
-                if (this.cycleState === 2) {
-                    this.cycleState = 0; // Về trạng thái ON_VISIBLE
-                    this.applyState();
-                }
-            });
-        }
-
-        applyState() {
-            switch (this.cycleState) {
-                case 0: // ON_VISIBLE
-                    this.EC.toggleEffects(true);
-                    this.EC.toggleContent(true);
-                    break;
-                case 1: // OFF_VISIBLE
-                    this.EC.toggleEffects(false);
-                    this.EC.toggleContent(true);
-                    break;
-                case 2: // ON_HIDDEN (A)
-                    this.EC.toggleEffects(true);
-                    this.EC.toggleContent(false);
-                    break;
-            }
-            this.updateOffIcon();
         }
 
         /* ============================= */
@@ -149,16 +110,9 @@
         /* ============================= */
 
         updateIcon() {
+
             const name = this.pool[this.index];
             this.toggleBtn.textContent = ICON_MAP[name] || "✨";
-        }
-
-        updateOffIcon() {
-            // 0: ON, 1: OFF, 2: HIDDEN (A)
-            const icons = ["🤖", "💤", "🌈"];
-            if (this.offBtn) {
-                this.offBtn.textContent = icons[this.cycleState];
-            }
         }
 
     }
