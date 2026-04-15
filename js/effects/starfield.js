@@ -9,6 +9,8 @@
     resizeHandler: null,
     mouseHandler: null,
     shootingTimeout: null,
+    warpStartHandler: null,
+    warpEndHandler: null,
 
     stars: [],
     shootingStars: [],
@@ -21,11 +23,13 @@
 
     mouseX: 0,
     mouseY: 0,
+    isWarping: false,
 
     colors: [
       '255,99,132', '54,162,235', '255,206,86',
       '75,192,192', '153,102,255', '255,159,64'
     ],
+    spriteCache: [],
 
     start() {
       if (this.running) return;
@@ -39,6 +43,8 @@
       // Reset trạng thái Canvas thông qua Controller chung
       window.EffectController.resetCanvasContext(this.ctx);
 
+      this.initSpriteCache();
+
       this.resizeHandler = () => this.resize();
       window.addEventListener('resize', this.resizeHandler);
 
@@ -51,7 +57,20 @@
           this.mouseY = e.clientY - this.h / 2;
         }
       };
+
+      this.warpStartHandler = (e) => {
+        if (window.EffectController.isUIElement(e.target)) return;
+        this.isWarping = true;
+      };
+      this.warpEndHandler = () => {
+        this.isWarping = false;
+      };
+
       document.addEventListener('mousemove', this.mouseHandler);
+      document.addEventListener('mousedown', this.warpStartHandler);
+      document.addEventListener('mouseup', this.warpEndHandler);
+      document.addEventListener('touchstart', this.warpStartHandler, { passive: true });
+      document.addEventListener('touchend', this.warpEndHandler, { passive: true });
 
       this.resize(true);
       this.spawnShootingStar();
@@ -69,13 +88,12 @@
 
       clearTimeout(this.resizeTimeout);
 
-      if (this.resizeHandler) {
-        window.removeEventListener('resize', this.resizeHandler);
-      }
-
-      if (this.mouseHandler) {
-        document.removeEventListener('mousemove', this.mouseHandler);
-      }
+      window.removeEventListener('resize', this.resizeHandler);
+      document.removeEventListener('mousemove', this.mouseHandler);
+      document.removeEventListener('mousedown', this.warpStartHandler);
+      document.removeEventListener('mouseup', this.warpEndHandler);
+      document.removeEventListener('touchstart', this.warpStartHandler);
+      document.removeEventListener('touchend', this.warpEndHandler);
 
       if (this.shootingTimeout) {
         clearTimeout(this.shootingTimeout);
@@ -87,6 +105,7 @@
 
       this.stars = [];
       this.shootingStars = [];
+      this.isWarping = false;
     },
 
     resize(isInitial = false) {
@@ -117,33 +136,57 @@
     },
 
     getLayersConfig() {
-
+      // Điều chỉnh dải kích thước để cân bằng thị giác
       return [
         {
           count: this.w < 600 ? 60 : 120,
           speed: 6,
-          size: this.w < 600 ? [1, 2] : [2, 4]
+          size: this.w < 600 ? [1.2, 2.5] : [2.5, 4.5]
         },
         {
           count: this.w < 600 ? 90 : 180,
           speed: 3,
-          size: this.w < 600 ? [0.5, 1] : [1, 2]
+          size: this.w < 600 ? [0.7, 1.4] : [1.4, 2.4]
         },
         {
           count: this.w < 600 ? 120 : 240,
           speed: 1.5,
-          size: this.w < 600 ? [0.2, 0.8] : [0.5, 1.5]
+          size: this.w < 600 ? [0.4, 1.0] : [0.8, 1.8]
         }
       ];
     },
 
+    initSpriteCache() {
+      this.spriteCache = [];
+      this.colors.forEach(colorStr => {
+        const size = 64; // Dùng 64 để cực nét mà vẫn mượt
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const center = size / 2;
+        
+        // Vẽ sao đanh thép: lõi đặc chiếm 75% diện tích
+        const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+        gradient.addColorStop(0, `rgba(${colorStr}, 1)`);
+        gradient.addColorStop(0.75, `rgba(${colorStr}, 0.9)`); // Lõi đặc rộng
+        gradient.addColorStop(0.9, `rgba(${colorStr}, 0.2)`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, size, size);
+        this.spriteCache.push(canvas);
+      });
+    },
+
     createStar(layer, layerIndex, atDistance = false) {
+      const colorIndex = Math.floor(Math.random() * this.colors.length);
       return {
         x: Math.random() * this.w,
         y: Math.random() * this.h,
         z: atDistance ? this.w : Math.random() * this.w,
         radius: layer.size[0] + Math.random() * (layer.size[1] - layer.size[0]),
-        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        colorIndex: colorIndex,
         alpha: Math.random() * 0.5 + 0.5,
         layer: layer,
         layerIndex: layerIndex,
@@ -194,7 +237,7 @@
         speed: this.w < 600
           ? 8 + Math.random() * 5
           : 15 + Math.random() * 10,
-        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        colorIndex: Math.floor(Math.random() * this.colors.length),
         alpha: 1
       };
 
@@ -212,11 +255,14 @@
       const totalInLayer = new Array(layersConfig.length).fill(0);
       this.stars.forEach(s => totalInLayer[s.layerIndex]++);
 
+      // Tốc độ Warp: X5 tốc độ bình thường
+      const warpMult = this.isWarping ? 5 : 1;
+
       for (let i = this.stars.length - 1; i >= 0; i--) {
 
         const star = this.stars[i];
 
-        star.z -= star.layer.speed;
+        star.z -= star.layer.speed * warpMult;
 
         if (star.z <= 0) {
           if (totalInLayer[star.layerIndex] > layerCounts[star.layerIndex]) {
@@ -229,8 +275,9 @@
           star.z = this.w;
         }
 
-        star.x += this.mouseX * 0.0005 * star.layer.speed;
-        star.y += this.mouseY * 0.0005 * star.layer.speed;
+        // Độ trôi theo chuột cũng tăng lên khi Warp
+        star.x += this.mouseX * 0.0005 * star.layer.speed * warpMult;
+        star.y += this.mouseY * 0.0005 * star.layer.speed * warpMult;
 
         star.alpha += star.alphaChange;
         if (star.alpha > 1 || star.alpha < 0.2) {
@@ -242,9 +289,9 @@
 
         const s = this.shootingStars[i];
 
-        s.x += s.speed;
-        s.y += s.speed / 3;
-        s.alpha -= 0.02;
+        s.x += s.speed * warpMult;
+        s.y += (s.speed / 3) * warpMult;
+        s.alpha -= 0.02 * warpMult;
 
         if (s.alpha <= 0) {
           this.shootingStars.splice(i, 1);
@@ -254,41 +301,44 @@
 
     drawStars() {
 
-      // Dùng destination-out để làm mờ vệt sao mà không tích tụ màu đen/xám lên Canvas.
+      const fadeAlpha = this.isWarping ? 0.15 : 0.35;
       this.ctx.globalCompositeOperation = 'destination-out';
-      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      this.ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha})`;
       this.ctx.fillRect(0, 0, this.w, this.h);
       this.ctx.globalCompositeOperation = 'source-over';
 
-      const isMobile = this.w < 600;
-
       this.stars.forEach(star => {
-
         const k = 500 / star.z;
         const x = (star.x - this.w / 2) * k + this.w / 2;
         const y = (star.y - this.h / 2) * k + this.h / 2;
-        const radius = star.radius * k * 0.5;
+        
+        // Tỉ lệ chuẩn hóa để giống bản cũ
+        let size = star.radius * k * 0.55; 
 
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = `rgba(${star.color},${star.alpha})`;
+        this.ctx.globalAlpha = star.alpha;
         
-        // Mobile: Chỉ đổ bóng cho sao đủ lớn để tiết kiệm CPU
-        if (!isMobile || radius > 1.5) {
-            this.ctx.shadowBlur = radius * 1.5;
-            this.ctx.shadowColor = `rgba(${star.color},${star.alpha})`;
+        if (this.isWarping) {
+            const stretch = 1 + (k * 0.05);
+            const angle = Math.atan2(y - this.h / 2, x - this.w / 2);
+            
+            this.ctx.save();
+            this.ctx.translate(x, y);
+            this.ctx.rotate(angle);
+            // Dùng drawing size = size * 2 để khớp với ảnh 64x64
+            this.ctx.drawImage(this.spriteCache[star.colorIndex], -size*stretch, -size, size * stretch * 2, size * 2);
+            this.ctx.restore();
+        } else {
+            this.ctx.drawImage(this.spriteCache[star.colorIndex], x - size, y - size, size * 2, size * 2);
         }
-        
-        this.ctx.fill();
-        this.ctx.shadowBlur = 0;
       });
+      
+      this.ctx.globalAlpha = 1;
 
       this.shootingStars.forEach(s => {
-
         this.ctx.beginPath();
         this.ctx.moveTo(s.x, s.y);
         this.ctx.lineTo(s.x - s.length, s.y - s.length / 3);
-        this.ctx.strokeStyle = `rgba(${s.color},${s.alpha})`;
+        this.ctx.strokeStyle = `rgba(${this.colors[s.colorIndex]},${s.alpha})`;
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
       });

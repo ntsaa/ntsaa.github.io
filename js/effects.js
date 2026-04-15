@@ -86,7 +86,7 @@
         /* ============================= */
 
         isUIElement(target) {
-            return !!(target && (target.closest('header') || target.closest('footer')));
+            return !!(target && (target.closest('header') || target.closest('footer') || target.closest('#toggle-off') || target.closest('#toggle-effect')));
         }
 
         /* ============================= */
@@ -94,6 +94,8 @@
         /* ============================= */
 
         async setEffect(name) {
+            if (this.current === name && this.enabled) return;
+
             try {
                 await this.loadEffect(name);
             } catch (err) {
@@ -103,14 +105,31 @@
 
             if (!this.effects[name]) return;
 
-            // Stop old
+            // Nếu đang bật hiệu ứng, thực hiện chuyển cảnh mờ dần (Fade transition)
+            if (this.enabled && this.current && this.effects[this.current]) {
+                const canvas = document.getElementById('network');
+                if (canvas) {
+                    canvas.style.transition = 'opacity 0.4s ease-in-out';
+                    canvas.style.opacity = '0';
+                    
+                    // Đợi mờ dần xong mới đổi sang hiệu ứng mới
+                    setTimeout(() => {
+                        this.effects[this.current]?.stop?.();
+                        this.current = name;
+                        
+                        canvas.style.transition = 'none';
+                        canvas.style.opacity = '1';
+                        this.effects[name].start?.();
+                    }, 400);
+                    return;
+                }
+            }
+
+            // Nếu không có hiệu ứng cũ hoặc đang tắt, bật thẳng hiệu ứng mới
             if (this.current && this.effects[this.current]) {
                 this.effects[this.current].stop?.();
             }
-
             this.current = name;
-
-            // Start new if enabled
             if (this.enabled) {
                 this.effects[name].start?.();
             }
@@ -134,10 +153,26 @@
 
             if (!this.current) return;
 
+            const canvas = document.getElementById('network');
             if (state) {
+                if (canvas) {
+                    canvas.style.transition = 'none';
+                    canvas.style.opacity = '1';
+                }
                 this.effects[this.current]?.start?.();
             } else {
-                this.effects[this.current]?.stop?.();
+                // Khi tắt hiệu ứng cũng mờ dần cho chuyên nghiệp
+                if (canvas) {
+                    canvas.style.transition = 'opacity 0.5s ease-in-out';
+                    canvas.style.opacity = '0';
+                    setTimeout(() => {
+                        if (!this.enabled) { // Kiểm tra lại đề phòng user bật lại nhanh
+                            this.effects[this.current]?.stop?.();
+                        }
+                    }, 500);
+                } else {
+                    this.effects[this.current]?.stop?.();
+                }
             }
         }
 

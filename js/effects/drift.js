@@ -24,6 +24,7 @@
         DPR: window.devicePixelRatio || 1,
         isMobile: false,
         initCount: 0,
+        particleCache: null, 
 
         mouseRadius: 120,
         running: false,
@@ -38,8 +39,9 @@
 
             this.ctx = this.canvas.getContext('2d');
 
-            // Reset trạng thái Canvas về mặc định thông qua Controller chung
             window.EffectController.resetCanvasContext(this.ctx);
+
+            this.initCache();
 
             this.resizeHandler = () => this.resize();
             window.addEventListener('resize', this.resizeHandler);
@@ -85,19 +87,18 @@
         },
 
         resize(isInitial = false) {
-            this.canvas.style.width = innerWidth + 'px';
-            this.canvas.style.height = innerHeight + 'px';
+            this.w = window.innerWidth;
+            this.h = window.innerHeight;
+            this.isMobile = this.w < 600;
 
-            this.canvas.width = innerWidth * this.DPR;
-            this.canvas.height = innerHeight * this.DPR;
+            this.canvas.style.width = this.w + 'px';
+            this.canvas.style.height = this.h + 'px';
+
+            this.canvas.width = this.w * this.DPR;
+            this.canvas.height = this.h * this.DPR;
 
             this.ctx.setTransform(this.DPR, 0, 0, this.DPR, 0, 0);
 
-            this.w = innerWidth;
-            this.h = innerHeight;
-            this.isMobile = this.w < 600;
-
-            // Cập nhật lại số lượng hạt mục tiêu khi resize
             const area = this.w * this.h;
             const density = this.isMobile ? 1 / 5000 : 1 / 3800;
             this.initCount = Math.max(100, Math.min(600, Math.floor(area * density)));
@@ -123,17 +124,40 @@
             }
         },
 
-        // ⭐ size tuned: nhỏ hơn bản mới, lớn hơn bản cũ
+        initCache() {
+            this.particleCache = [];
+            // Cache 60 frames màu sắc cho hạt
+            for (let i = 0; i < 60; i++) {
+                const size = 64; // Tăng độ phân giải cache để sắc nét hơn
+                const pCanvas = document.createElement('canvas');
+                pCanvas.width = size;
+                pCanvas.height = size;
+                const pCtx = pCanvas.getContext('2d');
+                const hue = i * 6;
+                const center = size / 2;
+                
+                // Gradient sắc nét hơn: đặc ở tâm và mờ nhẹ ở viền cực nhỏ
+                const grad = pCtx.createRadialGradient(center, center, 0, center, center, center);
+                grad.addColorStop(0, `hsla(${hue}, 90%, 75%, 0.8)`);
+                grad.addColorStop(0.8, `hsla(${hue}, 80%, 70%, 0.7)`);
+                grad.addColorStop(0.95, `hsla(${hue}, 80%, 70%, 0.1)`);
+                grad.addColorStop(1, `hsla(${hue}, 80%, 70%, 0)`);
+                
+                pCtx.fillStyle = grad;
+                pCtx.fillRect(0, 0, size, size);
+                this.particleCache.push(pCanvas);
+            }
+        },
+
         createParticle() {
             const raw = Math.random() * 0.9 + 0.35;
-
             return {
                 x: Math.random() * this.w,
                 y: Math.random() * this.h,
                 size: Math.max(raw, 0.65),
                 speedX: (Math.random() - 0.5) * 1.2,
                 speedY: (Math.random() - 0.5) * 1.2,
-                hueOffset: Math.random() * 360,
+                hueIndex: Math.floor(Math.random() * 60),
                 depth: Math.random()
             };
         },
@@ -154,16 +178,13 @@
                 size: Math.max(raw, 0.65),
                 speedX: (Math.random() - 0.5) * 1.2,
                 speedY: (Math.random() - 0.5) * 1.2,
-                hueOffset: Math.random() * 360,
+                hueIndex: Math.floor(Math.random() * 60),
                 depth: Math.random()
             };
         },
 
-        // ⭐ mật độ động theo màn hình
         initSingularity() {
-
             const area = this.w * this.h;
-            // Mật độ an toàn: Mobile ~1 hạt/5000px, Desktop ~1 hạt/3800px
             const density = this.isMobile ? 1 / 5000 : 1 / 3800;
             const count = Math.max(100, Math.min(600, Math.floor(area * density)));
 
@@ -176,7 +197,6 @@
         },
 
         createWell(x, y) {
-            // ⭐ vortex hút
             this.wells.push({ x, y, life: 320, radius: 140 });
         },
 
@@ -189,7 +209,6 @@
         },
 
         explodeNear(x, y, radius) {
-
             const r2 = radius * radius;
             const survivors = [];
 
@@ -199,7 +218,6 @@
                 const d2 = dx * dx + dy * dy;
 
                 if (d2 < r2) {
-
                     const strength = 1.2 + p.size * 1.2;
                     const pieces = 3 + Math.floor(p.size * 2);
 
@@ -213,10 +231,9 @@
                             life,
                             lifeMax: life,
                             size: p.size * (Math.random() * 0.6 + 0.4),
-                            hue: (Date.now() / 50 + p.hueOffset) % 360
+                            hueIndex: p.hueIndex
                         });
                     }
-
                 } else survivors.push(p);
             }
 
@@ -229,7 +246,6 @@
         },
 
         updateParticle(p) {
-
             p.speedX += (Math.random() - 0.5) * 0.05;
             p.speedY += (Math.random() - 0.5) * 0.05;
 
@@ -239,7 +255,6 @@
 
             let insideWell = false;
 
-            // ⭐ lực hút vortex (ưu tiên cao nhất)
             for (let w of this.wells) {
                 const dx = w.x - p.x;
                 const dy = w.y - p.y;
@@ -247,20 +262,14 @@
 
                 if (d2 < w.radius * w.radius) {
                     insideWell = true;
-
                     const dist = Math.sqrt(d2) || 1;
-
-                    // hút mạnh dần về tâm
                     const pull = 0.02 + (1 - dist / w.radius) * 0.05;
-
                     p.x += dx * pull;
                     p.y += dy * pull;
                 }
             }
 
-            // ⭐ đẩy chuột chỉ khi không nằm trong vùng hút
             if (this.hasMouse && !insideWell) {
-
                 const dx = p.x - this.mouseX;
                 const dy = p.y - this.mouseY;
                 const r2 = this.mouseRadius * this.mouseRadius;
@@ -274,8 +283,6 @@
             }
 
             const depth = 0.6 + p.depth * 0.6;
-
-            // giảm boost → tránh đuôi dài
             const sizeBoost = 1 + p.size * 0.045;
 
             p.x += p.speedX * depth * sizeBoost;
@@ -302,45 +309,32 @@
         },
 
         drawParticle(p) {
-
-            const hue = (Date.now() / 50 + p.hueOffset) % 360;
-            const color = `hsla(${hue},80%,70%,0.7)`;
-
-            this.ctx.fillStyle = color;
-
             const speed = Math.hypot(p.speedX, p.speedY);
-
-            // đuôi mềm như bản cũ
             const stretch = 1 + (speed / (speed + 2.2)) * 0.18;
+            const size = p.size * 1.2; // Tăng nhẹ 20% để hạt trông đầy đặn hơn
 
             this.ctx.save();
             this.ctx.translate(p.x, p.y);
             this.ctx.rotate(Math.atan2(p.speedY, p.speedX));
-
-            this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, p.size * stretch, p.size, 0, 0, Math.PI * 2);
-            this.ctx.fill();
-
+            this.ctx.drawImage(this.particleCache[p.hueIndex], -size * stretch, -size, size * stretch * 2, size * 2);
             this.ctx.restore();
         },
 
         drawFragments() {
             for (let f of this.fragments) {
                 const a = f.life / f.lifeMax;
-                this.ctx.fillStyle = `hsla(${f.hue},80%,70%,${a})`;
-                this.ctx.beginPath();
-                this.ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-                this.ctx.fill();
+                this.ctx.globalAlpha = a;
+                const size = f.size * 1.2; // Đồng bộ kích thước mảnh vỡ
+                this.ctx.drawImage(this.particleCache[f.hueIndex || 0], f.x - size, f.y - size, size * 2, size * 2);
             }
+            this.ctx.globalAlpha = 1;
         },
 
         animate() {
-
             if (!this.running) return;
 
-            // Tăng tỉ lệ xóa lên 0.1 để quét sạch "sương mù" tích tụ
             this.ctx.globalCompositeOperation = 'destination-out';
-            const fade = this.isMobile ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.1)';
+            const fade = this.isMobile ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.1)';
             this.ctx.fillStyle = fade;
             this.ctx.fillRect(0, 0, this.w, this.h);
             this.ctx.globalCompositeOperation = 'source-over';
