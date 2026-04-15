@@ -20,10 +20,17 @@
             const contentEl = document.getElementById('content');
 
             if (contentEl) {
-                contentEl.style.display = this.contentVisible ? '' : 'none';
+                if (this.contentVisible) {
+                    contentEl.style.display = '';
+                    // Ép trình duyệt render lại một frame (force reflow) để transition mượt
+                    contentEl.offsetHeight; 
+                    contentEl.classList.add('fade-in');
+                } else {
+                    contentEl.style.display = 'none';
+                    contentEl.classList.remove('fade-in');
+                }
             }
             
-            // Nếu hiện lại nội dung, đảm bảo body không bị scroll lỗi (nếu có)
             document.body.style.overflow = this.contentVisible ? '' : 'hidden';
         }
 
