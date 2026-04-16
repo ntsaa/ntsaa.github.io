@@ -50,19 +50,36 @@
                 if (window.EffectController.isUIElement(e.target)) {
                     this.hasMouse = false;
                 } else {
-                    this.mouseX = e.clientX;
-                    this.mouseY = e.clientY;
+                    const isTouch = e.type.startsWith('touch');
+                    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+                    const clientY = isTouch ? e.touches[0].clientY : e.clientY;
+                    this.mouseX = clientX;
+                    this.mouseY = clientY;
                     this.hasMouse = true;
                 }
             };
 
             this.clickHandler = e => {
                 if (window.EffectController.isUIElement(e.target)) return;
-                this.createWell(e.clientX, e.clientY);
+                const isTouch = e.type.startsWith('touch');
+                const clientX = isTouch ? (e.changedTouches ? e.changedTouches[0].clientX : e.touches[0].clientX) : e.clientX;
+                const clientY = isTouch ? (e.changedTouches ? e.changedTouches[0].clientY : e.touches[0].clientY) : e.clientY;
+                this.createWell(clientX, clientY);
             };
+
+            this.leaveHandler = () => { this.hasMouse = false; };
 
             window.addEventListener('mousemove', this.moveHandler);
             window.addEventListener('click', this.clickHandler);
+            window.addEventListener('mouseleave', this.leaveHandler);
+            
+            // Hỗ trợ Touch với passive: true để vừa scroll vừa tương tác
+            window.addEventListener('touchstart', this.moveHandler, { passive: true });
+            window.addEventListener('touchmove', this.moveHandler, { passive: true });
+            window.addEventListener('touchend', (e) => {
+                this.clickHandler(e);
+                this.hasMouse = false;
+            }, { passive: true });
 
             this.resize(true);
             this.animate();
@@ -78,6 +95,10 @@
             window.removeEventListener('resize', this.resizeHandler);
             window.removeEventListener('mousemove', this.moveHandler);
             window.removeEventListener('click', this.clickHandler);
+            window.removeEventListener('mouseleave', this.leaveHandler);
+            window.removeEventListener('touchstart', this.moveHandler);
+            window.removeEventListener('touchmove', this.moveHandler);
+            window.removeEventListener('touchend', this.clickHandler);
 
             this.singularities = [];
             this.fragments = [];

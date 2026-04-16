@@ -22,7 +22,6 @@
             if (contentEl) {
                 if (this.contentVisible) {
                     contentEl.style.display = '';
-                    // Ép trình duyệt render lại một frame (force reflow) để transition mượt
                     contentEl.offsetHeight; 
                     contentEl.classList.add('fade-in');
                 } else {

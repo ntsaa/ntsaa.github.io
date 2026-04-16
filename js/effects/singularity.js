@@ -66,9 +66,10 @@
                         this.mouse.y = e.touches[0].clientY; 
                     }
                 }
-                if (e.cancelable) e.preventDefault();
+                // KHÔNG gọi preventDefault() để trình duyệt có thể scroll bình thường
             };
             this.touchEndHandler = () => {
+                // Khi nhả tay ra (kết thúc scroll hoặc chạm), thực hiện nổ hạt
                 if (this.absorbedPool.length > 0) this.triggerBurst();
                 this.mouse.x = null; this.mouse.y = null;
             };
@@ -83,9 +84,11 @@
             window.addEventListener('mousemove', this.mouseMoveHandler);
             window.addEventListener('mouseleave', this.mouseLeaveHandler);
             window.addEventListener('click', this.clickHandler);
-            window.addEventListener('touchstart', this.touchStartHandler, { passive: false });
-            window.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
-            window.addEventListener('touchend', this.touchEndHandler);
+            
+            // Dùng passive: true để scroll mượt trên mobile
+            window.addEventListener('touchstart', this.touchStartHandler, { passive: true });
+            window.addEventListener('touchmove', this.touchMoveHandler, { passive: true });
+            window.addEventListener('touchend', this.touchEndHandler, { passive: true });
 
             this.resize(true); 
             this.animate();
