@@ -23,16 +23,21 @@
 
     mouseX: 0,
     mouseY: 0,
+    vX: 0,
+    vY: 0,
     isWarping: false,
     
-    // Performance & Scaling
     starPool: null,
+    shootingPool: null,
     spriteCache: null,
-    sensitivity: 0.0005,
 
     colors: [
-      '255,99,132', '54,162,235', '255,206,86',
-      '75,192,192', '153,102,255', '255,159,64'
+      '255,99,132',   // Pink
+      '54,162,235',   // Blue
+      '255,206,86',   // Yellow
+      '75,192,192',   // Teal
+      '153,102,255',  // Purple
+      '255,159,64'    // Orange
     ],
 
     /* ================= START ================= */
@@ -47,13 +52,10 @@
       this.ctx = this.canvas.getContext('2d');
       window.EffectController.resetCanvasContext(this.ctx);
 
-      // 1. Initialize Sprite Cache (once)
       this.spriteCache = window.EffectController.getCache("starfield", () => this.initSpriteCache());
 
-      // 2. Initialize Object Pool
-      if (!this.starPool) {
-        this.starPool = window.EffectController.createPool(() => ({}), 600);
-      }
+      if (!this.starPool) this.starPool = window.EffectController.createPool(() => ({}), 600);
+      if (!this.shootingPool) this.shootingPool = window.EffectController.createPool(() => ({}), 10);
 
       this.resizeHandler = () => this.resize();
       window.addEventListener('resize', this.resizeHandler);
@@ -75,7 +77,7 @@
       this.warpStartHandler = (e) => {
         if (window.EffectController.isUIElement(e.target)) return;
         this.isWarping = true;
-        this.mouseHandler(e); // Update position immediately on touch/click
+        this.mouseHandler(e);
       };
       this.warpEndHandler = () => {
         this.isWarping = false;
@@ -90,6 +92,9 @@
       document.addEventListener('touchend', this.warpEndHandler, { passive: true });
 
       this.resize(true);
+      this.vX = this.w / 2;
+      this.vY = this.h / 2;
+      
       this.spawnShootingStar();
       this.animate();
     },
@@ -100,11 +105,7 @@
       if (!this.running) return;
       this.running = false;
 
-      if (this.animationId) {
-        cancelAnimationFrame(this.animationId);
-        this.animationId = null;
-      }
-
+      if (this.animationId) cancelAnimationFrame(this.animationId);
       clearTimeout(this.resizeTimeout);
       if (this.shootingTimeout) clearTimeout(this.shootingTimeout);
 
@@ -116,32 +117,27 @@
       document.removeEventListener('touchmove', this.mouseHandler);
       document.removeEventListener('touchend', this.warpEndHandler);
 
-      // Recycle stars
       while (this.stars.length) this.starPool.recycle(this.stars.pop());
-      this.shootingStars = [];
+      while (this.shootingStars.length) this.shootingPool.recycle(this.shootingStars.pop());
+      
       this.isWarping = false;
-
       if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h);
     },
-
-    /* ================= SPRITE CACHE ================= */
 
     initSpriteCache() {
       const cache = [];
       this.colors.forEach(colorStr => {
-        const size = 64; 
+        const size = 48;
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         const center = size / 2;
-        
-        const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+        const gradient = ctx.createRadialGradient(center, center, 0, center, center, center * 0.8);
         gradient.addColorStop(0, `rgba(${colorStr}, 1)`);
-        gradient.addColorStop(0.75, `rgba(${colorStr}, 0.9)`);
-        gradient.addColorStop(0.9, `rgba(${colorStr}, 0.2)`);
+        gradient.addColorStop(0.3, `rgba(${colorStr}, 0.8)`);
+        gradient.addColorStop(0.6, `rgba(${colorStr}, 0.2)`);
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, size, size);
         cache.push(canvas);
@@ -149,36 +145,25 @@
       return cache;
     },
 
-    /* ================= LOGIC ================= */
-
     resize(isInitial = false) {
       this.w = window.innerWidth;
       this.h = window.innerHeight;
-
       this.canvas.style.width = this.w + 'px';
       this.canvas.style.height = this.h + 'px';
       this.canvas.width = Math.floor(this.w * this.DPR);
       this.canvas.height = Math.floor(this.h * this.DPR);
       this.ctx.setTransform(this.DPR, 0, 0, this.DPR, 0, 0);
-
-      // Scale sensitivity based on width: Narrower screen = Higher sensitivity
-      // Desktop (1200+) = 0.0005, Mobile (360) = ~0.0016
-      this.sensitivity = Math.max(0.0005, 0.6 / this.w);
-
-      if (isInitial) {
-        this.initStars();
-        return;
-      }
-
+      if (isInitial) this.initStars();
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = setTimeout(() => this.refillStep(), 500);
     },
 
     getLayersConfig() {
+      const mobile = this.w < 600;
       return [
-        { count: this.w < 600 ? 60 : 120, speed: 6, size: this.w < 600 ? [1.2, 2.5] : [2.5, 4.5] },
-        { count: this.w < 600 ? 90 : 180, speed: 3, size: this.w < 600 ? [0.7, 1.4] : [1.4, 2.4] },
-        { count: this.w < 600 ? 120 : 240, speed: 1.5, size: this.w < 600 ? [0.4, 1.0] : [0.8, 1.8] }
+        { count: mobile ? 60 : 120, speed: 6, size: mobile ? [1.2, 2.2] : [1.8, 3.5] },
+        { count: mobile ? 90 : 180, speed: 3, size: mobile ? [0.8, 1.4] : [1.2, 2.2] },
+        { count: mobile ? 120 : 240, speed: 1.5, size: mobile ? [0.5, 1.0] : [0.8, 1.6] }
       ];
     },
 
@@ -198,26 +183,20 @@
 
     initStars() {
       while (this.stars.length) this.starPool.recycle(this.stars.pop());
-      const layersConfig = this.getLayersConfig();
-      layersConfig.forEach((layer, index) => {
-        for (let i = 0; i < layer.count; i++) {
-          this.stars.push(this.createStar(layer, index));
-        }
+      this.getLayersConfig().forEach((layer, index) => {
+        for (let i = 0; i < layer.count; i++) this.stars.push(this.createStar(layer, index));
       });
     },
 
     refillStep() {
       if (!this.running) return;
-      const layersConfig = this.getLayersConfig();
       let added = false;
-
-      layersConfig.forEach((layer, index) => {
-        const currentCount = this.stars.filter(s => s.layerIndex === index).length;
+      this.getLayersConfig().forEach((layer, index) => {
+        let currentCount = 0;
+        for (let i = 0; i < this.stars.length; i++) if (this.stars[i].layerIndex === index) currentCount++;
         if (currentCount < layer.count) {
           const toAdd = Math.min(5, layer.count - currentCount);
-          for (let i = 0; i < toAdd; i++) {
-            this.stars.push(this.createStar(layer, index, true));
-          }
+          for (let i = 0; i < toAdd; i++) this.stars.push(this.createStar(layer, index, true));
           added = true;
         }
       });
@@ -226,91 +205,97 @@
 
     spawnShootingStar() {
       if (!this.running) return;
-      const star = {
-        x: Math.random() * this.w,
-        y: Math.random() * this.h / 2,
-        length: this.w < 600 ? (5 + Math.random() * 10) : (10 + Math.random() * 20),
-        speed: this.w < 600 ? (8 + Math.random() * 5) : (15 + Math.random() * 10),
-        colorIndex: (Math.random() * this.colors.length) | 0,
-        alpha: 1
-      };
-      this.shootingStars.push(star);
+      const s = this.shootingPool.get();
+      s.x = Math.random() * this.w;
+      s.y = Math.random() * this.h / 2;
+      s.length = this.w < 600 ? (5 + Math.random() * 10) : (10 + Math.random() * 20);
+      s.speed = this.w < 600 ? (8 + Math.random() * 5) : (15 + Math.random() * 10);
+      s.colorIndex = (Math.random() * this.colors.length) | 0;
+      s.alpha = 1;
+      this.shootingStars.push(s);
       this.shootingTimeout = setTimeout(() => this.spawnShootingStar(), Math.random() * 4000 + 3000);
     },
 
-    updateStars() {
-      const warpMult = this.isWarping ? 5 : 1;
-      const driftMult = this.isWarping ? 1.5 : 1; // Extra drift during warp
-
-      for (let i = this.stars.length - 1; i >= 0; i--) {
-        const star = this.stars[i];
-        star.z -= star.layer.speed * warpMult;
-
-        if (star.z <= 0) {
-          star.x = Math.random() * this.w;
-          star.y = Math.random() * this.h;
-          star.z = this.w;
-        }
-
-        // Apply scaled sensitivity
-        star.x += this.mouseX * this.sensitivity * star.layer.speed * warpMult * driftMult;
-        star.y += this.mouseY * this.sensitivity * star.layer.speed * warpMult * driftMult;
-
-        star.alpha += star.alphaChange;
-        if (star.alpha > 1 || star.alpha < 0.2) star.alphaChange *= -1;
-      }
-
-      for (let i = this.shootingStars.length - 1; i >= 0; i--) {
-        const s = this.shootingStars[i];
-        s.x += s.speed * warpMult;
-        s.y += (s.speed / 3) * warpMult;
-        s.alpha -= 0.02 * warpMult;
-        if (s.alpha <= 0) this.shootingStars.splice(i, 1);
-      }
-    },
-
-    drawStars() {
-      const fadeAlpha = this.isWarping ? 0.15 : 0.35;
-      this.ctx.globalCompositeOperation = 'destination-out';
-      this.ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha})`;
-      this.ctx.fillRect(0, 0, this.w, this.h);
-      this.ctx.globalCompositeOperation = 'source-over';
-
-      this.stars.forEach(star => {
-        const k = 500 / star.z;
-        const x = (star.x - this.w / 2) * k + this.w / 2;
-        const y = (star.y - this.h / 2) * k + this.h / 2;
-        let size = star.radius * k * 0.55; 
-
-        this.ctx.globalAlpha = star.alpha;
-        if (this.isWarping) {
-            const stretch = 1 + (k * 0.05);
-            const angle = Math.atan2(y - this.h / 2, x - this.w / 2);
-            this.ctx.save();
-            this.ctx.translate(x, y);
-            this.ctx.rotate(angle);
-            this.ctx.drawImage(this.spriteCache[star.colorIndex], -size*stretch, -size, size * stretch * 2, size * 2);
-            this.ctx.restore();
-        } else {
-            this.ctx.drawImage(this.spriteCache[star.colorIndex], x - size, y - size, size * 2, size * 2);
-        }
-      });
-      
-      this.ctx.globalAlpha = 1;
-      this.shootingStars.forEach(s => {
-        this.ctx.beginPath();
-        this.ctx.moveTo(s.x, s.y);
-        this.ctx.lineTo(s.x - s.length, s.y - s.length / 3);
-        this.ctx.strokeStyle = `rgba(${this.colors[s.colorIndex]},${s.alpha})`;
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-      });
-    },
+    /* ================= ANIMATE ================= */
 
     animate(t) {
+      if (!this.running) return;
       if (window.EffectController.shouldRender(t)) {
-        this.updateStars();
-        this.drawStars();
+        const warpMult = this.isWarping ? 5 : 1;
+        const dpr = this.DPR;
+
+        const limitX = this.w * 0.08;
+        const limitY = this.h * 0.08;
+        const constrainedX = Math.max(-limitX, Math.min(limitX, this.mouseX));
+        const constrainedY = Math.max(-limitY, Math.min(limitY, this.mouseY));
+
+        const targetVX = this.w / 2 - constrainedX;
+        const targetVY = this.h / 2 - constrainedY;
+        this.vX += (targetVX - this.vX) * 0.04;
+        this.vY += (targetVY - this.vY) * 0.04;
+
+        this.ctx.globalCompositeOperation = 'destination-out';
+        this.ctx.fillStyle = `rgba(0, 0, 0, ${this.isWarping ? 0.15 : 0.35})`;
+        this.ctx.fillRect(0, 0, this.w, this.h);
+        this.ctx.globalCompositeOperation = 'source-over';
+
+        for (let i = this.stars.length - 1; i >= 0; i--) {
+            const star = this.stars[i];
+            
+            star.z -= star.layer.speed * warpMult;
+            if (star.z <= 0) {
+              star.x = Math.random() * this.w;
+              star.y = Math.random() * this.h;
+              star.z = this.w;
+            }
+            
+            star.alpha += star.alphaChange;
+            if (star.alpha > 1 || star.alpha < 0.2) star.alphaChange *= -1;
+
+            const k = 550 / star.z;
+            const x = (star.x - this.vX) * k + this.vX;
+            const y = (star.y - this.vY) * k + this.vY;
+            let size = star.radius * k * 0.75; 
+
+            this.ctx.globalAlpha = star.alpha;
+            if (this.isWarping) {
+                // Vector math instead of Math.atan2/rotate
+                const dx = x - this.vX;
+                const dy = y - this.vY;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const stretch = 1 + (k * 0.05);
+                
+                // Rotation matrix components based on direction vector
+                const cos = dx / dist;
+                const sin = dy / dist;
+
+                this.ctx.setTransform(dpr * cos * stretch, dpr * sin * stretch, -dpr * sin, dpr * cos, dpr * x, dpr * y);
+                this.ctx.drawImage(this.spriteCache[star.colorIndex], -size, -size, size * 2, size * 2);
+            } else {
+                this.ctx.setTransform(dpr, 0, 0, dpr, dpr * x, dpr * y);
+                this.ctx.drawImage(this.spriteCache[star.colorIndex], -size, -size, size * 2, size * 2);
+            }
+        }
+
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        this.ctx.globalAlpha = 1;
+
+        for (let i = this.shootingStars.length - 1; i >= 0; i--) {
+            const s = this.shootingStars[i];
+            s.x += s.speed * warpMult;
+            s.y += (s.speed / 3) * warpMult;
+            s.alpha -= 0.02 * warpMult;
+            if (s.alpha <= 0) {
+                this.shootingPool.recycle(this.shootingStars.splice(i, 1)[0]);
+                continue;
+            }
+            this.ctx.beginPath();
+            this.ctx.moveTo(s.x, s.y);
+            this.ctx.lineTo(s.x - s.length, s.y - s.length / 3);
+            this.ctx.strokeStyle = `rgba(${this.colors[s.colorIndex]},${s.alpha})`;
+            this.ctx.lineWidth = 1.5;
+            this.ctx.stroke();
+        }
       }
       this.animationId = requestAnimationFrame((t) => this.animate(t));
     }

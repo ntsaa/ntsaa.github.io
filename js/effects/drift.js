@@ -260,18 +260,22 @@
         },
 
         updateAndDraw(t) {
-            // Wells
+            // Wells - Pre-calculate squared radius for performance
             for (let i = this.wells.length - 1; i >= 0; i--) {
                 const w = this.wells[i];
                 w.life--;
                 if (w.life <= 0) {
                     this.explodeNear(w.x, w.y, w.radius);
                     this.wellPool.recycle(this.wells.splice(i, 1)[0]);
+                } else {
+                    w.rSq = w.radius * w.radius; // Cache squared radius
                 }
             }
 
             // Singularities
             const mR2 = this.mouseRadius * this.mouseRadius;
+            const dpr = this.DPR;
+
             for (let i = this.singularities.length - 1; i >= 0; i--) {
                 const p = this.singularities[i];
                 
@@ -280,11 +284,12 @@
                 p.speedY = Math.max(-1.2, Math.min(1.2, p.speedY + (Math.random() - 0.5) * 0.05));
 
                 let insideWell = false;
-                for (let w of this.wells) {
+                for (let j = 0; j < this.wells.length; j++) {
+                    const w = this.wells[j];
                     const dx = w.x - p.x;
                     const dy = w.y - p.y;
                     const d2 = dx * dx + dy * dy;
-                    if (d2 < w.radius * w.radius) {
+                    if (d2 < w.rSq) {
                         insideWell = true;
                         const dist = Math.sqrt(d2) || 1;
                         const pull = 0.02 + (1 - dist / w.radius) * 0.05;
@@ -319,16 +324,24 @@
                     if (p.y < -50) p.y = this.h; else if (p.y > this.h + 50) p.y = 0;
                 }
 
-                // Draw using Cache
+                // Draw using Cache with optimized transform (no save/restore)
                 const size = p.size * 1.2;
-                const stretch = 1 + (Math.abs(p.speedX) + Math.abs(p.speedY)) * 0.05;
+                const speed = Math.hypot(p.speedX, p.speedY) || 0.001;
+                const stretch = 1 + speed * 0.05;
                 
-                this.ctx.save();
-                this.ctx.translate(p.x, p.y);
-                this.ctx.rotate(Math.atan2(p.speedY, p.speedX));
-                this.ctx.drawImage(this.particleCache[p.hueIndex], -size * stretch, -size, size * stretch * 2, size * 2);
-                this.ctx.restore();
+                // Vector-based rotation matrix components
+                const cos = (p.speedX / speed) * stretch;
+                const sin = (p.speedY / speed) * stretch;
+
+                // Use setTransform instead of save/translate/rotate/restore
+                // Matrix: [ dpr*cos, dpr*sin, -dpr*(sin/stretch), dpr*(cos/stretch), dpr*x, dpr*y ]
+                // Note: We need to account for stretch in the perpendicular axis to maintain aspect
+                this.ctx.setTransform(dpr * cos, dpr * sin, -dpr * (sin / stretch), dpr * (cos / stretch), dpr * p.x, dpr * p.y);
+                this.ctx.drawImage(this.particleCache[p.hueIndex], -size, -size, size * 2, size * 2);
             }
+
+            // Reset transform for fragments
+            this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
             // Fragments
             for (let i = this.fragments.length - 1; i >= 0; i--) {
