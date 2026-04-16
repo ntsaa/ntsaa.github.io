@@ -10,9 +10,26 @@
             this.enabled = false;   // global on/off
             this.contentVisible = true;
 
-            // Tối ưu hiệu suất
+            // --- PERFORMANCE OPTIMIZATIONS (CORE) ---
+            
+            // 1. Cap DPR (Min 1, Max 2 to ensure smoothness on 4K/Retina displays)
+            const rawDPR = window.devicePixelRatio || 1;
+            this.DPR = Math.min(2, Math.max(1, rawDPR));
+
+            // 2. Sin/Cos Lookup Tables (360 degrees, 1-degree resolution)
+            this.sinTable = new Float32Array(360);
+            this.cosTable = new Float32Array(360);
+            for (let i = 0; i < 360; i++) {
+                const rad = (i * Math.PI) / 180;
+                this.sinTable[i] = Math.sin(rad);
+                this.cosTable[i] = Math.cos(rad);
+            }
+
+            // 3. Shared Cache Management (Avoid redundant initCache calls)
+            this.caches = {}; // { effectName: [canvas1, canvas2, ...] }
+
+            this.fpsLimit = 60; 
             this.lastFrameTime = 0;
-            this.fpsLimit = 60; // Giới hạn 60fps để tiết kiệm pin và hỗ trợ máy yếu
             
             this.initVisibilityListener();
         }
@@ -20,6 +37,40 @@
         /* ============================= */
         /*  PERFORMANCE HELPERS          */
         /* ============================= */
+
+        // Fast Sin/Cos lookup (Input: integer degrees 0-359)
+        fastSin(deg) {
+            return this.sinTable[((deg | 0) % 360 + 360) % 360];
+        }
+
+        fastCos(deg) {
+            return this.cosTable[((deg | 0) % 360 + 360) % 360];
+        }
+
+        // Cache Management (Ensures initCache runs exactly once)
+        getCache(name, initFn) {
+            if (!this.caches[name]) {
+                this.caches[name] = initFn();
+                console.log(`[EffectController] Cache initialized for: ${name}`);
+            }
+            return this.caches[name];
+        }
+
+        // Simple Object Pool for Particles/Objects
+        createPool(factoryFn, initialSize = 100) {
+            const pool = [];
+            for (let i = 0; i < initialSize; i++) {
+                pool.push(factoryFn());
+            }
+            return {
+                get: () => pool.pop() || factoryFn(),
+                recycle: (obj) => {
+                    // Reset object state if needed before returning to pool
+                    pool.push(obj);
+                },
+                size: () => pool.length
+            };
+        }
 
         initVisibilityListener() {
             // Tự động dừng/chạy khi người dùng chuyển tab để tiết kiệm tài nguyên
