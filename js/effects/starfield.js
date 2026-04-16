@@ -344,12 +344,13 @@
       });
     },
 
-    animate() {
+    animate(t) {
+      if (window.EffectController.shouldRender(t)) {
+        this.updateStars();
+        this.drawStars();
+      }
 
-      this.updateStars();
-      this.drawStars();
-
-      this.animationId = requestAnimationFrame(() => this.animate());
+      this.animationId = requestAnimationFrame((t) => this.animate(t));
     }
 
   };

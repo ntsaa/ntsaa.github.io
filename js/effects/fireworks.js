@@ -65,15 +65,39 @@
 
             this.moveHandler = (e) => {
                 this.isOverUI = window.EffectController.isUIElement(e.target);
-                this.mouseX = e.clientX;
-                this.mouseY = e.clientY;
+                const isTouch = e.type.startsWith('touch');
+                const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+                const clientY = isTouch ? e.touches[0].clientY : e.clientY;
+                
+                this.mouseX = clientX;
+                this.mouseY = clientY;
                 this.lastMoveTime = performance.now();
                 this.hasShotAtCurrentMousePos = false;
             };
-            this.clickHandler = (e) => this.onClick(e);
+            
+            this.clickHandler = (e) => {
+                if (window.EffectController.isUIElement(e.target)) return;
+                const isTouch = e.type.startsWith('touch');
+                const clientX = isTouch ? (e.changedTouches ? e.changedTouches[0].clientX : e.touches[0].clientX) : e.clientX;
+                const clientY = isTouch ? (e.changedTouches ? e.changedTouches[0].clientY : e.touches[0].clientY) : e.clientY;
+                
+                this.clickQueue.push({ x: clientX, y: clientY });
+                this.lastClickTime = performance.now();
+            };
 
             document.addEventListener("mousemove", this.moveHandler);
             document.addEventListener("click", this.clickHandler);
+            
+            // Hỗ trợ Touch với passive: true để không chặn scroll
+            document.addEventListener("touchstart", this.moveHandler, { passive: true });
+            document.addEventListener("touchmove", this.moveHandler, { passive: true });
+            document.addEventListener("touchend", (e) => {
+                // Chỉ bắn khi người dùng chạm nhanh (không phải đang scroll dài)
+                const duration = performance.now() - this.lastMoveTime;
+                if (duration < 150) { 
+                    this.clickHandler(e);
+                }
+            }, { passive: true });
 
             this.resize(true);
             this.animate();
@@ -97,11 +121,14 @@
 
             if (this.moveHandler) {
                 document.removeEventListener("mousemove", this.moveHandler);
+                document.removeEventListener("touchstart", this.moveHandler);
+                document.removeEventListener("touchmove", this.moveHandler);
                 this.moveHandler = null;
             }
 
             if (this.clickHandler) {
                 document.removeEventListener("click", this.clickHandler);
+                document.removeEventListener("touchend", this.clickHandler);
                 this.clickHandler = null;
             }
 
@@ -415,30 +442,31 @@
 
         /* ================= ANIMATE ================= */
 
-        animate(now = 0) {
+        animate(t) {
+            if (window.EffectController.shouldRender(t)) {
+                this.control(t);
 
-            this.control(now);
+                // Xóa độ trong suốt (destination-out) thay vì vẽ màu đè lên.
+                // Tỉ lệ 0.25 giúp vệt tan biến nhanh, giữ Canvas luôn trong suốt để thấy rõ chữ.
+                this.ctx.globalCompositeOperation = "destination-out";
+                this.ctx.fillStyle = "rgba(0, 0, 0, 0.25)"; 
+                this.ctx.fillRect(0, 0, this.w, this.h);
 
-            // Xóa độ trong suốt (destination-out) thay vì vẽ màu đè lên.
-            // Tỉ lệ 0.25 giúp vệt tan biến nhanh, giữ Canvas luôn trong suốt để thấy rõ chữ.
-            this.ctx.globalCompositeOperation = "destination-out";
-            this.ctx.fillStyle = "rgba(0, 0, 0, 0.25)"; 
-            this.ctx.fillRect(0, 0, this.w, this.h);
+                this.ctx.globalCompositeOperation = "lighter";
 
-            this.ctx.globalCompositeOperation = "lighter";
+                for (let i = this.rockets.length - 1; i >= 0; i--) {
+                    const r = this.rockets[i];
+                    this.updateRocket(r);
+                    this.drawRocket(r);
+                    if (r.exploded) this.rockets.splice(i, 1);
+                }
 
-            for (let i = this.rockets.length - 1; i >= 0; i--) {
-                const r = this.rockets[i];
-                this.updateRocket(r);
-                this.drawRocket(r);
-                if (r.exploded) this.rockets.splice(i, 1);
-            }
-
-            for (let i = this.particles.length - 1; i >= 0; i--) {
-                const p = this.particles[i];
-                this.updateParticle(p);
-                this.drawParticle(p);
-                if (p.alpha <= 0) this.particles.splice(i, 1);
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    this.updateParticle(p);
+                    this.drawParticle(p);
+                    if (p.alpha <= 0) this.particles.splice(i, 1);
+                }
             }
 
             this.animationId = requestAnimationFrame((t) => this.animate(t));

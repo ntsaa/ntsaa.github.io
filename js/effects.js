@@ -9,6 +9,42 @@
             this.current = null;    // current effect name
             this.enabled = false;   // global on/off
             this.contentVisible = true;
+
+            // Tối ưu hiệu suất
+            this.lastFrameTime = 0;
+            this.fpsLimit = 60; // Giới hạn 60fps để tiết kiệm pin và hỗ trợ máy yếu
+            
+            this.initVisibilityListener();
+        }
+
+        /* ============================= */
+        /*  PERFORMANCE HELPERS          */
+        /* ============================= */
+
+        initVisibilityListener() {
+            // Tự động dừng/chạy khi người dùng chuyển tab để tiết kiệm tài nguyên
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (this.enabled && this.current) {
+                        this.effects[this.current]?.stop?.();
+                    }
+                } else {
+                    if (this.enabled && this.current) {
+                        this.effects[this.current]?.start?.();
+                    }
+                }
+            });
+        }
+
+        // Kiểm tra xem đã đến lúc vẽ frame tiếp theo chưa (FPS control)
+        shouldRender(now) {
+            const interval = 1000 / this.fpsLimit;
+            const delta = now - this.lastFrameTime;
+            if (delta >= interval) {
+                this.lastFrameTime = now - (delta % interval);
+                return true;
+            }
+            return false;
         }
 
         /* ============================= */

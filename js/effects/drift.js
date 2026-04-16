@@ -351,30 +351,32 @@
             this.ctx.globalAlpha = 1;
         },
 
-        animate() {
+        animate(t) {
             if (!this.running) return;
 
-            this.ctx.globalCompositeOperation = 'destination-out';
-            const fade = this.isMobile ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.1)';
-            this.ctx.fillStyle = fade;
-            this.ctx.fillRect(0, 0, this.w, this.h);
-            this.ctx.globalCompositeOperation = 'source-over';
+            if (window.EffectController.shouldRender(t)) {
+                this.ctx.globalCompositeOperation = 'destination-out';
+                const fade = this.isMobile ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.1)';
+                this.ctx.fillStyle = fade;
+                this.ctx.fillRect(0, 0, this.w, this.h);
+                this.ctx.globalCompositeOperation = 'source-over';
 
-            for (let i = this.singularities.length - 1; i >= 0; i--) {
-                const p = this.singularities[i];
-                this.updateParticle(p);
-                if (p.toRemove) {
-                    this.singularities.splice(i, 1);
-                    continue;
+                for (let i = this.singularities.length - 1; i >= 0; i--) {
+                    const p = this.singularities[i];
+                    this.updateParticle(p);
+                    if (p.toRemove) {
+                        this.singularities.splice(i, 1);
+                        continue;
+                    }
+                    this.drawParticle(p);
                 }
-                this.drawParticle(p);
+
+                this.updateWells();
+                this.updateFragments();
+                this.drawFragments();
             }
 
-            this.updateWells();
-            this.updateFragments();
-            this.drawFragments();
-
-            this.animationId = requestAnimationFrame(() => this.animate());
+            this.animationId = requestAnimationFrame((t) => this.animate(t));
         }
 
     };

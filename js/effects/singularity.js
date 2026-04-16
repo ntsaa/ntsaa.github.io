@@ -232,13 +232,21 @@
             p.vy += (p.vy / speed) * diff * 0.03;
         },
 
-        animate() {
+        animate(t) {
             if (!this.running) return;
+            
+            // Giới hạn FPS
+            if (!window.EffectController.shouldRender(t)) {
+                this.animationId = requestAnimationFrame((t) => this.animate(t));
+                return;
+            }
+
             this.ctx.clearRect(0, 0, this.w, this.h);
 
             const now = Date.now();
             const hue = (now / 60) % 360;
             const maxDist = this.w < 600 ? 60 : 100;
+            const maxDistSq = maxDist * maxDist;
 
             const capturedCount = this.absorbedPool.length;
             const currentRatio = capturedCount / this.totalInitialCount;
@@ -298,7 +306,6 @@
 
                 this.normalizeSpeed(p);
 
-                // Vẽ hạt: Hạt siêu thanh (bursting & isSuper) nhìn sẽ nhỏ và sắc hơn
                 const drawR = (p.bursting && p.isSuper) ? p.r * 0.8 : p.r;
                 this.ctx.beginPath();
                 this.ctx.arc(p.x, p.y, drawR, 0, Math.PI * 2);
@@ -308,32 +315,34 @@
                 this.ctx.fill();
             }
 
-            // --- Tối ưu: Gom nhóm lệnh vẽ đường nối và giới hạn liên kết (6) ---
+            // Vẽ đường nối
             this.ctx.beginPath();
             this.ctx.lineWidth = 0.6;
             this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, 0.15)`;
             
-            const maxDistSq = maxDist * maxDist;
             for (let i = 0; i < this.singularities.length; i++) {
                 const p = this.singularities[i];
                 let connections = 0;
                 for (let j = i + 1; j < this.singularities.length; j++) {
-                    if (connections >= 6) break; // Giới hạn 6 liên kết để tránh rối mắt và lag khi tụ lại
+                    if (connections >= 6) break;
 
                     const p2 = this.singularities[j];
-                    const dx = p.x - p2.x;
-                    const dy = p.y - p2.y;
-                    const d2 = dx * dx + dy * dy;
+                    
+                    // Tối ưu: Kiểm tra khoảng cách X trước khi tính dx*dx + dy*dy
+                    if (Math.abs(p.x - p2.x) < maxDist) {
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const d2 = dx * dx + dy * dy;
 
-                    if (d2 < maxDistSq) {
-                        this.ctx.moveTo(p.x, p.y);
-                        this.ctx.lineTo(p2.x, p2.y);
-                        connections++;
+                        if (d2 < maxDistSq) {
+                            this.ctx.moveTo(p.x, p.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            connections++;
+                        }
                     }
                 }
             }
             this.ctx.stroke();
-            // ----------------------------------------------------------
 
             if (currentRatio >= this.burstRatio) this.triggerBurst();
 
@@ -365,7 +374,7 @@
                 this.ctx.fill();
             }
 
-            this.animationId = requestAnimationFrame(() => this.animate());
+            this.animationId = requestAnimationFrame((t) => this.animate(t));
         }
     };
 
