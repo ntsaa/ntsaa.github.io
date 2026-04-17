@@ -4,19 +4,15 @@
     class EffectController {
 
         constructor() {
-            this.effects = {};      // { name: instance }
-            this.loadedScripts = {}; // { name: Promise }
-            this.current = null;    // current effect name
-            this.enabled = false;   // global on/off
+            this.effects = {};      
+            this.loadedScripts = {}; 
+            this.current = null;    
+            this.enabled = false;   
             this.contentVisible = true;
 
-            // --- PERFORMANCE OPTIMIZATIONS (CORE) ---
-            
-            // 1. Cap DPR (Min 1, Max 2 to ensure smoothness on 4K/Retina displays)
             const rawDPR = window.devicePixelRatio || 1;
             this.DPR = Math.min(2, Math.max(1, rawDPR));
 
-            // 2. Sin/Cos Lookup Tables (360 degrees, 1-degree resolution)
             this.sinTable = new Float32Array(360);
             this.cosTable = new Float32Array(360);
             for (let i = 0; i < 360; i++) {
@@ -25,70 +21,125 @@
                 this.cosTable[i] = Math.cos(rad);
             }
 
-            // 3. Shared Cache Management (Avoid redundant initCache calls)
-            this.caches = {}; // { effectName: [canvas1, canvas2, ...] }
-
+            this.caches = {}; 
             this.fpsLimit = 60; 
             this.lastFrameTime = 0;
             
+            this.performanceScale = 1.0; 
+            this.fpsHistory = [];
+            this.lastFpsCheck = 0;
+            this.isThrottled = false;
+
+            this.interaction = {
+                x: 0, y: 0, px: 0, py: 0, vx: 0, vy: 0,
+                isDown: false, isValid: false, isOverUI: false, lastMoveTime: 0
+            };
+
+            this.transitioning = false;
+            
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                this.performanceScale = 0.2;
+            }
+
+            this.initInteractionListeners();
             this.initVisibilityListener();
         }
 
-        /* ============================= */
-        /*  PERFORMANCE HELPERS          */
-        /* ============================= */
+        initInteractionListeners() {
+            const update = (e) => {
+                const isTouch = e.type.startsWith('touch');
+                const t = isTouch ? (e.touches[0] || e.changedTouches[0]) : e;
+                this.interaction.isValid = true;
+                this.interaction.isOverUI = this.isUIElement(e.target);
+                this.interaction.px = this.interaction.x;
+                this.interaction.py = this.interaction.y;
+                this.interaction.x = t.clientX;
+                this.interaction.y = t.clientY;
+                this.interaction.lastMoveTime = performance.now();
+                this.interaction.vx = this.interaction.x - this.interaction.px;
+                this.interaction.vy = this.interaction.y - this.interaction.py;
+            };
 
-        // Fast Sin/Cos lookup (Input: integer degrees 0-359)
-        fastSin(deg) {
-            return this.sinTable[((deg | 0) % 360 + 360) % 360];
+            const down = (e) => { this.interaction.isDown = true; update(e); };
+            const up = () => { this.interaction.isDown = false; };
+
+            window.addEventListener('mousemove', update, { passive: true });
+            window.addEventListener('mousedown', down, { passive: true });
+            window.addEventListener('mouseup', up, { passive: true });
+            window.addEventListener('mouseleave', () => { this.interaction.isValid = false; });
+            window.addEventListener('touchstart', down, { passive: true });
+            window.addEventListener('touchmove', update, { passive: true });
+            window.addEventListener('touchend', up, { passive: true });
         }
 
-        fastCos(deg) {
-            return this.cosTable[((deg | 0) % 360 + 360) % 360];
-        }
-
-        // Cache Management (Ensures initCache runs exactly once)
-        getCache(name, initFn) {
-            if (!this.caches[name]) {
-                this.caches[name] = initFn();
-                console.log(`[EffectController] Cache initialized for: ${name}`);
+        updatePerformance(now) {
+            if (now - this.interaction.lastMoveTime > 100) {
+                this.interaction.vx *= 0.8; this.interaction.vy *= 0.8;
             }
+            if (now - this.lastFpsCheck < 1000) return;
+            const delta = now - this.lastFrameTime;
+            const currentFps = 1000 / delta;
+            this.fpsHistory.push(currentFps);
+            if (this.fpsHistory.length > 5) this.fpsHistory.shift();
+            const avgFps = this.fpsHistory.reduce((a, b) => a + b, 0) / this.fpsHistory.length;
+            if (avgFps < 40 && !this.isThrottled && this.fpsHistory.length >= 5) {
+                this.performanceScale = 0.5; this.isThrottled = true;
+                this.recalculateCurrentEffect();
+            } else if (avgFps > 55 && this.isThrottled) {
+                this.performanceScale = 0.8; this.isThrottled = false;
+                this.recalculateCurrentEffect();
+            }
+            this.lastFpsCheck = now;
+        }
+
+        recalculateCurrentEffect() {
+            if (this.current && this.effects[this.current]) this.effects[this.current].resize?.();
+        }
+
+        getCSSVar(name, fallback) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback; }
+        fastSin(deg) { return this.sinTable[((deg | 0) % 360 + 360) % 360]; }
+        fastCos(deg) { return this.cosTable[((deg | 0) % 360 + 360) % 360]; }
+
+        getCache(name, initFn) {
+            if (!this.caches[name]) this.caches[name] = initFn();
             return this.caches[name];
         }
 
-        // Simple Object Pool for Particles/Objects
-        createPool(factoryFn, initialSize = 100) {
+        createPool(factoryFn, resetFn = null, initialSize = 100) {
             const pool = [];
-            for (let i = 0; i < initialSize; i++) {
-                pool.push(factoryFn());
-            }
+            for (let i = 0; i < initialSize; i++) pool.push(factoryFn());
             return {
                 get: () => pool.pop() || factoryFn(),
-                recycle: (obj) => {
-                    // Reset object state if needed before returning to pool
-                    pool.push(obj);
-                },
-                size: () => pool.length
+                recycle: (obj) => { if (typeof resetFn === 'function') resetFn(obj); pool.push(obj); }
             };
         }
 
+        drawSprite(ctx, sprite, x, y, size, rotation = 0, alpha = 1) {
+            if (alpha <= 0 || !sprite) return;
+            const dpr = this.DPR;
+            ctx.globalAlpha = alpha;
+            if (rotation === 0) {
+                ctx.setTransform(dpr, 0, 0, dpr, dpr * x, dpr * y);
+            } else {
+                const cos = Math.cos(rotation);
+                const sin = Math.sin(rotation);
+                ctx.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * x, dpr * y);
+            }
+            ctx.drawImage(sprite, -size, -size, size * 2, size * 2);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0); 
+            ctx.globalAlpha = 1;
+        }
+
         initVisibilityListener() {
-            // Tự động dừng/chạy khi người dùng chuyển tab để tiết kiệm tài nguyên
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    if (this.enabled && this.current) {
-                        this.effects[this.current]?.stop?.();
-                    }
-                } else {
-                    if (this.enabled && this.current) {
-                        this.effects[this.current]?.start?.();
-                    }
-                }
+                const effect = this.effects[this.current];
+                if (document.hidden) { if (this.enabled && effect) effect.stop?.(); } 
+                else { if (this.enabled && effect) effect.start?.(); }
             });
         }
 
-        // Kiểm tra xem đã đến lúc vẽ frame tiếp theo chưa (FPS control)
         shouldRender(now) {
+            this.updatePerformance(now);
             const interval = 1000 / this.fpsLimit;
             const delta = now - this.lastFrameTime;
             if (delta >= interval) {
@@ -98,184 +149,90 @@
             return false;
         }
 
-        /* ============================= */
-        /*  CONTENT VISIBILITY           */
-        /* ============================= */
-
         toggleContent(show) {
             this.contentVisible = show === undefined ? !this.contentVisible : show;
-            const contentEl = document.getElementById('content');
-
-            if (contentEl) {
-                if (this.contentVisible) {
-                    contentEl.style.display = '';
-                    contentEl.offsetHeight; 
-                    contentEl.classList.add('fade-in');
-                } else {
-                    contentEl.style.display = 'none';
-                    contentEl.classList.remove('fade-in');
-                }
+            const el = document.getElementById('content');
+            if (el) {
+                if (this.contentVisible) { el.style.display = ''; el.classList.add('fade-in'); } 
+                else { el.style.display = 'none'; el.classList.remove('fade-in'); }
             }
-            
             document.body.style.overflow = this.contentVisible ? '' : 'hidden';
         }
-
-        /* ============================= */
-        /*  LAZY LOAD                    */
-        /* ============================= */
 
         async loadEffect(name) {
             if (this.effects[name]) return true;
             if (this.loadedScripts[name]) return this.loadedScripts[name];
-
             this.loadedScripts[name] = new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = `js/effects/${name}.js`;
-                script.async = true;
-                script.onload = () => resolve(true);
-                script.onerror = () => {
-                    delete this.loadedScripts[name];
-                    reject(new Error(`Failed to load effect: ${name}`));
-                };
-                document.body.appendChild(script);
+                const s = document.createElement('script');
+                s.src = `js/effects/${name}.js`; s.async = true;
+                s.onload = () => resolve(true);
+                s.onerror = () => { delete this.loadedScripts[name]; reject(new Error(name)); };
+                document.body.appendChild(s);
             });
-
             return this.loadedScripts[name];
         }
 
-        /* ============================= */
-        /*  REGISTER                     */
-        /* ============================= */
-
-        register(name, instance) {
-            if (!name || !instance) return;
-            this.effects[name] = instance;
-        }
-
-        /* ============================= */
-        /*  HELPER                       */
-        /* ============================= */
+        register(name, instance) { this.effects[name] = instance; }
 
         resetCanvasContext(ctx) {
             if (!ctx) return;
-            ctx.globalAlpha = 1;
-            ctx.globalCompositeOperation = "source-over";
-            ctx.shadowBlur = 0;
-            ctx.shadowColor = "transparent";
-            ctx.filter = "none";
-            ctx.imageSmoothingEnabled = true;
-            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform về mặc định
+            ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
-
-        /* ============================= */
-        /*  UI CHECK                     */
-        /* ============================= */
 
         isUIElement(target) {
             return !!(target && (target.closest('header') || target.closest('footer') || target.closest('#toggle-off') || target.closest('#toggle-effect')));
         }
 
-        /* ============================= */
-        /*  SET EFFECT                   */
-        /* ============================= */
-
         async setEffect(name) {
-            if (this.current === name && this.enabled) return;
+            if (this.current === name || this.transitioning) return;
+            try { await this.loadEffect(name); } catch (e) { return; }
 
-            try {
-                await this.loadEffect(name);
-            } catch (err) {
-                console.error(err);
+            const canvas = document.getElementById('network');
+            if (!this.enabled) {
+                if (this.current) this.effects[this.current]?.stop?.();
+                this.current = name;
                 return;
             }
 
-            if (!this.effects[name]) return;
-
-            // Nếu đang bật hiệu ứng, thực hiện chuyển cảnh mờ dần (Fade transition)
-            if (this.enabled && this.current && this.effects[this.current]) {
-                const canvas = document.getElementById('network');
-                if (canvas) {
-                    canvas.style.transition = 'opacity 0.4s ease-in-out';
-                    canvas.style.opacity = '0';
-                    
-                    // Đợi mờ dần xong mới đổi sang hiệu ứng mới
-                    setTimeout(() => {
-                        this.effects[this.current]?.stop?.();
-                        this.current = name;
-                        
-                        canvas.style.transition = 'none';
-                        canvas.style.opacity = '1';
-                        this.effects[name].start?.();
-                    }, 400);
-                    return;
-                }
-            }
-
-            // Nếu không có hiệu ứng cũ hoặc đang tắt, bật thẳng hiệu ứng mới
-            if (this.current && this.effects[this.current]) {
-                this.effects[this.current].stop?.();
-            }
-            this.current = name;
-            if (this.enabled) {
+            // Fix Flicker: Fade-out OLD -> Stop -> Swap -> Start NEW -> Fade-in
+            if (this.current && canvas) {
+                this.transitioning = true;
+                canvas.style.transition = 'opacity 0.25s ease-in-out';
+                canvas.style.opacity = '0';
+                
+                setTimeout(() => {
+                    this.effects[this.current]?.stop?.();
+                    this.current = name;
+                    this.effects[this.current].start?.();
+                    canvas.style.opacity = '1';
+                    setTimeout(() => { this.transitioning = false; }, 250);
+                }, 250);
+            } else {
+                this.current = name;
                 this.effects[name].start?.();
             }
         }
 
-        getCurrent() {
-            return this.current;
-        }
-
-        getAvailableEffects() {
-            return Object.keys(this.effects);
-        }
-
-        /* ============================= */
-        /*  TOGGLE                       */
-        /* ============================= */
-
         toggleEffects(state) {
             state = state === undefined ? !this.enabled : state;
             this.enabled = state;
-
-            if (!this.current) return;
-
+            const effect = this.effects[this.current];
             const canvas = document.getElementById('network');
             if (state) {
-                if (canvas) {
-                    canvas.style.transition = 'none';
-                    canvas.style.opacity = '1';
-                }
-                this.effects[this.current]?.start?.();
+                if (canvas) { canvas.style.transition = 'opacity 0.3s ease-in-out'; canvas.style.opacity = '1'; }
+                if (this.current) effect?.start?.();
             } else {
-                // Khi tắt hiệu ứng cũng mờ dần cho chuyên nghiệp
                 if (canvas) {
-                    canvas.style.transition = 'opacity 0.5s ease-in-out';
+                    canvas.style.transition = 'opacity 0.4s ease-in-out';
                     canvas.style.opacity = '0';
-                    setTimeout(() => {
-                        if (!this.enabled) { // Kiểm tra lại đề phòng user bật lại nhanh
-                            this.effects[this.current]?.stop?.();
-                        }
-                    }, 500);
+                    setTimeout(() => { if (!this.enabled) effect?.stop?.(); }, 400);
                 } else {
-                    this.effects[this.current]?.stop?.();
+                    effect?.stop?.();
                 }
             }
         }
-
-        /* ============================= */
-        /*  DESTROY (optional)           */
-        /* ============================= */
-
-        destroyAll() {
-            Object.values(this.effects).forEach(effect => {
-                effect.stop?.();
-            });
-            this.enabled = false;
-            this.current = null;
-        }
-
     }
 
     window.EffectController = new EffectController();
-
 })();
