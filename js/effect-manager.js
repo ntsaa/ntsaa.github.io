@@ -33,7 +33,7 @@
             end.setFullYear(year);
         }
 
-        return !(now >= start && now <= end);
+        return (now >= start && now <= end);
     }
 
     /* ============================= */
