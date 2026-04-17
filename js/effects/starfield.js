@@ -18,9 +18,6 @@
     running: false,
     resizeTimeout: null,
 
-    vX: 0,
-    vY: 0,
-    
     starPool: null,
     shootingPool: null,
     spriteCache: null,
@@ -48,14 +45,13 @@
 
       this.spriteCache = window.EffectController.getCache("starfield", () => this.initSpriteCache());
 
-      if (!this.starPool) this.starPool = window.EffectController.createPool(() => ({}), null, 600);
-      if (!this.shootingPool) this.shootingPool = window.EffectController.createPool(() => ({}), null, 10);
+      if (!this.starPool) this.starPool = window.EffectController.createPool(() => ({}), null, 800);
+      if (!this.shootingPool) this.shootingPool = window.EffectController.createPool(() => ({}), null, 15);
 
       this.resizeHandler = () => this.resize();
       window.addEventListener('resize', this.resizeHandler);
 
       this.resize(true);
-      this.vX = this.w / 2; this.vY = this.h / 2;
       this.spawnShootingStar();
       this.animate();
     },
@@ -77,14 +73,14 @@
     initSpriteCache() {
       const cache = [];
       this.colors.forEach(colorStr => {
-        const size = 48; // Tăng độ phân giải sprite
+        const size = 32; 
         const canvas = document.createElement('canvas');
         canvas.width = size; canvas.height = size;
         const ctx = canvas.getContext('2d');
         const c = size / 2;
         const grad = ctx.createRadialGradient(c, c, 0, c, c, c * 0.8);
         grad.addColorStop(0, `rgba(${colorStr}, 1)`);
-        grad.addColorStop(0.3, `rgba(${colorStr}, 0.7)`); // Hào quang rộng hơn chút
+        grad.addColorStop(0.3, `rgba(${colorStr}, 0.6)`);
         grad.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, size, size);
@@ -107,21 +103,23 @@
       const mobile = this.w < 600;
       const perf = window.EffectController.performanceScale;
       return [
-        { count: (mobile ? 60 : 120) * perf, speed: 5, size: [2.5, 4.5] }, // To hơn
-        { count: (mobile ? 90 : 180) * perf, speed: 2.5, size: [1.5, 3.0] }, // To hơn
-        { count: (mobile ? 120 : 240) * perf, speed: 1.2, size: [1.0, 1.8] }  // To hơn
+        { count: (mobile ? 80 : 150) * perf, speed: 6, size: [2.5, 5.5] }, // To hơn
+        { count: (mobile ? 120 : 200) * perf, speed: 3, size: [1.5, 3.2] }, // To hơn
+        { count: (mobile ? 150 : 250) * perf, speed: 1.5, size: [1.0, 2.0] } // To hơn
       ];
     },
 
     createStar(layer, layerIndex, atDistance = false) {
       const s = this.starPool.get();
-      s.x = Math.random() * this.w; s.y = Math.random() * this.h;
+      s.x = Math.random() * this.w; 
+      s.y = Math.random() * this.h;
       s.z = atDistance ? this.w : Math.random() * this.w;
-      s.size = layer.size[0] + Math.random() * (layer.size[1] - layer.size[0]);
+      s.radius = layer.size[0] + Math.random() * (layer.size[1] - layer.size[0]);
       s.colorIndex = (Math.random() * this.colors.length) | 0;
       s.alpha = 0.5 + Math.random() * 0.5;
       s.layerIndex = layerIndex;
       s.speed = layer.speed;
+      s.alphaChange = Math.random() * 0.02 + 0.005;
       return s;
     },
 
@@ -147,12 +145,12 @@
       if (!this.running) return;
       const s = this.shootingPool.get();
       s.x = Math.random() * this.w; s.y = Math.random() * this.h / 2;
-      s.len = 10 + Math.random() * 15;
-      s.speed = 12 + Math.random() * 10;
-      s.hue = (Math.random() * 360) | 0;
+      s.len = 10 + Math.random() * 20;
+      s.speed = 15 + Math.random() * 10;
+      s.colorIndex = (Math.random() * this.colors.length) | 0;
       s.alpha = 1;
       this.shootingStars.push(s);
-      this.shootingTimeout = setTimeout(() => this.spawnShootingStar(), 2000 + Math.random() * 4000);
+      this.shootingTimeout = setTimeout(() => this.spawnShootingStar(), 2000 + Math.random() * 3000);
     },
 
     animate(t) {
@@ -165,32 +163,35 @@
 
         const mx = interact.isValid ? (interact.x - this.w/2) : 0;
         const my = interact.isValid ? (interact.y - this.h/2) : 0;
-        const targetVX = this.w / 2 - Math.max(-50, Math.min(50, mx));
-        const targetVY = this.h / 2 - Math.max(-50, Math.min(50, my));
-        this.vX += (targetVX - this.vX) * 0.05;
-        this.vY += (targetVY - this.vY) * 0.05;
 
         this.ctx.globalCompositeOperation = 'destination-out';
-        this.ctx.fillStyle = `rgba(0, 0, 0, ${warp ? 0.2 : 0.4})`;
+        this.ctx.fillStyle = `rgba(0, 0, 0, ${warp ? 0.2 : 0.35})`;
         this.ctx.fillRect(0, 0, this.w, this.h);
         this.ctx.globalCompositeOperation = 'lighter';
 
         for (let i = this.stars.length - 1; i >= 0; i--) {
             const s = this.stars[i];
+            
             s.z -= s.speed * warpMult;
             if (s.z <= 0) {
               s.x = Math.random() * this.w; s.y = Math.random() * this.h; s.z = this.w;
             }
             
-            const k = 650 / s.z; // Perspective factor tăng lên chút
-            const px = (s.x - this.vX) * k + this.vX;
-            const py = (s.y - this.vY) * k + this.vY;
-            const size = s.size * k * 0.85; // Tăng size hiển thị cuối cùng
+            s.x += mx * 0.0004 * s.speed * warpMult;
+            s.y += my * 0.0004 * s.speed * warpMult;
+            
+            s.alpha += s.alphaChange;
+            if (s.alpha > 1 || s.alpha < 0.2) s.alphaChange *= -1;
+
+            const k = 550 / s.z; // Tăng perspective nhẹ
+            const px = (s.x - this.w / 2) * k + this.w / 2;
+            const py = (s.y - this.h / 2) * k + this.h / 2;
+            const size = s.radius * k * 0.65; // Tăng hệ số hiển thị
 
             if (warp) {
-                const dx = px - this.vX; const dy = py - this.vY;
+                const dx = px - this.w / 2; const dy = py - this.h / 2;
                 const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                const stretch = 1 + (k * 0.1); // Kéo dài hơn khi warp
+                const stretch = 1 + (k * 0.07);
                 const cos = dx / dist; const sin = dy / dist;
                 this.ctx.setTransform(dpr * cos * stretch, dpr * sin * stretch, -dpr * sin, dpr * cos, dpr * px, dpr * py);
             } else {
@@ -206,13 +207,14 @@
 
         for (let i = this.shootingStars.length - 1; i >= 0; i--) {
             const s = this.shootingStars[i];
-            s.x += s.speed * warpMult; s.y += (s.speed / 4) * warpMult; s.alpha -= 0.015 * warpMult;
+            s.x += s.speed * warpMult; s.y += (s.speed / 4) * warpMult; s.alpha -= 0.02 * warpMult;
             if (s.alpha <= 0) {
                 this.shootingPool.recycle(this.shootingStars.splice(i, 1)[0]);
                 continue;
             }
-            this.ctx.strokeStyle = `hsla(${s.hue}, 100%, 80%, ${s.alpha})`;
-            this.ctx.lineWidth = 2.0; // Vệt sao băng dày hơn chút
+            const color = this.colors[s.colorIndex];
+            this.ctx.strokeStyle = `rgba(${color}, ${s.alpha})`;
+            this.ctx.lineWidth = 2.5; // Shooting star đậm hơn
             this.ctx.beginPath();
             this.ctx.moveTo(s.x, s.y);
             this.ctx.lineTo(s.x - s.len, s.y - s.len / 4);
