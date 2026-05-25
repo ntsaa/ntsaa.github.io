@@ -24,12 +24,29 @@
         totalInitialCount: 0,
         burstCooldown: false,
         wasDown: false,
+        wasEsc: false,
+
+        // Game State
+        gameActive: false,
+        runValid: false,
+        startTime: 0,
+        elapsedTime: 0,
+        lastRecord: { score: 0, captured: 0, time: 0 },
+        bestRecord: { score: 0, captured: 0, time: Infinity, percent: 0 },
 
         /* ================= START ================= */
 
         start() {
             if (this.running) return;
             this.running = true;
+
+            // Load Best Record (New v2 metric: Capture Rate)
+            const saved = localStorage.getItem('ntsaa_singularity_best_v2');
+            if (saved) {
+                this.bestRecord = JSON.parse(saved);
+            } else {
+                this.bestRecord = { score: 0, captured: 0, time: Infinity, percent: 0 };
+            }
 
             this.canvas = document.getElementById('network');
             if (!this.canvas) return;
@@ -62,34 +79,36 @@
             if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h);
             while (this.singularities.length) this.particlePool.recycle(this.singularities.pop());
             while (this.absorbedPool.length) this.particlePool.recycle(this.absorbedPool.pop());
+            
+            // Reset game state on stop
+            this.gameActive = false;
+            this.runValid = false;
             this.burstCooldown = false;
         },
 
         initCache() {
             const cache = { particles: [], core: [] };
-            const hues = [200, 30, 0]; 
-            hues.forEach(hue => {
-                const canvas = document.createElement("canvas");
-                canvas.width = 16; canvas.height = 16;
-                const ctx = canvas.getContext("2d");
-                const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-                grad.addColorStop(0, `hsla(${hue}, 90%, 95%, 1)`);
-                grad.addColorStop(0.4, `hsla(${hue}, 80%, 75%, 0.4)`);
-                grad.addColorStop(1, `hsla(${hue}, 80%, 70%, 0)`);
-                ctx.fillStyle = grad; ctx.fillRect(0, 0, 16, 16);
-                cache.particles.push(canvas);
-            });
-            hues.forEach(hue => {
-                const canvas = document.createElement("canvas");
-                canvas.width = 64; canvas.height = 64;
-                const ctx = canvas.getContext("2d");
-                const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-                grad.addColorStop(0, `hsla(${hue}, 100%, 95%, 0.9)`);
-                grad.addColorStop(0.3, `hsla(${hue}, 100%, 80%, 0.5)`);
-                grad.addColorStop(1, `hsla(${hue}, 100%, 70%, 0)`);
-                ctx.fillStyle = grad; ctx.fillRect(0, 0, 64, 64);
-                cache.core.push(canvas);
-            });
+            for (let h = 0; h < 360; h += 30) {
+                const pCanvas = document.createElement("canvas");
+                pCanvas.width = 16; pCanvas.height = 16;
+                const pCtx = pCanvas.getContext("2d");
+                const pGrad = pCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
+                pGrad.addColorStop(0, `hsla(${h}, 100%, 95%, 1)`);
+                pGrad.addColorStop(0.4, `hsla(${h}, 90%, 75%, 0.8)`); 
+                pGrad.addColorStop(1, `hsla(${h}, 90%, 70%, 0)`);
+                pCtx.fillStyle = pGrad; pCtx.fillRect(0, 0, 16, 16);
+                cache.particles.push(pCanvas);
+
+                const cCanvas = document.createElement("canvas");
+                cCanvas.width = 64; cCanvas.height = 64;
+                const cCtx = cCanvas.getContext("2d");
+                const cGrad = cCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+                cGrad.addColorStop(0, `hsla(${h}, 100%, 95%, 0.9)`);
+                cGrad.addColorStop(0.3, `hsla(${h}, 100%, 80%, 0.7)`);
+                cGrad.addColorStop(1, `hsla(${h}, 100%, 70%, 0)`);
+                cCtx.fillStyle = cGrad; cCtx.fillRect(0, 0, 64, 64);
+                cache.core.push(cCanvas);
+            }
             return cache;
         },
 
@@ -104,15 +123,20 @@
 
             if (isInitial) { this.initSingularity(); return; }
             clearTimeout(this.resizeTimeout);
-            this.resizeTimeout = setTimeout(() => this.refillStep(), 500); 
+            this.resizeTimeout = setTimeout(() => this.refillStep(), 1000); 
         },
 
         refillStep() {
             if (!this.running) return;
-            const currentTotal = this.singularities.length + this.absorbedPool.length;
-            if (currentTotal < this.totalInitialCount) {
-                this.singularities.push(this.spawnParticle(true));
-                this.resizeTimeout = setTimeout(() => this.refillStep(), 200);
+            while (this.singularities.length) this.particlePool.recycle(this.singularities.pop());
+            while (this.absorbedPool.length) this.particlePool.recycle(this.absorbedPool.pop());
+            this.timeouts.forEach(t => clearTimeout(t));
+            this.timeouts = [];
+            this.burstCooldown = false;
+            this.runValid = false;
+            this.gameActive = false;
+            for (let i = 0; i < this.totalInitialCount; i++) {
+                this.singularities.push(this.spawnParticle(false));
             }
         },
 
@@ -166,25 +190,30 @@
                 const interact = window.EffectController.interaction;
                 const capturedCount = this.absorbedPool.length;
                 const ratio = capturedCount / this.totalInitialCount;
-                const stage = ratio >= 0.8 ? 2 : (ratio >= 0.6 ? 1 : 0);
                 const hue = (t / 50) % 360;
+                const hueIndex = Math.floor(hue / 30) % 12;
                 const maxDist = this.w < 600 ? 50 : 90;
                 const maxDistSq = maxDist * maxDist;
 
-                if (interact.isDown && !this.wasDown && !interact.isOverUI && capturedCount > 0) this.triggerBurst();
+                const isClicked = (interact.isDown && !this.wasDown && !interact.isOverUI);
+                const isEscPressed = (interact.isEsc && !this.wasEsc);
+                
+                if (isClicked && capturedCount > 0) this.triggerBurst();
                 this.wasDown = interact.isDown;
+                this.wasEsc = interact.isEsc;
 
-                this.ctx.lineWidth = 0.8;
+                this.ctx.lineWidth = 1.0;
                 for (let i = 0; i < this.singularities.length; i++) {
                     const p1 = this.singularities[i]; let count = 0;
                     for (let j = i + 1; j < this.singularities.length; j++) {
-                        if (count > 5) break;
+                        if (count > 6) break;
                         const p2 = this.singularities[j];
                         const dx = p1.x - p2.x; const dy = p1.y - p2.y;
                         const d2 = dx*dx + dy*dy;
                         if (d2 < maxDistSq) {
-                            const alpha = (1 - Math.sqrt(d2) / maxDist) * 0.4;
-                            this.ctx.strokeStyle = `hsla(${hue}, 80%, 70%, ${alpha})`;
+                            const dist = Math.sqrt(d2);
+                            const alpha = (1 - dist / maxDist) * 0.6;
+                            this.ctx.strokeStyle = `hsla(${hue}, 90%, 75%, ${alpha})`;
                             this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
                             count++;
                         }
@@ -213,17 +242,72 @@
                     if (p.y < 0 || p.y > this.h) p.vy *= -1;
                     const s = Math.hypot(p.vx, p.vy) || 1; const diff = p.baseSpeed - s;
                     p.vx += (p.vx/s) * diff * 0.02; p.vy += (p.vy/s) * diff * 0.02;
-                    window.EffectController.drawSprite(this.ctx, this.spriteCache.particles[stage], p.x, p.y, p.size, 0, 0.8);
+                    window.EffectController.drawSprite(this.ctx, this.spriteCache.particles[hueIndex], p.x, p.y, p.size, 0, 1.0);
                 }
 
-                if (ratio >= 0.9) this.triggerBurst();
+                if (ratio >= 1.0) this.triggerBurst();
 
                 if (capturedCount > 0 && interact.isValid && !interact.isOverUI) {
                     const r = (2 + Math.sqrt(capturedCount) * 0.8);
                     const coreSize = r * (1 + Math.sin(t / 150) * 0.1) * 3;
-                    window.EffectController.drawSprite(this.ctx, this.spriteCache.core[stage], interact.x, interact.y, coreSize, t * 0.001, 0.9);
-                    this.ctx.fillStyle = `hsla(${stage === 2 ? 0 : (stage === 1 ? 30 : hue)}, 90%, 90%, 1)`;
+                    window.EffectController.drawSprite(this.ctx, this.spriteCache.core[hueIndex], interact.x, interact.y, coreSize, t * 0.001, 1.0);
+                    this.ctx.fillStyle = `hsla(${hue}, 100%, 95%, 1)`;
                     this.ctx.beginPath(); this.ctx.arc(interact.x, interact.y, r, 0, Math.PI * 2); this.ctx.fill();
+                }
+
+                const isUIHidden = !window.EffectController.contentVisible;
+                if (isUIHidden) {
+                    if (isEscPressed) this.refillStep();
+
+                    if (!this.gameActive) {
+                        this.gameActive = true; this.runValid = true; this.startTime = t; this.elapsedTime = 0;
+                    }
+
+                    const currentPercent = Math.round((capturedCount / this.totalInitialCount) * 100);
+                    let currentScore = 0;
+
+                    if (this.runValid) {
+                        const nowElapsed = (t - this.startTime) / 1000;
+                        if (nowElapsed <= 999) {
+                            this.elapsedTime = nowElapsed;
+                            currentScore = capturedCount / (this.elapsedTime || 1);
+                        } else { this.elapsedTime = 999; }
+                    }
+
+                    if (ratio >= 1.0 && this.runValid && this.elapsedTime > 0.5) {
+                        const finalScore = this.totalInitialCount / (this.elapsedTime || 1);
+                        this.lastRecord = { score: finalScore };
+                        if (finalScore > this.bestRecord.score) {
+                            this.bestRecord = { score: finalScore, captured: this.totalInitialCount, time: this.elapsedTime };
+                            localStorage.setItem('ntsaa_singularity_best_v2', JSON.stringify(this.bestRecord));
+                        }
+                        this.startTime = t; this.elapsedTime = 0;
+                    }
+
+                    if (interact.isR && interact.rDownTime > 0) {
+                        if (t - interact.rDownTime > 2000) {
+                            this.bestRecord = { score: 0, captured: 0, time: Infinity, percent: 0 };
+                            this.lastRecord = { score: 0 };
+                            localStorage.removeItem('ntsaa_singularity_best_v2');
+                            interact.rDownTime = 0; 
+                        }
+                    }
+
+                    const displayTime = this.elapsedTime >= 999 ? "999.00s+" : this.elapsedTime.toFixed(2) + "s";
+                    const currentStats = `${capturedCount}/${this.totalInitialCount} (${currentPercent}%) [${displayTime}]`;
+                    
+                    const lastResultDisplay = this.lastRecord.score > 0 ? ` | ⚡ ${this.lastRecord.score.toFixed(2)} pts/s` : "";
+                    
+                    const noneLabel = window.getTranslation('none');
+                    const bestDisplay = this.bestRecord.score > 0 
+                        ? `🏆 ${this.bestRecord.score.toFixed(2)} pts/s` 
+                        : `🏆 ${noneLabel}`;
+                    
+                    window.EffectController.updateStats(`${currentStats}${lastResultDisplay} | ${bestDisplay}`);
+                } else {
+                    this.gameActive = false; this.runValid = false;
+                    const percent = Math.round((capturedCount / this.totalInitialCount) * 100);
+                    window.EffectController.updateStats(`${capturedCount} / ${this.totalInitialCount} (${percent}%)`);
                 }
             }
             this.animationId = requestAnimationFrame((t) => this.animate(t));

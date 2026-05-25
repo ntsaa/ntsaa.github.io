@@ -5,7 +5,10 @@ const translations = {
         image_loading: "Loading image...",
         effect: "Change effect",
         effect_off: "Turn on/off effects",
-        error: "Cannot load content."
+        error: "Cannot load content.",
+        copyright: "© 2025 NTSAA. All rights reserved.",
+        none: "None",
+        press_esc: "Press Esc to start"
     },
     vn: {
         download_full: "📦 Dùng ngay",
@@ -13,7 +16,10 @@ const translations = {
         image_loading: "Đang tải ảnh...",
         effect: "Chuyển hiệu ứng",
         effect_off: "Bật/Tắt hiệu ứng",
-        error: "Không thể tải nội dung."
+        error: "Không thể tải nội dung.",
+        copyright: "© 2025 NTSAA. Giữ bản quyền.",
+        none: "Chưa có",
+        press_esc: "Nhấn Esc để bắt đầu"
     }
 };
 
@@ -38,12 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ((navigator.language || "").toLowerCase().startsWith("vi") ? "vn" : "en");
 
     const getCurrentLang = () => detectLanguage();
-
     const pageCache = {};
 
     const loadPage = async (url, callback) => {
         const contentEl = document.getElementById("content");
-        
+
         // Bước 1: Cho mờ dần nội dung cũ đi (Fade out)
         contentEl.classList.remove("fade-in");
 
@@ -61,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch(url);
                 if (!res.ok) throw new Error("Network response was not ok");
                 const html = await res.text();
-                
+
                 pageCache[url] = html;
                 contentEl.innerHTML = html;
                 contentEl.classList.add("fade-in");
@@ -79,19 +84,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateDownloadText = (lang) => {
         document.documentElement.lang = (lang === "vn" ? "vi" : "en");
-        
-        document.querySelector("#download .full-text").textContent =
-            isDldPage()
+
+        const dldEl = document.querySelector("#download .full-text");
+        if (dldEl) {
+            dldEl.textContent = isDldPage()
                 ? translations[lang].help_full
                 : translations[lang].download_full;
+        }
 
         const toggleBtn = document.getElementById('toggle-effect');
         const offBtn = document.getElementById('toggle-off');
+        const footerText = document.querySelector('.footer-text');
 
         if (toggleBtn) toggleBtn.title = translations[lang].effect;
         if (offBtn) offBtn.title = translations[lang].effect_off;
+
+        if (footerText && window.EffectController && window.EffectController.contentVisible) {
+            footerText.textContent = translations[lang].copyright;
+        }
     };
 
+    // Expose helpers globally
+    window.getCurrentLang = getCurrentLang;
+    window.getTranslation = (key) => translations[getCurrentLang()][key] || key;
+    window.updateLanguageUI = () => updateDownloadText(getCurrentLang());
     const highlightLangButton = (lang) => {
         document.querySelectorAll(".lang-toggle")
             .forEach(btn => btn.classList.remove("active-lang"));
@@ -139,26 +155,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
             btn.addEventListener('click', (e) => {
 
-                // nếu đang cooldown → bỏ qua nhưng KHÔNG chặn propagation
+                // nếu đang cooldown → chặn click hoàn toàn
                 if (btn.dataset.cooling === "1") {
+                    e.preventDefault();
                     return;
                 }
-
-                btn.dataset.cooling = "1";
 
                 const href = btn.getAttribute('href');
 
                 if (href && href !== '#') {
+                    // Chặn trình duyệt mở link mặc định (tránh bị x2 download)
+                    e.preventDefault();
+                    
+                    btn.dataset.cooling = "1";
                     window.open(href, '_blank');
+
+                    // Tạm thời vô hiệu hóa tương tác chuột để tránh click nhầm/nhanh
+                    btn.style.pointerEvents = "none";
+
+                    setTimeout(() => {
+                        btn.dataset.cooling = "0";
+                        btn.style.pointerEvents = "";
+                    }, 3000);
                 }
-
-                // khoá click trong 3 giây
-                btn.style.pointerEvents = "none";
-
-                setTimeout(() => {
-                    btn.dataset.cooling = "0";
-                    btn.style.pointerEvents = "";
-                }, 3000);
 
             });
 

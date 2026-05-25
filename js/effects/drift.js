@@ -17,6 +17,7 @@
         DPR: window.EffectController.DPR,
         isMobile: false,
         initCount: 0,
+        roundTarget: 0,
         
         particleCache: null, 
         particlePool: null,
@@ -28,13 +29,27 @@
         
         running: false,
         wasDown: false,
+        wasEsc: false,
         resizeTimeout: null,
+
+        // Game State
+        gameActive: false,
+        startTime: 0,
+        elapsedTime: 0,
+        totalKills: 0,
+        lastRecord: { score: 0 },
+        bestRecord: { score: 0, kills: 0, time: 0 },
 
         /* ================= START ================= */
 
         start() {
             if (this.running) return;
             this.running = true;
+
+            // Load Best Record
+            const saved = localStorage.getItem('ntsaa_drift_best_v1');
+            if (saved) this.bestRecord = JSON.parse(saved);
+            else this.bestRecord = { score: 0, kills: 0, time: 0 };
 
             this.canvas = document.getElementById('network');
             if (!this.canvas) return;
@@ -71,6 +86,12 @@
             while (this.wells.length) this.wellPool.recycle(this.wells.pop());
 
             if (this.ctx) this.ctx.clearRect(0, 0, this.w, this.h);
+
+            // Reset game state on stop
+            this.gameActive = false;
+            this.totalKills = 0;
+            this.elapsedTime = 0;
+            this.startTime = 0;
         },
 
         initCache() {
@@ -103,23 +124,26 @@
             this.wellBaseRadius = 140 * scale;
             
             const perf = window.EffectController.performanceScale;
-            this.initCount = Math.max(80, Math.min(600, Math.floor((this.w * this.h) / (this.isMobile ? 5000 : 3800) * perf)));
+            this.initCount = Math.max(40, Math.min(200, Math.floor((this.w * this.h) / 12000 * perf)));
 
             if (isInitial) {
+                this.roundTarget = this.initCount;
                 for (let i = 0; i < this.initCount; i++) this.singularities.push(this.spawnParticle(false));
                 return;
             }
+            
             clearTimeout(this.resizeTimeout);
-            this.resizeTimeout = setTimeout(() => this.refillStep(), 500);
+            this.resizeTimeout = setTimeout(() => this.refillStep(), 1000);
         },
 
         refillStep() {
             if (!this.running) return;
-            let current = this.singularities.length;
-            if (current < this.initCount) {
-                for (let i = 0; i < 5; i++) this.singularities.push(this.spawnParticle(true));
-                this.resizeTimeout = setTimeout(() => this.refillStep(), 100);
-            }
+            while (this.singularities.length) this.particlePool.recycle(this.singularities.pop());
+            while (this.fragments.length) this.fragmentPool.recycle(this.fragments.pop());
+            while (this.wells.length) this.wellPool.recycle(this.wells.pop());
+            this.roundTarget = this.initCount;
+            for (let i = 0; i < this.initCount; i++) this.singularities.push(this.spawnParticle(false));
+            this.gameActive = true; this.startTime = performance.now(); this.elapsedTime = 0; this.totalKills = 0;
         },
 
         spawnParticle(fromEdge = true) {
@@ -138,6 +162,7 @@
             p.vy = (Math.random() - 0.5) * 1.5;
             p.hueIndex = (Math.random() * 40) | 0;
             p.depth = 0.5 + Math.random() * 0.5;
+            p.isCounted = false; // Mới hồi sinh thì chưa tính điểm
             return p;
         },
 
@@ -149,10 +174,12 @@
 
         explodeNear(x, y, radius) {
             const r2 = radius * radius;
+            let killsInThisWell = 0;
             for (let i = this.singularities.length - 1; i >= 0; i--) {
                 const p = this.singularities[i];
                 const dx = p.x - x; const dy = p.y - y;
                 if (dx * dx + dy * dy < r2) {
+                    killsInThisWell++;
                     for (let j = 0; j < 4; j++) {
                         const f = this.fragmentPool.get();
                         f.x = p.x; f.y = p.y;
@@ -162,8 +189,10 @@
                         this.fragments.push(f);
                     }
                     this.particlePool.recycle(this.singularities.splice(i, 1)[0]);
+                    this.singularities.push(this.spawnParticle(true));
                 }
             }
+            // totalKills now tracks cumulative round progress
         },
 
         animate(t) {
@@ -177,10 +206,38 @@
                 const interact = window.EffectController.interaction;
                 const mR2 = this.mouseRadius * this.mouseRadius;
 
-                if (interact.isDown && !this.wasDown && !interact.isOverUI) this.createWell(interact.x, interact.y);
+                const isClicked = (interact.isDown && !this.wasDown && !interact.isOverUI);
+                const isEscPressed = (interact.isEsc && !this.wasEsc);
+                const isUIHidden = !window.EffectController.contentVisible;
+
+                if (isClicked) {
+                    this.createWell(interact.isValid ? interact.x : this.w / 2, interact.isValid ? interact.y : this.h / 2);
+                }
+
+                if (isEscPressed && isUIHidden) {
+                    while (this.singularities.length) this.particlePool.recycle(this.singularities.pop());
+                    while (this.fragments.length) this.fragmentPool.recycle(this.fragments.pop());
+                    while (this.wells.length) this.wellPool.recycle(this.wells.pop());
+                    for (let i = 0; i < this.initCount; i++) this.singularities.push(this.spawnParticle(false));
+                    this.gameActive = true; this.startTime = t; this.elapsedTime = 0; this.totalKills = 0;
+                }
+
+                if (isUIHidden && !this.gameActive) {
+                    this.gameActive = true; this.startTime = t; this.elapsedTime = 0; this.totalKills = 0;
+                }
+
                 this.wasDown = interact.isDown;
+                this.wasEsc = interact.isEsc;
+
+                if (isUIHidden && interact.isR && interact.rDownTime > 0) {
+                    if (t - interact.rDownTime > 2000) {
+                        this.bestRecord = { score: 0, kills: 0, time: 0 };
+                        this.lastRecord = { score: 0 };
+                        localStorage.removeItem('ntsaa_drift_best_v1');
+                        interact.rDownTime = 0;
+                    }
+                }
                 
-                // Wells (Gravity Pull)
                 for (let i = this.wells.length - 1; i >= 0; i--) {
                     const w = this.wells[i];
                     w.life--;
@@ -190,11 +247,9 @@
                     }
                 }
 
-                // Singularities
+                let currentAbsorbed = 0;
                 for (let i = this.singularities.length - 1; i >= 0; i--) {
                     const p = this.singularities[i];
-                    
-                    // Natural Brownian drift
                     p.vx = Math.max(-1.5, Math.min(1.5, p.vx + (Math.random() - 0.5) * 0.08));
                     p.vy = Math.max(-1.5, Math.min(1.5, p.vy + (Math.random() - 0.5) * 0.08));
                     
@@ -206,24 +261,28 @@
                             const dist = Math.sqrt(d2) || 1;
                             const pull = 0.02 + (1 - dist / this.wellBaseRadius) * 0.06;
                             p.x += dx * pull; p.y += dy * pull;
-                            insideWell = true; break;
+                            insideWell = true; 
+                            currentAbsorbed++; 
+                            
+                            // CỘNG DỒN ĐIỂM: Nếu hạt này chưa bị tính trong vòng này
+                            if (!p.isCounted && this.gameActive) {
+                                p.isCounted = true;
+                                this.totalKills++;
+                            }
+                            break;
                         }
                     }
 
-                    // Mouse Repulsion (Position-based for snappiness)
                     if (interact.isValid && !interact.isOverUI && !insideWell) {
                         const dx = p.x - interact.x; const dy = p.y - interact.y;
                         const d2 = dx * dx + dy * dy;
                         if (d2 < mR2) {
                             const f = (mR2 - d2) / mR2;
-                            p.x += dx * f * 0.5;
-                            p.y += dy * f * 0.5;
+                            p.x += dx * f * 0.5; p.y += dy * f * 0.5;
                         }
                     }
 
                     p.x += p.vx * p.depth; p.y += p.vy * p.depth;
-                    
-                    // Wrap-around
                     if (p.x < -50) p.x = this.w + 50; else if (p.x > this.w + 50) p.x = -50;
                     if (p.y < -50) p.y = this.h + 50; else if (p.y > this.h + 50) p.y = -50;
 
@@ -231,7 +290,10 @@
                     window.EffectController.drawSprite(this.ctx, this.particleCache[p.hueIndex], p.x, p.y, p.size * 1.5, rotation, 0.8);
                 }
 
-                // Fragments
+                if (this.gameActive) {
+                    this.totalKills = Math.max(this.totalKills, currentAbsorbed);
+                }
+
                 for (let i = this.fragments.length - 1; i >= 0; i--) {
                     const f = this.fragments[i];
                     f.x += f.vx; f.y += f.vy; f.life--;
@@ -240,6 +302,57 @@
                         continue;
                     }
                     window.EffectController.drawSprite(this.ctx, this.particleCache[f.hueIndex], f.x, f.y, f.size, 0, f.life / f.maxLife);
+                }
+
+                if (isUIHidden) {
+                    const currentPercent = Math.round((this.totalKills / this.initCount) * 100);
+                    let currentScore = 0;
+
+                    if (this.gameActive) {
+                        const nowElapsed = (t - this.startTime) / 1000;
+                        if (nowElapsed <= 999) {
+                            this.elapsedTime = nowElapsed;
+                            currentScore = this.totalKills / (this.elapsedTime || 1);
+                        } else { this.elapsedTime = 999; }
+                    }
+
+                    // XỬ LÝ CHỐT SỔ VÀ RESET KHI ĐẠT 100%
+                    if (this.gameActive && this.totalKills >= this.initCount && this.elapsedTime > 0.5) {
+                        const finalScore = this.initCount / (this.elapsedTime || 1);
+                        
+                        // 1. Chốt sổ Last Result (⚡)
+                        this.lastRecord = { score: finalScore };
+
+                        // 2. Kiểm tra và lưu Kỷ lục (🏆)
+                        if (finalScore > this.bestRecord.score) {
+                            this.bestRecord = { score: finalScore, kills: this.initCount, time: this.elapsedTime };
+                            localStorage.setItem('ntsaa_drift_best_v1', JSON.stringify(this.bestRecord));
+                        }
+
+                        // 3. Hard Reset cho vòng mới
+                        while (this.singularities.length) this.particlePool.recycle(this.singularities.pop());
+                        while (this.fragments.length) this.fragmentPool.recycle(this.fragments.pop());
+                        while (this.wells.length) this.wellPool.recycle(this.wells.pop());
+                        for (let i = 0; i < this.initCount; i++) this.singularities.push(this.spawnParticle(false));
+                        
+                        this.startTime = t; this.elapsedTime = 0; this.totalKills = 0;
+                    }
+
+                    const displayTime = this.elapsedTime >= 999 ? "999.00s+" : this.elapsedTime.toFixed(2) + "s";
+                    const currentStats = `${this.totalKills}/${this.initCount} (${currentPercent}%) [${displayTime}]`;
+                    
+                    const lastResultDisplay = this.lastRecord.score > 0 ? ` | ⚡ ${this.lastRecord.score.toFixed(2)} pts/s` : "";
+                    
+                    const noneLabel = window.getTranslation('none');
+                    const bestDisplay = this.bestRecord.score > 0 
+                        ? `🏆 ${this.bestRecord.score.toFixed(2)} pts/s` 
+                        : `🏆 ${noneLabel}`;
+
+                    window.EffectController.updateStats(`${currentStats}${lastResultDisplay} | ${bestDisplay}`);
+                } else {
+                    this.gameActive = false;
+                    const percent = Math.round((currentAbsorbed / this.initCount) * 100);
+                    window.EffectController.updateStats(`${currentAbsorbed} / ${this.initCount} (${percent}%)`);
                 }
             }
             this.animationId = requestAnimationFrame((t) => this.animate(t));
