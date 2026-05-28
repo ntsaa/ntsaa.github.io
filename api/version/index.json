@@ -3,6 +3,7 @@
   "dom_scripts_version": "1.0.0",
   "url": "http://127.0.0.1:5500/download/NTSAA.zip",
   "alterurl": "https://drive.usercontent.google.com/download?id=1TRXNV4RHIJS72vQIYUYmvOxUQuC9Az48",
+  "sha256": "2ed34705197d7ce1e10b2ae501c54e4a500be5d25d089f0b98a61e20ba417d4d",
   "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.4.x/NTSAA_x86.zip",
   "alterurl_x86": "https://drive.usercontent.google.com/download?id=1ncYzHIfFZJa9z4UHGqkuJnNW5fyXYqRW",
   "sha256_x86": "2ef24a1ddd1992bc8477989079b855d128935772fcefa1e407e8e6bd77e9a5bb",
