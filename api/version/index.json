@@ -10,7 +10,7 @@
     "update_url": "http://127.0.0.1:5500/download/x86/"
   },
   "url": "http://127.0.0.1:5500/download/NTSAA.zip",
-  "sha256": "9b04405aed18bedb5bd7e007d8d552f74255c24c46ad2e203bc3bee95dc23157",
+  "sha256": "e68d1be00b01708f2b26e9c857ae9dfa3c9a2257359f635d8e9733cc3144f14f",
   "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.4.x/NTSAA_x86.zip",
   "sha256_x86": "2ef24a1ddd1992bc8477989079b855d128935772fcefa1e407e8e6bd77e9a5bb",
   "pw": "ntsaa"
