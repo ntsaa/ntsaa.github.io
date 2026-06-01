@@ -126,10 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const updateUrl = (all) => {
         if (all) {
             [
-                ["download_x64", ver.url],
-                ["alt_x64", ver.alterurl],
-                ["download_x86", ver.url_x86],
-                ["alt_x86", ver.alterurl_x86],
+                ["download_x64", ver.x64?.bundle_url],
+                ["download_x86", ver.x86?.bundle_url],
             ].forEach(([id, url]) => {
                 const el = document.getElementById(id);
                 if (el && url) el.href = url;
