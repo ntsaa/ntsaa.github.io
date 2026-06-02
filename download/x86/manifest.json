@@ -1,0 +1,71 @@
+{
+  "version": "1.4.5.0",
+  "date": "2026-06-02 12:01:15",
+  "files": [
+    {
+      "name": "Interop.UIAutomationClient.dll",
+      "sha256": "dcea43a1f5a2114b7bcc9e41cc1377064307611d0caa50f1ec203b887f4c20bb",
+      "size": 151040
+    },
+    {
+      "name": "Microsoft.Web.WebView2.Core.dll",
+      "sha256": "50e9c2f516e2f05c4d8ee925018314353b5f8198795f2222a4d433bddfece078",
+      "size": 649792
+    },
+    {
+      "name": "Microsoft.Web.WebView2.WinForms.dll",
+      "sha256": "6e0f59d00775b4e41c22504ff98414dcbc3e183ee545afc4e9d7f5113253e363",
+      "size": 39488
+    },
+    {
+      "name": "Microsoft.Web.WebView2.Wpf.dll",
+      "sha256": "025b07df0768ad4d17c0a232210a1844f70613fb622b3b854025cab557a79fa3",
+      "size": 83008
+    },
+    {
+      "name": "NTSAA.deps.json",
+      "sha256": "dbac3f16dfa45172165132bcae9c965bb6a1abf73993698edae223c199c067c2",
+      "size": 4794
+    },
+    {
+      "name": "NTSAA.dll",
+      "sha256": "9a72f200eb4ec0633a77a058cc9941c39b3bad4e7fa8f2eed798f43e7fb005fd",
+      "size": 645344
+    },
+    {
+      "name": "NTSAA.exe",
+      "sha256": "e3aabd03d6fb5ab435605f27785b4ff66eda635f3b28baf14485e5fd48c151f7",
+      "size": 135904
+    },
+    {
+      "name": "NTSAA.runtimeconfig.json",
+      "sha256": "73b37384bb001e78db2014d328750eb2990393712fd63cd00c0f41965b3dbe96",
+      "size": 429
+    },
+    {
+      "name": "Serilog.dll",
+      "sha256": "089fc2c35ac0d5b9887042701d7635b8df34238154df899da84efc8a47de3efa",
+      "size": 163328
+    },
+    {
+      "name": "Serilog.Sinks.File.dll",
+      "sha256": "642a271b254ca70d35a02a4ae9c6d86b38c4bb2d0656012c1dc93839bf82b8b0",
+      "size": 36864
+    },
+    {
+      "name": "WebView2Loader.dll",
+      "sha256": "88a23a619ee7f2f4d2e476533aeb59b6fef917baa3eecf369a1c14f7446c649c",
+      "size": 120904
+    },
+    {
+      "name": "zxing.dll",
+      "sha256": "0aad7a70ad42a48d74f75204a9dcf05a94bb1ed66c0824f49d6f8bd08fefb127",
+      "size": 514560
+    },
+    {
+      "name": "runtimes/win-x86/native/WebView2Loader.dll",
+      "sha256": "88a23a619ee7f2f4d2e476533aeb59b6fef917baa3eecf369a1c14f7446c649c",
+      "size": 120904
+    }
+  ]
+}
