@@ -9,9 +9,9 @@
     "bundle_url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.5x/NTSAA_v1.5.0_x86_Bundle.exe",
     "update_url": "https://ntsaa.github.io/download/x86/"
   },
-  "url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.5.x/NTSAA.zip",
+  "url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.5x/NTSAA.zip",
   "sha256": "a8671da210b1aa15c9324aaabb939481e0b9bb8bec114a9d8fd89f66c3961a75",
-  "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.5.x/NTSAA_x86.zip",
+  "url_x86": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.5x/NTSAA_x86.zip",
   "sha256_x86": "496bb4a07e74ad7e7736130bffb5299016db23bf9dba4fc217bb2d84cd11a8e0",
   "pw": "ntsaa"
 }
