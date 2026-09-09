@@ -1,7 +1,7 @@
 /* --- VARIABLES --- */
 :root {
   --color-bg-dark: #111;
-  --color-bg-mid: #333;
+  --color-bg-mid: #1a1a1a;
   --color-btn-dark: #222;
   --color-border: #555;
   --color-border-light: #777;
@@ -19,6 +19,7 @@ html, body {
     padding: 0;
     height: 100%;
     font-family: sans-serif;
+    background: radial-gradient(circle at center, #1c2530, #141414);
 }
 
 /* --- HEADER --- */
@@ -30,7 +31,7 @@ header {
     left: 0;
     right: 0;
     height: 56px;
-    z-index: 10;
+    z-index: 100;
     font-size: 15px;
 }
 
@@ -231,7 +232,7 @@ header {
     box-sizing: border-box;
     color: var(--color-text-light);
     opacity: 0;
-    transition: opacity 0.2s ease-in-out; /* Thêm transition mặc định để hỗ trợ fade out */
+    transition: opacity 0.2s ease-in-out;
 }
 
 #content.fade-in {
@@ -250,7 +251,7 @@ footer {
     height: 40px;
     line-height: 40px;
     font-size: 14px;
-    z-index: 10;
+    z-index: 100; /* Nâng lên cao nhất */
 }
 
 .footer-container {
@@ -318,7 +319,8 @@ a {
     color: var(--color-accent);
 }
 
-.help-content section > div {
+.help-content section > div,
+.help-content .version-group-body > div {
     color: var(--color-accent);
     margin: 20px 0px -10px 0px;
 }
@@ -395,8 +397,7 @@ kbd img.logo-kbd {
 /* --- RESPONSIVE --- */
 .version-header-row {
   display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin: 20px 0 -10px 0;
   color: var(--color-accent);
@@ -410,11 +411,8 @@ kbd img.logo-kbd {
 @media (max-width: 600px) {
   .version-header-row {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 8px;
-  }
-  .version-header-row .pw-info {
-    align-self: flex-end;
   }
   .version-header-row .version-info {
     align-self: flex-start;
@@ -443,4 +441,70 @@ kbd img.logo-kbd {
     .site-title {
         display: none;
     }
+}
+
+/* --- VERSION GROUP COLLAPSIBLE (ONE-WAY) --- */
+details.version-group {
+    margin: 12px 0;
+}
+
+details.version-group[open] {
+    margin-bottom: 20px;
+}
+
+/* Khi mở ra: có đường gạch ngang ở trên ngăn cách */
+details.version-group[open]:not(:first-of-type) {
+    border-top: 2px solid var(--color-border);
+    padding-top: 15px;
+    margin-top: 20px;
+}
+
+details.version-group summary.version-summary {
+    cursor: pointer;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-accent);
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    list-style: none;
+    user-select: none;
+    display: block;
+}
+
+details.version-group summary.version-summary .version-arrow {
+    display: inline-block;
+    margin-right: 4px;
+    transition: transform 0.2s ease;
+}
+
+details.version-group summary.version-summary::-webkit-details-marker {
+    display: none;
+}
+
+details.version-group summary.version-summary:hover {
+    background: rgba(228, 123, 255, 0.12);
+    border-color: var(--color-accent);
+}
+
+/* Đã xổ ra: Khóa click (không cho cụp lại), biến thành tiêu đề tĩnh */
+details.version-group[open] summary.version-summary {
+    pointer-events: none;
+    cursor: default;
+    background: transparent;
+    border: none;
+    padding: 10px 0 0 0;
+    font-weight: bold;
+    color: var(--color-accent);
+}
+
+details.version-group[open] summary.version-summary .version-arrow {
+    transform: rotate(90deg);
+}
+
+details.version-group .version-group-body {
+    margin-top: 5px;
+    padding-left: 16px;
 }

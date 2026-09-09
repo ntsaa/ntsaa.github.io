@@ -1,5 +1,5 @@
 html, body {
-  background: radial-gradient(circle at center, #0d1b2a, #000);
+  background: radial-gradient(circle at center, #1c2530, #141414);
 }
 
 canvas#network {
@@ -7,12 +7,12 @@ canvas#network {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 10; /* Mức trung bình: Trên text (0) nhưng dưới ảnh (20) */
   pointer-events: none;
   display: block;
 }
 
-.help-content img {
+.help-content img, #screenshot-image {
   position: relative;
-  z-index: 2;
+  z-index: 20; /* Cao nhất: Che được cả hiệu ứng */
 }
