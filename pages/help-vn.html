@@ -7,6 +7,7 @@
     <ul>
       <li>Tải và mở tệp <kbd><img src="images/logo.png" alt="Logo" class="logo-kbd" />NTSAA_..._Bundle.exe</kbd> để giải nén (mặc định ở chế độ <strong>Portable</strong>, không cần quyền Administrator).</li>
       <li>Sau khi hoàn tất, NTSAA sẽ <strong>tự động khởi chạy</strong> và hiển thị ở khay hệ thống (góc dưới bên phải màn hình).</li>
+      <li>Nhấn <kbd>PrtScn</kbd> (Print Screen) bất kỳ lúc nào để bắt đầu chọn vùng chụp màn hình.</li>
     </ul>
     <div>Lưu ý:</div>
     <ul>
@@ -18,6 +19,7 @@
     </div>
   </section>
 
+  <hr>
   <section>
     <h3>2. Chuyển ảnh thành văn bản</h3>
     <ul>
@@ -30,11 +32,13 @@
     </div>
   </section>
 
+  <hr>
   <section>
     <h3>3. Sử dụng công cụ vẽ</h3>
     <ul>
       <li>Chọn vùng ảnh cần chỉnh sửa.</li>
       <li>Dùng các công cụ vẽ hoặc viết chữ trên thanh công cụ (thường nằm bên phải vùng chụp).</li>
+      <li>Giữ <kbd>Shift</kbd> khi vẽ để tạo hình vuông, hình tròn hoặc khóa góc đường thẳng/mũi tên (0°, 30°, 45°, 60°, 90°).</li>
       <li>Giữ <kbd>Alt</kbd> để chọn lại hình vẽ bất kỳ để di chuyển, đổi kích thước hoặc chuột phải đổi kiểu.</li>
     </ul>
     <div class="img-demo">
@@ -42,70 +46,115 @@
     </div>
   </section>
 
+  <hr>
   <section>
-  <h3>4. Các phím tắt</h3>
-    <div>💡 Cơ bản</div>
-    <ul>
-      <li><kbd>Ctrl+T</kbd> - Chuyển ảnh thành văn bản</li>
-      <li><kbd>Ctrl+C</kbd> - Sao chép ảnh</li>
-      <li><kbd>Ctrl+S</kbd> - Lưu ảnh</li>
-      <li><kbd>Ctrl+X</kbd> - Đóng</li>
-    </ul>
+    <h3>4. Các phím tắt</h3>
+    <p class="section-intro-note">💡 Tất cả các phím tắt và phím nóng bên dưới là cấu hình mặc định, bạn có thể tùy chỉnh lại theo ý muốn trong <strong>Settings (Cài đặt)</strong>.</p>
+    <div class="shortcuts-grid">
+      <div class="shortcut-card hotkeys-card">
+        <div class="shortcut-title">🌐 Phím nóng toàn cục</div>
+        <ul>
+          <li><kbd>PrtScn</kbd> - Bắt đầu chụp màn hình</li>
+          <li><kbd>Alt+Shift+C</kbd> - Lấy mã màu (Color Picker)</li>
+          <li><kbd>Alt+Shift+H</kbd> - Mở lịch sử ảnh chụp (History)</li>
+        </ul>
+      </div>
 
-    <div>🖱️ Điều khiển và thao tác chung</div>
-    <ul>
-      <li>Double-click chuột - Chuyển chế độ chọn toàn màn hình</li>
-      <li>Scroll chuột - Tăng/giảm độ dày nét (stroke)</li>
-      <li>Giữ <kbd>Shift</kbd> - Khóa tỉ lệ (hình vuông, tròn) hoặc góc đường thẳng</li>
-      <li>Giữ <kbd>Alt</kbd> - Chọn và chỉnh sửa (di chuyển, đổi kích thước) các hình đã vẽ</li>
-      <li><kbd>Ctrl+D</kbd> - Nhân bản hình vẽ đang chọn</li>
-      <li><kbd>Alt+Shift+H</kbd> - Mở Lịch sử chụp ảnh (History / Workspace)</li>
-    </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">💡 Cơ bản khi chụp</div>
+        <ul>
+          <li><kbd>Ctrl+T</kbd> - Chuyển ảnh thành văn bản</li>
+          <li><kbd>Ctrl+C</kbd> - Sao chép ảnh</li>
+          <li><kbd>Ctrl+S</kbd> - Lưu ảnh</li>
+          <li><kbd>Ctrl+X</kbd> - Đóng</li>
+        </ul>
+      </div>
 
-    <div>🎨 Màu sắc</div>
-    <ul>
-      <li><kbd>R</kbd> / <kbd>G</kbd> / <kbd>B</kbd> / <kbd>Y</kbd> - Chọn màu 
-        <span style="color:red;">Red</span> / 
-        <span style="color:green;">Green</span> / 
-        <span style="color:blue;">Blue</span> / 
-        <span style="color:yellow;">Yellow</span>
-      </li>
-      <li><kbd>`</kbd> - Chọn lại màu trước đó</li>
-      <li><kbd>Ctrl+7</kbd> - Chọn màu</li>
-    </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">🖱️ Thao tác chung</div>
+        <ul>
+          <li><kbd>Double-click</kbd> chuột - Chọn toàn màn hình</li>
+          <li><kbd>Cuộn chuột</kbd> - Tăng/giảm độ dày nét</li>
+          <li><kbd>Shift</kbd> (khi vẽ) - Khóa tỉ lệ (Vuông, Tròn) hoặc góc (0°, 30°, 45°, 60°, 90°)</li>
+          <li><kbd>Alt</kbd> (giữ) - Chọn và chỉnh sửa hình đã vẽ</li>
+          <li><kbd>Ctrl+D</kbd> - Nhân bản hình vẽ đang chọn</li>
+        </ul>
+      </div>
 
-    <div>✏️ Công cụ vẽ</div>
-    <ul>
-      <li><kbd>1-9</kbd> - Chọn các công cụ vẽ tương ứng (trừ số 7, sử dụng <kbd>Ctrl+7</kbd> để chọn màu)</li>
-      <li><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> - Chuyển đổi qua lại giữa các công cụ vẽ</li>
-    </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">✏️ Công cụ vẽ</div>
+        <ul class="shortcut-subgrid">
+          <li><kbd>P</kbd> Bút vẽ (Pen)</li>
+          <li><kbd>T</kbd> Văn bản (Text)</li>
+          <li><kbd>L</kbd> Đường thẳng (Line)</li>
+          <li><kbd>N</kbd> Đánh số (Number)</li>
+          <li><kbd>A</kbd> Mũi tên (Arrow)</li>
+          <li><kbd>M</kbd> Dạ quang (Marker)</li>
+          <li><kbd>R</kbd> Chữ nhật (Rect)</li>
+          <li><kbd>B</kbd> Làm mờ (Blur)</li>
+          <li><kbd>E</kbd> Hình tròn (Ellipse)</li>
+          <li><kbd>Tab</kbd> Đổi công cụ</li>
+        </ul>
+      </div>
 
-    <div>📐 Di chuyển hoặc thay đổi kích thước</div>
-    <ul>
-      <li><kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> - Di chuyển vùng chọn lên, xuống, sang trái hoặc sang phải</li>
-      <li>Giữ <kbd>Shift</kbd> - Thay đổi kích thước vùng chọn theo hướng tương ứng</li>
-    </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">🎨 Màu sắc</div>
+        <ul>
+          <li>
+            <kbd>1-9</kbd> - Chọn màu nhanh theo màu team game AOE
+            <div class="color-palette-text">
+              (<span style="color: #5390fc;">1-Xanh biển</span>,
+              <span style="color: #ff5a5a;">2-Đỏ</span>,
+              <span style="color: #ffd700;">3-Vàng</span>,
+              <span style="color: #c78a58;">4-Nâu</span>,
+              <span style="color: #ff9800;">5-Cam</span>,
+              <span style="color: #4cd964;">6-Xanh lá</span>,
+              <span style="color: #cfd8dc;">7-Xám</span>,
+              <span style="color: #00e5ff;">8-Cyan</span>,
+              <span style="color: var(--color-accent); font-weight: 600;" title="Màu nhận diện NTSAA">9-Tím*</span> - màu app)
+            </div>
+          </li>
+          <li><kbd>`</kbd> - Đổi qua lại màu trước đó</li>
+          <li><kbd>Ctrl+`</kbd> - Chọn màu (Choose color)</li>
+        </ul>
+        <div class="shortcut-footer">💡 Với văn bản (Text), nhấn kết hợp thêm phím <kbd>Ctrl</kbd></div>
+      </div>
 
-    <div>💬 Văn bản & hoàn thành thao tác</div>
-    <ul>
-      <li><kbd>Enter</kbd> - Hoàn thành khi hình vẽ đang ở chế độ thay đổi kích thước (resizeable)</li>
-      <li><kbd>Ctrl+Enter</kbd> - Hoàn thành khi gõ văn bản</li>
-    </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">💬 Hoàn thành & Xóa hình</div>
+        <ul>
+          <li><kbd>Enter</kbd> / <kbd>Esc</kbd> - Hoàn thành vẽ hoặc chỉnh kích thước</li>
+          <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> - Xóa hình vẽ đang chọn</li>
+        </ul>
+        <div class="shortcut-footer">💡 Với văn bản (Text), nhấn kết hợp thêm phím <kbd>Ctrl</kbd></div>
+      </div>
 
-    <div>🔍 Tùy chọn hiển thị</div>
-    <ul>
-      <li><kbd>F1</kbd> - Bật/tắt hiển thị gợi ý phím tắt</li>
-      <li><kbd>F2</kbd> - Hiện/ẩn văn bản UIA</li>
-      <li><kbd>F3</kbd> - Sao chép văn bản UIA</li>
-      <li><kbd>F4</kbd> - Chuyển đổi viền/nền của Text Box; bật/tắt tô nền hình vẽ (vuông/tròn)</li>
-    </ul>
-    
-    <div>⚙️ Điều chỉnh nét vẽ</div>
-    <ul>
-      <li><kbd>F5</kbd> - Đặt lại độ dày nét về mặc định</li>
-      <li><kbd>F6</kbd> - Giảm độ dày nét</li>
-      <li><kbd>F7</kbd> - Tăng độ dày nét</li>
-      <li><kbd>F8</kbd> - Chuyển kiểu nét vẽ (Vuông ↔ Tròn)</li>
-    </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">📐 Di chuyển & Thay đổi kích thước</div>
+        <ul>
+          <li><kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> - Di chuyển vùng chọn hoặc hình vẽ</li>
+        </ul>
+        <div class="shortcut-footer">💡 Giữ thêm phím <kbd>Shift</kbd> để thay đổi kích thước</div>
+      </div>
+
+      <div class="shortcut-card">
+        <div class="shortcut-title">🔍 Tùy chọn hiển thị</div>
+        <ul>
+          <li><kbd>F1</kbd> - Bật/tắt gợi ý phím tắt</li>
+          <li><kbd>F2</kbd> - Hiện/ẩn văn bản UIA</li>
+          <li><kbd>F3</kbd> - Sao chép văn bản UIA</li>
+          <li><kbd>F4</kbd> - Đổi viền/nền Text Box; bật/tắt tô nền hình vẽ</li>
+        </ul>
+      </div>
+
+      <div class="shortcut-card">
+        <div class="shortcut-title">⚙️ Điều chỉnh nét vẽ</div>
+        <ul>
+          <li><kbd>F5</kbd> - Đặt lại độ dày nét về mặc định</li>
+          <li><kbd>F6</kbd> / <kbd>F7</kbd> - Giảm / Tăng độ dày nét</li>
+          <li><kbd>F8</kbd> - Chuyển kiểu nét vẽ (Vuông ↔ Tròn)</li>
+        </ul>
+      </div>
+    </div>
   </section>
 </div>

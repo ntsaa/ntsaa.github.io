@@ -7,6 +7,7 @@
     <ul>
       <li>Download and run <kbd><img src="images/logo.png" alt="Logo" class="logo-kbd" />NTSAA_..._Bundle.exe</kbd> to extract (defaults to <strong>Portable mode</strong>, no Administrator privileges required).</li>
       <li>Once completed, NTSAA will <strong>automatically launch</strong> and sit ready in the System Tray (bottom-right corner of your screen).</li>
+      <li>Press <kbd>PrtScn</kbd> (Print Screen) anytime to start selecting a screen capture area.</li>
     </ul>
     <div>Note:</div>
     <ul>
@@ -18,6 +19,7 @@
     </div>
   </section>
 
+  <hr>
   <section>
     <h3>2. Convert image to text</h3>
     <ul>
@@ -30,11 +32,13 @@
     </div>
   </section>
 
+  <hr>
   <section>
     <h3>3. Use drawing tools</h3>
     <ul>
       <li>Select the area of the image you want to edit.</li>
       <li>Use drawing or text tools from the toolbar (usually located on the right side of the capture area).</li>
+      <li>Hold <kbd>Shift</kbd> while drawing to create perfect squares/circles or snap line/arrow angles (0°, 30°, 45°, 60°, 90°).</li>
       <li>Hold <kbd>Alt</kbd> to select any drawn shape to move, resize, or right-click to convert types.</li>
     </ul>
     <div class="img-demo">
@@ -42,71 +46,116 @@
     </div>
   </section>
 
- <section>
-  <h3>4. Keyboard Shortcuts</h3>
-  
-  <div>💡 Basic</div>
-  <ul>
-    <li><kbd>Ctrl+T</kbd> - Convert image to text</li>
-    <li><kbd>Ctrl+C</kbd> - Copy image</li>
-    <li><kbd>Ctrl+S</kbd> - Save image</li>
-    <li><kbd>Ctrl+X</kbd> - Close</li>
-  </ul>
+  <hr>
+  <section>
+    <h3>4. Keyboard Shortcuts</h3>
+    <p class="section-intro-note">💡 All shortcuts and hotkeys listed below are defaults and can be fully customized in <strong>Settings</strong>.</p>
+    <div class="shortcuts-grid">
+      <div class="shortcut-card hotkeys-card">
+        <div class="shortcut-title">🌐 Global Hotkeys</div>
+        <ul>
+          <li><kbd>PrtScn</kbd> - Start screen capture</li>
+          <li><kbd>Alt+Shift+C</kbd> - Pick screen color (Color Picker)</li>
+          <li><kbd>Alt+Shift+H</kbd> - Open capture history (History)</li>
+        </ul>
+      </div>
 
-  <div>🖱️ Controls and general actions</div>
-  <ul>
-    <li>Double-click mouse - Toggle full-screen selection mode</li>
-    <li>Scroll mouse - Increase/decrease stroke thickness</li>
-    <li>Hold <kbd>Shift</kbd> - Constrain proportions (square, circle) or line angle</li>
-    <li>Hold <kbd>Alt</kbd> - Select and edit (move, resize) previously drawn items</li>
-    <li><kbd>Ctrl+D</kbd> - Duplicate selected drawn shape</li>
-    <li><kbd>Alt+Shift+H</kbd> - Open Capture History / Workspace</li>
-  </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">💡 Basic (On Canvas)</div>
+        <ul>
+          <li><kbd>Ctrl+T</kbd> - Convert image to text</li>
+          <li><kbd>Ctrl+C</kbd> - Copy image</li>
+          <li><kbd>Ctrl+S</kbd> - Save image</li>
+          <li><kbd>Ctrl+X</kbd> - Close</li>
+        </ul>
+      </div>
 
-  <div>🎨 Colors</div>
-  <ul>
-    <li><kbd>R</kbd> / <kbd>G</kbd> / <kbd>B</kbd> / <kbd>Y</kbd> - Select color
-        <span style="color:red;">Red</span> / 
-        <span style="color:green;">Green</span> / 
-        <span style="color:blue;">Blue</span> / 
-        <span style="color:yellow;">Yellow</span></li>
-    <li><kbd>`</kbd> - Revert to the previous color</li>
-    <li><kbd>Ctrl+7</kbd> - Select color</li>
-  </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">🖱️ General Controls</div>
+        <ul>
+          <li><kbd>Double-click</kbd> - Full-screen selection</li>
+          <li><kbd>Scroll</kbd> - Adjust stroke thickness</li>
+          <li><kbd>Shift</kbd> (drawing) - Constrain proportions (Square, Circle) or angles (0°, 30°, 45°, 60°, 90°)</li>
+          <li><kbd>Alt</kbd> (hold) - Select and edit drawn items</li>
+          <li><kbd>Ctrl+D</kbd> - Duplicate selected shape</li>
+        </ul>
+      </div>
 
-  <div>✏️ Drawing tools</div>
-  <ul>
-    <li><kbd>1-9</kbd> - Select drawing tools (except 7, use <kbd>Ctrl+7</kbd> to select color)</li>
-    <li><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> - Switch between drawing tools</li>
-  </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">✏️ Drawing Tools</div>
+        <ul class="shortcut-subgrid">
+          <li><kbd>P</kbd> Pen</li>
+          <li><kbd>T</kbd> Text</li>
+          <li><kbd>L</kbd> Line</li>
+          <li><kbd>N</kbd> Number</li>
+          <li><kbd>A</kbd> Arrow</li>
+          <li><kbd>M</kbd> Marker</li>
+          <li><kbd>R</kbd> Rectangle</li>
+          <li><kbd>B</kbd> Blur</li>
+          <li><kbd>E</kbd> Ellipse</li>
+          <li><kbd>Tab</kbd> Switch tool</li>
+        </ul>
+      </div>
 
-  <div>📐 Move or resize</div>
-  <ul>
-    <li><kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> - Move the selected area up, down, left, or right</li>
-    <li>Hold <kbd>Shift</kbd> - Resize the selected area in the corresponding direction</li>
-  </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">🎨 Colors</div>
+        <ul>
+          <li>
+            <kbd>1-9</kbd> - Quick select AOE team colors
+            <div class="color-palette-text">
+              (<span style="color: #5390fc;">1-Blue</span>,
+              <span style="color: #ff5a5a;">2-Red</span>,
+              <span style="color: #ffd700;">3-Yellow</span>,
+              <span style="color: #c78a58;">4-Brown</span>,
+              <span style="color: #ff9800;">5-Orange</span>,
+              <span style="color: #4cd964;">6-Green</span>,
+              <span style="color: #cfd8dc;">7-Gray</span>,
+              <span style="color: #00e5ff;">8-Cyan</span>,
+              <span style="color: var(--color-accent); font-weight: 600;" title="NTSAA theme color">9-Violet*</span> - app theme)
+            </div>
+          </li>
+          <li><kbd>`</kbd> - Toggle previous color</li>
+          <li><kbd>Ctrl+`</kbd> - Choose color</li>
+        </ul>
+        <div class="shortcut-footer">💡 For text items, combine with <kbd>Ctrl</kbd></div>
+      </div>
 
-  <div>💬 Text & completion</div>
-  <ul>
-    <li><kbd>Enter</kbd> - Complete when the shape is in resizable mode</li>
-    <li><kbd>Ctrl+Enter</kbd> - Complete when typing text</li>
-  </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">💬 Confirm & Delete</div>
+        <ul>
+          <li><kbd>Enter</kbd> / <kbd>Esc</kbd> - Complete drawing or shape resizing</li>
+          <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> - Delete selected shape</li>
+        </ul>
+        <div class="shortcut-footer">💡 For text items, combine with <kbd>Ctrl</kbd></div>
+      </div>
 
-  <div>🔍 Display options</div>
-  <ul>
-    <li><kbd>F1</kbd> - Show/hide shortcut hints</li>
-    <li><kbd>F2</kbd> - Show/hide UIA text</li>
-    <li><kbd>F3</kbd> - Copy UIA text</li>
-    <li><kbd>F4</kbd> - Toggle Text Box border/background; toggle shape fill (rectangle/ellipse)</li>
-  </ul>
+      <div class="shortcut-card">
+        <div class="shortcut-title">📐 Move & Resize</div>
+        <ul>
+          <li><kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> - Move selected area or shape</li>
+        </ul>
+        <div class="shortcut-footer">💡 Hold <kbd>Shift</kbd> to resize in key direction</div>
+      </div>
 
-  <div>⚙️ Stroke adjustments</div>
-  <ul>
-    <li><kbd>F5</kbd> - Reset stroke thickness to default</li>
-    <li><kbd>F6</kbd> - Decrease stroke thickness</li>
-    <li><kbd>F7</kbd> - Increase stroke thickness</li>
-    <li><kbd>F8</kbd> - Toggle stroke shape (Square ↔ Round)</li>
-  </ul>
-</section>
+      <div class="shortcut-card">
+        <div class="shortcut-title">🔍 Display Options</div>
+        <ul>
+          <li><kbd>F1</kbd> - Toggle shortcut hints</li>
+          <li><kbd>F2</kbd> - Show/hide UIA text</li>
+          <li><kbd>F3</kbd> - Copy UIA text</li>
+          <li><kbd>F4</kbd> - Toggle Text Box border; toggle fill</li>
+        </ul>
+      </div>
+
+      <div class="shortcut-card">
+        <div class="shortcut-title">⚙️ Stroke Adjustments</div>
+        <ul>
+          <li><kbd>F5</kbd> - Reset stroke to default</li>
+          <li><kbd>F6</kbd> / <kbd>F7</kbd> - Decrease / Increase thickness</li>
+          <li><kbd>F8</kbd> - Toggle stroke (Square ↔ Round)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
 </div>

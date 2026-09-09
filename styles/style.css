@@ -327,7 +327,7 @@ a {
 
 hr {
     border: none;
-    border-top: 2px solid var(--color-border);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .help-content h3 {
@@ -382,6 +382,26 @@ kbd img.logo-kbd {
     display: inline-block;
 }
 
+/* --- DONATE SECTION & CARD --- */
+.donate-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin: 28px 0;
+}
+
+.donate-card h3 {
+    margin-top: 0 !important;
+}
+
+.donate-subtitle {
+    color: var(--color-accent);
+    font-size: 15px;
+    margin: 12px 0 6px 0;
+    font-weight: 500;
+}
+
 .donate-container {
     display: flex;
     align-items: flex-start;
@@ -395,8 +415,65 @@ kbd img.logo-kbd {
     color: var(--color-text-muted);
 }
 
+.copy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 1px 7px;
+    cursor: pointer;
+    color: #fff;
+    font-family: monospace;
+    font-size: 14.5px;
+    vertical-align: middle;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.copy-badge:hover {
+    background: rgba(228, 123, 255, 0.15);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.copy-badge.copied {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4caf50;
+    color: #81c784;
+    font-family: inherit;
+    font-size: 13.5px;
+}
+
+.copy-icon {
+    font-size: 13px;
+}
+
 .donate-international {
-    margin: 20px 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+    margin: 14px 0 0 !important;
+}
+
+.donate-international > span,
+.donate-international-row > span {
+    color: var(--color-accent);
+    font-weight: 500;
+}
+
+.donate-intl-focus {
+    margin: 12px 0 16px;
+}
+
+.donate-international-row {
+    gap: 12px;
+}
+
+.donate-vn-secondary {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+    margin-top: 14px;
 }
 
 .section-title {
@@ -405,7 +482,124 @@ kbd img.logo-kbd {
     color: var(--color-text-muted) !important;
 }
 
+/* --- SHORTCUTS GRID (HELP PAGE) --- */
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 14px 0 0 0 !important;
+    color: inherit !important;
+}
+
+.shortcut-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 14px 16px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.shortcut-card:hover {
+    border-color: rgba(228, 123, 255, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.shortcut-card.hotkeys-card {
+    background: rgba(228, 123, 255, 0.035);
+    border-color: rgba(228, 123, 255, 0.25);
+}
+
+.shortcut-card.hotkeys-card:hover {
+    border-color: rgba(228, 123, 255, 0.45);
+    background: rgba(228, 123, 255, 0.065);
+}
+
+.section-intro-note {
+    margin: 4px 0 14px 0 !important;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.shortcut-title {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 14.5px;
+    margin: 0 0 10px 0 !important;
+}
+
+.shortcut-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+}
+
+.shortcut-card li {
+    line-height: 1.7;
+    margin-bottom: 5px;
+}
+
+.shortcut-card li:last-child {
+    margin-bottom: 0;
+}
+
+.shortcut-subgrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 10px;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.shortcut-subgrid li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    line-height: 1.4;
+    margin-bottom: 0;
+    font-size: 13.5px;
+}
+
+.color-palette-text {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 2px 0 6px 0;
+}
+
+.shortcut-footer,
+.shortcut-note {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
 /* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+    .shortcuts-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+    .shortcut-card.hotkeys-card {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .shortcuts-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .shortcut-card.hotkeys-card {
+        grid-column: auto;
+    }
+}
+
 .version-header-row {
   display: flex;
   justify-content: flex-start;
@@ -471,15 +665,21 @@ kbd img.logo-kbd {
         text-align: center;
     }
 
+    .donate-card {
+        padding: 16px 14px;
+        margin: 16px 0;
+    }
+
     .donate-container {
         flex-direction: column;
         align-items: center;
         margin: 0px;
-        gap: 0px;
+        gap: 8px;
     }
 
     .donate-info {
-        line-height: 1;
+        line-height: 1.5;
+        width: 100%;
     }
 }
 
@@ -491,38 +691,35 @@ kbd img.logo-kbd {
 
 /* --- VERSION GROUP COLLAPSIBLE (ONE-WAY) --- */
 details.version-group {
-    margin: 12px 0;
+    margin: 0;
 }
 
 details.version-group[open] {
-    margin-bottom: 20px;
-}
-
-/* Khi mở ra: có đường gạch ngang ở trên ngăn cách */
-details.version-group[open]:not(:first-of-type) {
-    border-top: 2px solid var(--color-border);
-    padding-top: 15px;
-    margin-top: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 18px;
+    margin-bottom: 8px;
 }
 
 details.version-group summary.version-summary {
     cursor: pointer;
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--color-accent);
     font-size: 15px;
     font-weight: 500;
     transition: all 0.2s ease;
     list-style: none;
     user-select: none;
-    display: block;
+    display: flex;
+    align-items: center;
 }
 
 details.version-group summary.version-summary .version-arrow {
     display: inline-block;
-    margin-right: 4px;
+    margin-right: 8px;
+    font-size: 12px;
     transition: transform 0.2s ease;
 }
 
@@ -530,9 +727,14 @@ details.version-group summary.version-summary::-webkit-details-marker {
     display: none;
 }
 
-details.version-group summary.version-summary:hover {
-    background: rgba(228, 123, 255, 0.12);
-    border-color: var(--color-accent);
+details.version-group:not([open]) summary.version-summary:hover {
+    color: #f3b8ff;
+    border-bottom-color: var(--color-accent);
+    padding-left: 4px;
+}
+
+details.version-group:not([open]) summary.version-summary:hover .version-arrow {
+    transform: translateX(2px);
 }
 
 /* Đã xổ ra: Khóa click (không cho cụp lại), biến thành tiêu đề tĩnh */
@@ -541,7 +743,8 @@ details.version-group[open] summary.version-summary {
     cursor: default;
     background: transparent;
     border: none;
-    padding: 10px 0 0 0;
+    border-bottom: none;
+    padding: 14px 0 6px 0;
     font-weight: bold;
     color: var(--color-accent);
 }

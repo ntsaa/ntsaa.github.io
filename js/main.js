@@ -43,9 +43,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const getHashParam = (name) =>
         new URLSearchParams(window.location.hash.slice(1)).get(name);
 
-    const detectLanguage = () =>
-        localStorage.getItem("lang") ||
-        ((navigator.language || "").toLowerCase().startsWith("vi") ? "vn" : "en");
+    const detectLanguage = () => {
+        const saved = localStorage.getItem("lang");
+        if (saved) return saved;
+
+        const browserLangs = navigator.languages || [navigator.language || ""];
+        
+        // 1. Trình duyệt có tiếng Việt
+        if (browserLangs.some(l => (l || "").toLowerCase().startsWith("vi"))) {
+            return "vn";
+        }
+
+        // 2. Kiểm tra nếu là ngôn ngữ các nước láng giềng cùng múi giờ UTC+7 (Thái Lan, Indo, Malay)
+        const isNeighbor = browserLangs.some(l => {
+            const s = (l || "").toLowerCase();
+            return s.startsWith("th") || s.startsWith("id") || s.startsWith("ms");
+        });
+
+        // 3. Múi giờ Việt Nam (Windows đặt là Asia/Bangkok, SE Asia Standard Time, offset -420)
+        try {
+            const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "").toLowerCase();
+            const isGmt7 = new Date().getTimezoneOffset() === -420;
+            const isVnTimezone = tz.includes("ho_chi_minh") || tz.includes("saigon") || tz.includes("bangkok") || isGmt7;
+
+            if (isVnTimezone && !isNeighbor) {
+                return "vn";
+            }
+        } catch {}
+
+        return "en";
+    };
 
     const getCurrentLang = () => detectLanguage();
     const pageCache = {};
@@ -107,7 +134,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const footerText = document.querySelector('.footer-text');
 
         if (toggleBtn) toggleBtn.title = t.effect;
-        if (offBtn) offBtn.title = t.effect_off;
+        if (window.effectManager?.updateOffIcon) {
+            window.effectManager.updateOffIcon();
+        } else if (offBtn) {
+            offBtn.title = t.effect_off;
+        }
 
         if (footerText && window.EffectController && window.EffectController.contentVisible) {
             footerText.textContent = t.copyright;
@@ -308,6 +339,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("lang-en")
         ?.addEventListener("click", () => setLanguage("en"));
+
+    /* ============================= */
+    /*  1-CLICK COPY HANDLER         */
+    /* ============================= */
+
+    document.addEventListener("click", (e) => {
+        const copyBadge = e.target.closest(".copy-badge");
+        if (!copyBadge) return;
+
+        const textToCopy = copyBadge.getAttribute("data-copy");
+        if (!textToCopy) return;
+
+        if (copyBadge.dataset.copied === "1") return;
+
+        const showCopiedFeedback = () => {
+            copyBadge.dataset.copied = "1";
+            const originalHtml = copyBadge.innerHTML;
+            const lang = getCurrentLang();
+            const copiedText = lang === "vn" ? "Đã chép! ✅" : "Copied! ✅";
+            copyBadge.innerHTML = copiedText;
+            copyBadge.classList.add("copied");
+
+            setTimeout(() => {
+                copyBadge.innerHTML = originalHtml;
+                copyBadge.classList.remove("copied");
+                copyBadge.dataset.copied = "0";
+            }, 2000);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy)
+                .then(showCopiedFeedback)
+                .catch(() => {
+                    const temp = document.createElement("input");
+                    temp.value = textToCopy;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(temp);
+                    showCopiedFeedback();
+                });
+        } else {
+            const temp = document.createElement("input");
+            temp.value = textToCopy;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            showCopiedFeedback();
+        }
+    });
 
     /* ============================= */
     /*  INIT EFFECT SYSTEM           */
