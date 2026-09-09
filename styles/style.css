@@ -358,17 +358,28 @@ li {
 }
 
 kbd {
-    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 0.95rem;
     padding: 2px 6px;
     border-radius: 4px;
     border: 1px solid #ccc;
+    vertical-align: middle;
+    line-height: normal;
 }
 
 kbd img.logo-kbd {
-    height: 1.3em;
+    height: 1.25em;
     width: auto;
     vertical-align: middle;
     margin-right: 4px;
+    flex-shrink: 0;
+}
+
+.nowrap {
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .donate-container {
@@ -409,29 +420,64 @@ kbd img.logo-kbd {
 }
 
 @media (max-width: 600px) {
-  .version-header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .version-header-row .version-info {
-    align-self: flex-start;
-  }
-}
+    .header-container {
+        padding: 0 12px;
+        flex-wrap: nowrap;
+    }
 
-@media (max-width: 600px) {
-    .right .download-button, .lang-toggle {
-        margin-left: 8px;
+    .logo {
+        height: 28px;
     }
+
+    .site-title {
+        font-size: 18px;
+    }
+
+    .right {
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .right .link-button {
+        padding: 6px 11px;
+        font-size: 13.5px;
+        margin-left: 0;
+        white-space: nowrap;
+    }
+
+    .right .download-button {
+        margin-left: 0;
+        padding: 6px 12px;
+        font-size: 13.5px;
+    }
+
+    .lang-toggle {
+        padding: 3px 6px;
+        font-size: 12.5px;
+        margin-left: 0;
+    }
+
+    .version-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .version-header-row .version-info {
+        align-self: flex-start;
+    }
+
     .help-content .img-demo {
-       text-align: center;
+        text-align: center;
     }
+
     .donate-container {
         flex-direction: column;
         align-items: center;
         margin: 0px;
         gap: 0px;
     }
+
     .donate-info {
         line-height: 1;
     }
