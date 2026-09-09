@@ -1,5 +1,7 @@
 const translations = {
     en: {
+        title: "NTSAA - Capture, Edit & Extract Text",
+        description: "A lightweight desktop tool for screenshot capture, drawing, and AI-powered text recognition.",
         download_full: "📦 Get it",
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
@@ -11,6 +13,8 @@ const translations = {
         press_esc: "Press Esc to start"
     },
     vn: {
+        title: "NTSAA - Chụp màn hình, Chỉnh sửa & Trích xuất văn bản",
+        description: "Công cụ máy tính gọn nhẹ hỗ trợ chụp màn hình, vẽ chú thích và nhận dạng văn bản thông minh.",
         download_full: "📦 Dùng ngay",
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",
@@ -83,24 +87,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const isDldPage = () => window.location.hash === "#download";
 
     const updateDownloadText = (lang) => {
+        const t = translations[lang] || translations.en;
         document.documentElement.lang = (lang === "vn" ? "vi" : "en");
+
+        document.title = t.title;
+        document.querySelector('meta[name="description"]')?.setAttribute("content", t.description);
+        document.querySelector('meta[property="og:title"]')?.setAttribute("content", t.title);
+        document.querySelector('meta[property="og:description"]')?.setAttribute("content", t.description);
 
         const dldEl = document.querySelector("#download .full-text");
         if (dldEl) {
             dldEl.textContent = isDldPage()
-                ? translations[lang].help_full
-                : translations[lang].download_full;
+                ? t.help_full
+                : t.download_full;
         }
 
         const toggleBtn = document.getElementById('toggle-effect');
         const offBtn = document.getElementById('toggle-off');
         const footerText = document.querySelector('.footer-text');
 
-        if (toggleBtn) toggleBtn.title = translations[lang].effect;
-        if (offBtn) offBtn.title = translations[lang].effect_off;
+        if (toggleBtn) toggleBtn.title = t.effect;
+        if (offBtn) offBtn.title = t.effect_off;
 
         if (footerText && window.EffectController && window.EffectController.contentVisible) {
-            footerText.textContent = translations[lang].copyright;
+            footerText.textContent = t.copyright;
         }
     };
 
@@ -162,11 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const href = btn.getAttribute('href');
 
                 if (href && href !== '#') {
-                    // Chặn trình duyệt mở link mặc định (tránh bị x2 download)
+                    // Tải trực tiếp trên trang hiện tại, không mở tab trắng thừa
                     e.preventDefault();
                     
                     btn.dataset.cooling = "1";
-                    window.open(href, '_blank');
+                    window.location.href = href;
 
                     // Tạm thời vô hiệu hóa tương tác chuột để tránh click nhầm/nhanh
                     btn.style.pointerEvents = "none";
