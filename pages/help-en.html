@@ -49,113 +49,171 @@
   <hr>
   <section>
     <h3>4. Keyboard Shortcuts</h3>
-    <p class="section-intro-note">💡 All shortcuts and hotkeys listed below are defaults and can be fully customized in <strong>Settings</strong>.</p>
-    <div class="shortcuts-grid">
-      <div class="shortcut-card hotkeys-card">
-        <div class="shortcut-title">🌐 Global Hotkeys</div>
-        <ul>
-          <li><kbd>PrtScn</kbd> - Start screen capture</li>
-          <li><kbd>Alt+Shift+C</kbd> - Pick screen color (Color Picker)</li>
-          <li><kbd>Alt+Shift+H</kbd> - Open capture history (History)</li>
-        </ul>
-      </div>
+    <p class="section-intro-note">⚙️ All shortcuts and hotkeys listed below are defaults and can be fully customized in <strong>Settings</strong>.</p>
+    <p class="section-intro-note">💡 For text notes, shortcuts marked with <span class="tip-icon">💡</span> require holding the <kbd>Ctrl</kbd> key.</p>
+    <div class="shortcuts-container">
+      <div class="shortcuts-grid-2">
+        <!-- GROUP 1: CAPTURE & GLOBAL HOTKEYS -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>🌐 Capture &amp; Global Hotkeys</span>
+          </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">💡 Basic (On Canvas)</div>
-        <ul>
-          <li><kbd>Ctrl+T</kbd> - Convert image to text</li>
-          <li><kbd>Ctrl+C</kbd> - Copy image</li>
-          <li><kbd>Ctrl+S</kbd> - Save image</li>
-          <li><kbd>Ctrl+X</kbd> - Close</li>
-        </ul>
-      </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>PrtScn</kbd></div>
+            <div class="desc-cell">Start screen capture</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Alt+Shift+C</kbd></div>
+            <div class="desc-cell">Pick screen color (Color Picker)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Alt+Shift+H</kbd></div>
+            <div class="desc-cell">Open capture history (History / Workspace)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+T</kbd></div>
+            <div class="desc-cell">Convert image to text (Text AI)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+C</kbd></div>
+            <div class="desc-cell">Copy image to clipboard</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+S</kbd></div>
+            <div class="desc-cell">Save image to disk</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+X</kbd></div>
+            <div class="desc-cell">Close canvas</div>
+          </div>
+        </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">🖱️ General Controls</div>
-        <ul>
-          <li><kbd>Double-click</kbd> - Full-screen selection</li>
-          <li><kbd>Scroll</kbd> - Adjust stroke thickness</li>
-          <li><kbd>Shift</kbd> (drawing) - Constrain proportions (Square, Circle) or angles (0°, 30°, 45°, 60°, 90°)</li>
-          <li><kbd>Alt</kbd> (hold) - Select and edit drawn items</li>
-          <li><kbd>Ctrl+D</kbd> - Duplicate selected shape</li>
-        </ul>
-      </div>
+        <!-- GROUP 2: MOUSE CONTROLS & EDITING -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>🖱️ Mouse Controls &amp; Shape Editing</span>
+          </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">✏️ Drawing Tools</div>
-        <ul class="shortcut-subgrid">
-          <li><kbd>P</kbd> Pen</li>
-          <li><kbd>T</kbd> Text</li>
-          <li><kbd>L</kbd> Line</li>
-          <li><kbd>N</kbd> Number</li>
-          <li><kbd>A</kbd> Arrow</li>
-          <li><kbd>M</kbd> Marker</li>
-          <li><kbd>R</kbd> Rectangle</li>
-          <li><kbd>B</kbd> Blur</li>
-          <li><kbd>E</kbd> Ellipse</li>
-          <li><kbd>Tab</kbd> Switch tool</li>
-        </ul>
-      </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Double-click</kbd></div>
+            <div class="desc-cell">Full-screen selection mode</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Scroll</kbd></div>
+            <div class="desc-cell">Adjust stroke thickness</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Hold Shift</kbd></div>
+            <div class="desc-cell">Constrain angle (0°, 45°, 90°) or square/circle</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Hold Alt</kbd></div>
+            <div class="desc-cell">Select and edit drawn shapes</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+D</kbd></div>
+            <div class="desc-cell">Duplicate selected shape</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>↑ ↓ ← →</kbd></div>
+            <div class="desc-cell">Nudge selection (1px) / Hold <kbd>Shift</kbd> to resize</div>
+          </div>
+        </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">🎨 Colors</div>
-        <ul>
-          <li>
-            <kbd>1-9</kbd> - Quick select AOE team colors
-            <div class="color-palette-text">
-              (<span style="color: #5390fc;">1-Blue</span>,
-              <span style="color: #ff5a5a;">2-Red</span>,
-              <span style="color: #ffd700;">3-Yellow</span>,
-              <span style="color: #c78a58;">4-Brown</span>,
-              <span style="color: #ff9800;">5-Orange</span>,
-              <span style="color: #4cd964;">6-Green</span>,
-              <span style="color: #cfd8dc;">7-Gray</span>,
-              <span style="color: #00e5ff;">8-Cyan</span>,
-              <span style="color: var(--color-accent); font-weight: 600;" title="NTSAA theme color">9-Violet*</span> - app theme)
+        <!-- GROUP 3: DRAWING TOOLS & COLORS -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>✏️ Drawing Tools &amp; Colors</span>
+          </div>
+
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>P</kbd> / <kbd>T</kbd></div>
+            <div class="desc-cell">Pen tool / Text note</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>L</kbd> / <kbd>A</kbd></div>
+            <div class="desc-cell">Line / Arrow</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>R</kbd> / <kbd>E</kbd></div>
+            <div class="desc-cell">Rectangle / Ellipse</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>N</kbd> / <kbd>M</kbd></div>
+            <div class="desc-cell">Step number / Highlighter marker</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>B</kbd> / <kbd>Tab</kbd></div>
+            <div class="desc-cell">Blur tool / Switch tool</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>1 – 9</kbd> <span class="tip-icon" title="For text notes, combine with Ctrl">💡</span></div>
+            <div class="desc-cell">
+              Quick select 9 AOE team colors:
+              <div class="color-dots-palette">
+                <span class="color-item" style="color: #5390fc;">1-Blue</span>
+                <span class="color-item" style="color: #ff5a5a;">2-Red</span>
+                <span class="color-item" style="color: #ffd700;">3-Yellow</span>
+                <span class="color-item" style="color: #c78a58;">4-Brown</span>
+                <span class="color-item" style="color: #ff9800;">5-Orange</span>
+                <span class="color-item" style="color: #4cd964;">6-Green</span>
+                <span class="color-item" style="color: #cfd8dc;">7-Gray</span>
+                <span class="color-item" style="color: #00e5ff;">8-Cyan</span>
+                <span class="color-item" style="color: var(--color-accent);" title="NTSAA theme color">9-Violet*</span>
+              </div>
             </div>
-          </li>
-          <li><kbd>`</kbd> - Toggle previous color</li>
-          <li><kbd>Ctrl+`</kbd> - Choose color</li>
-        </ul>
-        <div class="shortcut-footer">💡 For text items, combine with <kbd>Ctrl</kbd></div>
-      </div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>`</kbd> / <kbd>Ctrl+`</kbd></div>
+            <div class="desc-cell">Toggle previous color / Open color dialog</div>
+          </div>
+        </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">💬 Confirm & Delete</div>
-        <ul>
-          <li><kbd>Enter</kbd> / <kbd>Esc</kbd> - Complete drawing or shape resizing</li>
-          <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> - Delete selected shape</li>
-        </ul>
-        <div class="shortcut-footer">💡 For text items, combine with <kbd>Ctrl</kbd></div>
-      </div>
+        <!-- GROUP 4: FUNCTION KEYS & ACTIONS -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>⚙️ Function Keys (F1–F8) &amp; Actions</span>
+          </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">📐 Move & Resize</div>
-        <ul>
-          <li><kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> - Move selected area or shape</li>
-        </ul>
-        <div class="shortcut-footer">💡 Hold <kbd>Shift</kbd> to resize in key direction</div>
-      </div>
-
-      <div class="shortcut-card">
-        <div class="shortcut-title">🔍 Display Options</div>
-        <ul>
-          <li><kbd>F1</kbd> - Toggle shortcut hints</li>
-          <li><kbd>F2</kbd> - Show/hide UIA text</li>
-          <li><kbd>F3</kbd> - Copy UIA text</li>
-          <li><kbd>F4</kbd> - Toggle Text Box border; toggle fill</li>
-        </ul>
-      </div>
-
-      <div class="shortcut-card">
-        <div class="shortcut-title">⚙️ Stroke Adjustments</div>
-        <ul>
-          <li><kbd>F5</kbd> - Reset stroke to default</li>
-          <li><kbd>F6</kbd> / <kbd>F7</kbd> - Decrease / Increase thickness</li>
-          <li><kbd>F8</kbd> - Toggle stroke (Square ↔ Round)</li>
-        </ul>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F1</kbd></div>
+            <div class="desc-cell">Toggle shortcut hints overlay</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F2</kbd> / <kbd>F3</kbd></div>
+            <div class="desc-cell">Show-hide / Copy detected UIA text</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F4</kbd></div>
+            <div class="desc-cell">Toggle text box border; toggle fill for shapes</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F5</kbd></div>
+            <div class="desc-cell">Reset stroke thickness to default</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F6</kbd> / <kbd>F7</kbd></div>
+            <div class="desc-cell">Decrease / Increase stroke thickness</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F8</kbd></div>
+            <div class="desc-cell">Toggle corner style (Square ↔ Rounded)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Enter</kbd> <span class="tip-icon" title="For text notes, combine with Ctrl">💡</span></div>
+            <div class="desc-cell">Finish drawing or shape resizing</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Esc</kbd></div>
+            <div class="desc-cell">Deselect drawing tool (back to region); press again to exit</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Del</kbd> / <kbd>Back</kbd> <span class="tip-icon" title="For text notes, combine with Ctrl">💡</span></div>
+            <div class="desc-cell">Delete selected shape</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-
 </div>

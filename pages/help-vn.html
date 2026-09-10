@@ -49,111 +49,170 @@
   <hr>
   <section>
     <h3>4. Các phím tắt</h3>
-    <p class="section-intro-note">💡 Tất cả các phím tắt và phím nóng bên dưới là cấu hình mặc định, bạn có thể tùy chỉnh lại theo ý muốn trong <strong>Settings (Cài đặt)</strong>.</p>
-    <div class="shortcuts-grid">
-      <div class="shortcut-card hotkeys-card">
-        <div class="shortcut-title">🌐 Phím nóng toàn cục</div>
-        <ul>
-          <li><kbd>PrtScn</kbd> - Bắt đầu chụp màn hình</li>
-          <li><kbd>Alt+Shift+C</kbd> - Lấy mã màu (Color Picker)</li>
-          <li><kbd>Alt+Shift+H</kbd> - Mở lịch sử ảnh chụp (History)</li>
-        </ul>
-      </div>
+    <p class="section-intro-note">⚙️ Tất cả các phím tắt và phím nóng bên dưới là cấu hình mặc định, bạn có thể tùy chỉnh lại theo ý muốn trong <strong>Settings (Cài đặt)</strong>.</p>
+    <p class="section-intro-note">💡 Với văn bản (Text), các phím có đánh dấu <span class="tip-icon">💡</span> cần nhấn kết hợp thêm phím <kbd>Ctrl</kbd>.</p>
+    <div class="shortcuts-container">
+      <div class="shortcuts-grid-2">
+        <!-- NHÓM 1: CHỤP ẢNH & PHÍM NÓNG -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>🌐 Chụp ảnh &amp; Phím nóng toàn cục</span>
+          </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">💡 Cơ bản khi chụp</div>
-        <ul>
-          <li><kbd>Ctrl+T</kbd> - Chuyển ảnh thành văn bản</li>
-          <li><kbd>Ctrl+C</kbd> - Sao chép ảnh</li>
-          <li><kbd>Ctrl+S</kbd> - Lưu ảnh</li>
-          <li><kbd>Ctrl+X</kbd> - Đóng</li>
-        </ul>
-      </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>PrtScn</kbd></div>
+            <div class="desc-cell">Bắt đầu chụp màn hình</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Alt+Shift+C</kbd></div>
+            <div class="desc-cell">Lấy mã màu màn hình (Color Picker)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Alt+Shift+H</kbd></div>
+            <div class="desc-cell">Mở lịch sử ảnh chụp (History / Workspace)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+T</kbd></div>
+            <div class="desc-cell">Chuyển ảnh thành văn bản (Text AI)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+C</kbd></div>
+            <div class="desc-cell">Sao chép ảnh vào clipboard</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+S</kbd></div>
+            <div class="desc-cell">Lưu ảnh vào máy</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+X</kbd></div>
+            <div class="desc-cell">Đóng nhanh vùng chụp</div>
+          </div>
+        </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">🖱️ Thao tác chung</div>
-        <ul>
-          <li><kbd>Double-click</kbd> chuột - Chọn toàn màn hình</li>
-          <li><kbd>Cuộn chuột</kbd> - Tăng/giảm độ dày nét</li>
-          <li><kbd>Shift</kbd> (khi vẽ) - Khóa tỉ lệ (Vuông, Tròn) hoặc góc (0°, 30°, 45°, 60°, 90°)</li>
-          <li><kbd>Alt</kbd> (giữ) - Chọn và chỉnh sửa hình đã vẽ</li>
-          <li><kbd>Ctrl+D</kbd> - Nhân bản hình vẽ đang chọn</li>
-        </ul>
-      </div>
+        <!-- NHÓM 2: THAO TÁC CHUỘT & CHỈNH SỬA -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>🖱️ Thao tác chuột &amp; Chỉnh sửa hình</span>
+          </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">✏️ Công cụ vẽ</div>
-        <ul class="shortcut-subgrid">
-          <li><kbd>P</kbd> Bút vẽ (Pen)</li>
-          <li><kbd>T</kbd> Văn bản (Text)</li>
-          <li><kbd>L</kbd> Đường thẳng (Line)</li>
-          <li><kbd>N</kbd> Đánh số (Number)</li>
-          <li><kbd>A</kbd> Mũi tên (Arrow)</li>
-          <li><kbd>M</kbd> Dạ quang (Marker)</li>
-          <li><kbd>R</kbd> Chữ nhật (Rect)</li>
-          <li><kbd>B</kbd> Làm mờ (Blur)</li>
-          <li><kbd>E</kbd> Hình tròn (Ellipse)</li>
-          <li><kbd>Tab</kbd> Đổi công cụ</li>
-        </ul>
-      </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Double-click</kbd></div>
+            <div class="desc-cell">Chuyển chế độ chọn toàn màn hình</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Cuộn chuột</kbd></div>
+            <div class="desc-cell">Tăng / giảm độ dày nét vẽ (stroke)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Giữ Shift</kbd></div>
+            <div class="desc-cell">Khóa góc (0°, 45°, 90°) hoặc tỉ lệ vuông/tròn</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Giữ Alt</kbd></div>
+            <div class="desc-cell">Chọn &amp; chỉnh sửa lại các hình đã vẽ</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+D</kbd></div>
+            <div class="desc-cell">Nhân bản hình vẽ đang chọn</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>↑ ↓ ← →</kbd></div>
+            <div class="desc-cell">Di chuyển vùng chọn (1px) / Giữ <kbd>Shift</kbd> để đổi kích thước</div>
+          </div>
+        </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">🎨 Màu sắc</div>
-        <ul>
-          <li>
-            <kbd>1-9</kbd> - Chọn màu nhanh theo màu team game AOE
-            <div class="color-palette-text">
-              (<span style="color: #5390fc;">1-Xanh biển</span>,
-              <span style="color: #ff5a5a;">2-Đỏ</span>,
-              <span style="color: #ffd700;">3-Vàng</span>,
-              <span style="color: #c78a58;">4-Nâu</span>,
-              <span style="color: #ff9800;">5-Cam</span>,
-              <span style="color: #4cd964;">6-Xanh lá</span>,
-              <span style="color: #cfd8dc;">7-Xám</span>,
-              <span style="color: #00e5ff;">8-Cyan</span>,
-              <span style="color: var(--color-accent); font-weight: 600;" title="Màu nhận diện NTSAA">9-Tím*</span> - màu app)
+        <!-- NHÓM 3: CÔNG CỤ VẼ & MÀU SẮC -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>✏️ Công cụ vẽ &amp; Màu sắc</span>
+          </div>
+
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>P</kbd> / <kbd>T</kbd></div>
+            <div class="desc-cell">Bút vẽ (Pen) / Ghi chú văn bản (Text)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>L</kbd> / <kbd>A</kbd></div>
+            <div class="desc-cell">Đường thẳng (Line) / Mũi tên (Arrow)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>R</kbd> / <kbd>E</kbd></div>
+            <div class="desc-cell">Hình chữ nhật (Rect) / Hình tròn (Ellipse)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>N</kbd> / <kbd>M</kbd></div>
+            <div class="desc-cell">Đánh số thứ tự (Number) / Dạ quang (Marker)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>B</kbd> / <kbd>Tab</kbd></div>
+            <div class="desc-cell">Làm mờ (Blur) / Đổi nhanh công cụ vẽ kế tiếp</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>1 – 9</kbd> <span class="tip-icon" title="Với văn bản (Text), kết hợp thêm phím Ctrl">💡</span></div>
+            <div class="desc-cell">
+              Chọn nhanh 9 màu theo màu team game AOE:
+              <div class="color-dots-palette">
+                <span class="color-item" style="color: #5390fc;">1-Biển</span>
+                <span class="color-item" style="color: #ff5a5a;">2-Đỏ</span>
+                <span class="color-item" style="color: #ffd700;">3-Vàng</span>
+                <span class="color-item" style="color: #c78a58;">4-Nâu</span>
+                <span class="color-item" style="color: #ff9800;">5-Cam</span>
+                <span class="color-item" style="color: #4cd964;">6-Lá</span>
+                <span class="color-item" style="color: #cfd8dc;">7-Xám</span>
+                <span class="color-item" style="color: #00e5ff;">8-Cyan</span>
+                <span class="color-item" style="color: var(--color-accent);" title="Màu nhận diện NTSAA">9-Tím*</span>
+              </div>
             </div>
-          </li>
-          <li><kbd>`</kbd> - Đổi qua lại màu trước đó</li>
-          <li><kbd>Ctrl+`</kbd> - Chọn màu (Choose color)</li>
-        </ul>
-        <div class="shortcut-footer">💡 Với văn bản (Text), nhấn kết hợp thêm phím <kbd>Ctrl</kbd></div>
-      </div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>`</kbd> / <kbd>Ctrl+`</kbd></div>
+            <div class="desc-cell">Đổi qua lại màu trước đó / Mở bảng chọn màu</div>
+          </div>
+        </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">💬 Hoàn thành & Xóa hình</div>
-        <ul>
-          <li><kbd>Enter</kbd> / <kbd>Esc</kbd> - Hoàn thành vẽ hoặc chỉnh kích thước</li>
-          <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> - Xóa hình vẽ đang chọn</li>
-        </ul>
-        <div class="shortcut-footer">💡 Với văn bản (Text), nhấn kết hợp thêm phím <kbd>Ctrl</kbd></div>
-      </div>
+        <!-- NHÓM 4: PHÍM CHỨC NĂNG & HOÀN TẤT -->
+        <div class="shortcut-col">
+          <div class="group-header">
+            <span>⚙️ Phím chức năng (F1–F8) &amp; Hoàn tất</span>
+          </div>
 
-      <div class="shortcut-card">
-        <div class="shortcut-title">📐 Di chuyển & Thay đổi kích thước</div>
-        <ul>
-          <li><kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> - Di chuyển vùng chọn hoặc hình vẽ</li>
-        </ul>
-        <div class="shortcut-footer">💡 Giữ thêm phím <kbd>Shift</kbd> để thay đổi kích thước</div>
-      </div>
-
-      <div class="shortcut-card">
-        <div class="shortcut-title">🔍 Tùy chọn hiển thị</div>
-        <ul>
-          <li><kbd>F1</kbd> - Bật/tắt gợi ý phím tắt</li>
-          <li><kbd>F2</kbd> - Hiện/ẩn văn bản UIA</li>
-          <li><kbd>F3</kbd> - Sao chép văn bản UIA</li>
-          <li><kbd>F4</kbd> - Đổi viền/nền Text Box; bật/tắt tô nền hình vẽ</li>
-        </ul>
-      </div>
-
-      <div class="shortcut-card">
-        <div class="shortcut-title">⚙️ Điều chỉnh nét vẽ</div>
-        <ul>
-          <li><kbd>F5</kbd> - Đặt lại độ dày nét về mặc định</li>
-          <li><kbd>F6</kbd> / <kbd>F7</kbd> - Giảm / Tăng độ dày nét</li>
-          <li><kbd>F8</kbd> - Chuyển kiểu nét vẽ (Vuông ↔ Tròn)</li>
-        </ul>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F1</kbd></div>
+            <div class="desc-cell">Bật / tắt bảng gợi ý phím tắt</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F2</kbd> / <kbd>F3</kbd></div>
+            <div class="desc-cell">Hiện-ẩn / Sao chép văn bản nhận diện UIA</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F4</kbd></div>
+            <div class="desc-cell">Đổi viền/nền Text Box; bật/tắt tô nền hình vẽ</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F5</kbd></div>
+            <div class="desc-cell">Đặt lại độ dày nét vẽ về mặc định</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F6</kbd> / <kbd>F7</kbd></div>
+            <div class="desc-cell">Giảm / Tăng độ dày nét vẽ</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>F8</kbd></div>
+            <div class="desc-cell">Chuyển kiểu nét vẽ (Vuông ↔ Bo tròn)</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Enter</kbd> <span class="tip-icon" title="Với văn bản (Text), kết hợp thêm phím Ctrl">💡</span></div>
+            <div class="desc-cell">Hoàn thành vẽ hoặc chỉnh kích thước hình</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Esc</kbd></div>
+            <div class="desc-cell">Bỏ công cụ vẽ (về chọn vùng); nhấn lần nữa để thoát</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Del</kbd> / <kbd>Back</kbd> <span class="tip-icon" title="Với văn bản (Text), kết hợp thêm phím Ctrl">💡</span></div>
+            <div class="desc-cell">Xóa hình vẽ đang chọn</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
