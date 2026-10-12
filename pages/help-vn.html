@@ -39,7 +39,7 @@
       <li>Chọn vùng ảnh cần chỉnh sửa.</li>
       <li>Dùng các công cụ vẽ hoặc viết chữ trên thanh công cụ (thường nằm bên phải vùng chụp).</li>
       <li>Giữ <kbd>Shift</kbd> khi vẽ để tạo hình vuông, hình tròn hoặc khóa góc đường thẳng/mũi tên (0°, 30°, 45°, 60°, 90°).</li>
-      <li>Giữ <kbd>Alt</kbd> để chọn lại hình vẽ bất kỳ để di chuyển, đổi kích thước hoặc chuột phải đổi kiểu.</li>
+      <li>Giữ <kbd>Alt</kbd> để chọn lại hình vẽ bất kỳ để di chuyển, đổi kích thước (hoặc ở chế độ chọn vùng, giữ <kbd>Alt</kbd> sẽ tạm ẩn các hình vẽ để chọn vùng lại).</li>
     </ul>
     <div class="img-demo">
       <img src="images/capture-draw.png" alt="Minh họa công cụ vẽ và ghi chú">
@@ -64,7 +64,7 @@
             <div class="desc-cell">Bắt đầu chụp màn hình</div>
           </div>
           <div class="shortcut-row">
-            <div class="key-cell"><kbd>Alt+Shift+C</kbd></div>
+            <div class="key-cell"><kbd>Alt+Shift+I</kbd></div>
             <div class="desc-cell">Lấy mã màu màn hình (Color Picker)</div>
           </div>
           <div class="shortcut-row">
@@ -78,6 +78,14 @@
           <div class="shortcut-row">
             <div class="key-cell"><kbd>Ctrl+C</kbd></div>
             <div class="desc-cell">Sao chép ảnh vào clipboard</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+Shift+C</kbd></div>
+            <div class="desc-cell">Sao chép ảnh thành chuỗi Base64</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="key-cell"><kbd>Ctrl+G</kbd></div>
+            <div class="desc-cell">Ghim sticker nổi trên màn hình, luôn hiển thị phía trên các cửa sổ khác</div>
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>Ctrl+S</kbd></div>
@@ -101,7 +109,7 @@
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>Cuộn chuột</kbd></div>
-            <div class="desc-cell">Tăng / giảm độ dày nét vẽ (stroke)</div>
+            <div class="desc-cell">Tăng / giảm độ dày nét vẽ; giữ thêm <kbd>Ctrl</kbd> để phóng to / thu nhỏ ảnh (Image view)</div>
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>Giữ Shift</kbd></div>
@@ -109,7 +117,7 @@
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>Giữ Alt</kbd></div>
-            <div class="desc-cell">Chọn &amp; chỉnh sửa lại các hình đã vẽ</div>
+            <div class="desc-cell">Chọn &amp; chỉnh sửa lại các hình đã vẽ; ở chế độ chọn vùng thì tạm ẩn các hình vẽ để chọn vùng lại.</div>
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>Ctrl+D</kbd></div>
@@ -150,7 +158,7 @@
           <div class="shortcut-row">
             <div class="key-cell"><kbd>1 – 9</kbd> <span class="tip-icon" title="Với văn bản (Text), kết hợp thêm phím Ctrl">💡</span></div>
             <div class="desc-cell">
-              Chọn nhanh 9 màu theo màu team game AOE:
+              Chọn nhanh 8 màu theo màu team game AOE + 1 app color:
               <div class="color-dots-palette">
                 <span class="color-item" style="color: #5390fc;">1-Biển</span>
                 <span class="color-item" style="color: #ff5a5a;">2-Đỏ</span>
@@ -190,11 +198,11 @@
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>F5</kbd></div>
-            <div class="desc-cell">Đặt lại độ dày nét vẽ về mặc định</div>
+            <div class="desc-cell">Đặt lại độ dày nét vẽ về mặc định / Reset mức zoom ảnh (Image view)</div>
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>F6</kbd> / <kbd>F7</kbd></div>
-            <div class="desc-cell">Giảm / Tăng độ dày nét vẽ</div>
+            <div class="desc-cell">Giảm / Tăng độ dày nét vẽ (hoặc độ thu phóng ảnh ở Image view)</div>
           </div>
           <div class="shortcut-row">
             <div class="key-cell"><kbd>F8</kbd></div>
