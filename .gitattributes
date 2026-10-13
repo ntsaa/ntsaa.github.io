@@ -1,0 +1,3 @@
+# The app files are checked by SHA-256 (manifest.json): Git must never change their line endings
+# (core.autocrlf would store CRLF text files as LF, so the copy served online no longer matches the manifest).
+download/** -text
