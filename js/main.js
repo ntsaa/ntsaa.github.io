@@ -166,13 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const updateUrl = (all) => {
         if (all) {
-            [
-                ["download_x64", ver.x64?.bundle_url],
-                ["download_x86", ver.x86?.bundle_url],
-            ].forEach(([id, url]) => {
-                const el = document.getElementById(id);
-                if (el && url) el.href = url;
-            });
+            // One setup for every Windows: NTSAA_Bundle.exe picks x64 / x86 itself
+            const el = document.getElementById("download_x64");
+            if (el && ver.x64?.bundle_url) el.href = ver.x64.bundle_url;
         }
 
         document.querySelectorAll('[data-role="pw"]')
