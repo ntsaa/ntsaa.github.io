@@ -319,6 +319,32 @@ a {
     color: var(--color-accent);
 }
 
+.header-subnote {
+    font-size: 13.5px;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+.feature-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 12px 0 16px 0;
+}
+
+.badge-item {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(228, 123, 255, 0.08);
+    border: 1px solid rgba(228, 123, 255, 0.22);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 13.5px;
+    color: #f1e9f8;
+    letter-spacing: 0.2px;
+}
+
 .help-content section > div,
 .help-content .version-group-body > div {
     color: var(--color-accent);
