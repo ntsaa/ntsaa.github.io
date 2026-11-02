@@ -1,6 +1,6 @@
 {
-  "version": "1.5.2.0",
-  "date": "2026-10-13 10:20:12",
+  "version": "1.5.3.0",
+  "date": "2026-11-02 11:20:24",
   "files": [
     {
       "name": "Interop.UIAutomationClient.dll",
@@ -24,18 +24,18 @@
     },
     {
       "name": "NTSAA.deps.json",
-      "sha256": "dbac3f16dfa45172165132bcae9c965bb6a1abf73993698edae223c199c067c2",
-      "size": 4794
+      "sha256": "bbd822e29ff6d79612069c789ca1f96cd3c91b7eaf40b2622cdfa74c6cd83748",
+      "size": 5997
     },
     {
       "name": "NTSAA.dll",
-      "sha256": "1f68ecd48d8bc5befa2f823bd9074a9467fd0f0f536cb45902897717d837a97f",
-      "size": 1609440
+      "sha256": "f73c5f641663a9119a1ec180f98a88ccc422982c74a5106348859d9cb9f92991",
+      "size": 2021120
     },
     {
       "name": "NTSAA.exe",
-      "sha256": "da52fe693277c8a8b73a58b6aeeefb9be8678f320d1e65520e82effaf62f8933",
-      "size": 137440
+      "sha256": "da0eb5376f93375ba318748100f1b4a2e1a2f5d50f8aa57e48edfcad1bb7baa3",
+      "size": 137472
     },
     {
       "name": "NTSAA.runtimeconfig.json",
@@ -48,9 +48,19 @@
       "size": 163328
     },
     {
+      "name": "Serilog.Sinks.Console.dll",
+      "sha256": "dc88002ddd9f5fd0ffec9a6568ef89954671f60f2c9161593ee78932538c1e3e",
+      "size": 38400
+    },
+    {
       "name": "Serilog.Sinks.File.dll",
       "sha256": "642a271b254ca70d35a02a4ae9c6d86b38c4bb2d0656012c1dc93839bf82b8b0",
       "size": 36864
+    },
+    {
+      "name": "Tesseract.dll",
+      "sha256": "99d6318b43bad0482ac947f1a7d60c3aff439a64fb98c004f92fe60d486e6eac",
+      "size": 128512
     },
     {
       "name": "WebView2Loader.dll",
@@ -63,6 +73,36 @@
       "size": 514560
     },
     {
+      "name": "ocr/tessdata/eng.traineddata",
+      "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+      "size": 4113088
+    },
+    {
+      "name": "ocr/tessdata/vie.traineddata",
+      "sha256": "79df64caf7bcfb2a27df5042ecb6121e196eada34da774956995747636d5bfa1",
+      "size": 531275
+    },
+    {
+      "name": "ocr/x86/leptonica-1.82.0.dll",
+      "sha256": "1700330110ada8e4f07fb063915e60e2b585ad87d9b1948093945e4645b66d08",
+      "size": 3379712
+    },
+    {
+      "name": "ocr/x86/msvcp140.dll",
+      "sha256": "7d48324089836eb8c0b4520595f15704887efbf0efddce471b5c374da1c4a05c",
+      "size": 618944
+    },
+    {
+      "name": "ocr/x86/tesseract50.dll",
+      "sha256": "7f4873cdb78b9cd18c069eae434d38dd14e987531866463357cf51c016241820",
+      "size": 2336768
+    },
+    {
+      "name": "ocr/x86/vcruntime140.dll",
+      "sha256": "f268a454a72787c9e55885f32347cc986a115946bfbbf34ebb80a5c6094d7157",
+      "size": 123248
+    },
+    {
       "name": "runtimes/win-x86/native/WebView2Loader.dll",
       "sha256": "88a23a619ee7f2f4d2e476533aeb59b6fef917baa3eecf369a1c14f7446c649c",
       "size": 120904
@@ -70,7 +110,34 @@
   ],
   "restart": {
     "name": "restart.cmd",
-    "sha256": "f5ba31dfa104f6a72f51a815fa598d7c514097a286762c436761a5b4938c6450",
-    "size": 5353
+    "sha256": "44abb953adfd49f3e4d3ae79f5e944b790dbe0e47f4bc7b01341953aa81f247f",
+    "size": 5751
+  },
+  "package": {
+    "name": "package.zip",
+    "sha256": "7dec16f2b1b0aa47057964fdf5452ff35b2fe187d037e4507e3536abfac10954",
+    "size": 6754960
+  },
+  "runtime": {
+    "version": "8.0.33",
+    "hostfxr": {
+      "name": "dotnet/8.0.33/hostfxr.dll",
+      "sha256": "b810312d4db580be74dd096dba96ee49636bd133c52d94e30972d67b7b8044bb",
+      "size": 300328
+    },
+    "frameworks": [
+      {
+        "name": "dotnet/8.0.33/Microsoft.NETCore.App.zip",
+        "sha256": "ddce88a6fe5f7dd291c2cec6758e1d1a0a540e33cc0f7664ad3645b2cc8322dc",
+        "size": 30361176,
+        "target": "shared/Microsoft.NETCore.App/8.0.33"
+      },
+      {
+        "name": "dotnet/8.0.33/Microsoft.WindowsDesktop.App.zip",
+        "sha256": "bb00db056dbb8ade8a1da8d2abedfe1beb725bc4a061744e3bcdcb58962d9195",
+        "size": 34123296,
+        "target": "shared/Microsoft.WindowsDesktop.App/8.0.33"
+      }
+    ]
   }
 }

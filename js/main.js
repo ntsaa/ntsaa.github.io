@@ -1,7 +1,7 @@
 const translations = {
     en: {
         title: "NTSAA - Screenshot, Annotation & Image Processing Tool",
-        description: "A lightweight screenshot, annotation, and image processing tool inspired by Lightshot, featuring smart text recognition and Google Translate integration.",
+        description: "A lightweight screenshot, annotation, and image processing tool inspired by Lightshot, featuring smart text recognition and translation powered by Google and Microsoft.",
         download_full: "📦 Get it",
         help_full: "📝 User Guide",
         image_loading: "Loading image...",
@@ -14,7 +14,7 @@ const translations = {
     },
     vn: {
         title: "NTSAA - Công cụ chụp màn hình, chú thích & xử lý hình ảnh",
-        description: "Công cụ chụp màn hình, chú thích và xử lý hình ảnh lấy cảm hứng từ Lightshot, tích hợp nhận diện văn bản thông minh và dịch thuật bằng Google Translate.",
+        description: "Công cụ chụp màn hình, chú thích và xử lý hình ảnh lấy cảm hứng từ Lightshot, tích hợp nhận diện văn bản thông minh và dịch thuật hỗ trợ bởi Google và Microsoft.",
         download_full: "📦 Dùng ngay",
         help_full: "📝 Hướng dẫn",
         image_loading: "Đang tải ảnh...",

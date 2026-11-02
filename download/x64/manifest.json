@@ -1,6 +1,6 @@
 {
-  "version": "1.5.2.0",
-  "date": "2026-10-13 10:20:10",
+  "version": "1.5.3.0",
+  "date": "2026-11-02 11:20:25",
   "files": [
     {
       "name": "Interop.UIAutomationClient.dll",
@@ -24,18 +24,18 @@
     },
     {
       "name": "NTSAA.deps.json",
-      "sha256": "f93de5af237c70c313f9dce1495f0e91694d4275bb1a76e8eb82cef713e439aa",
-      "size": 4794
+      "sha256": "ccc308dcb7434b0558413cd5e665258b0a3ecf00e2d020fee2c97ed129704839",
+      "size": 5997
     },
     {
       "name": "NTSAA.dll",
-      "sha256": "1e8d8661a3f86a8c8d2c70f95df5b843d4e79d29f7323afa31b523bfb6bf84d6",
-      "size": 1608928
+      "sha256": "8738e19321440d0ce6e4277c3bb43a64ff8e7aee4a3d0c3f4d10f7dc26d26061",
+      "size": 2020608
     },
     {
       "name": "NTSAA.exe",
-      "sha256": "d107fcd9cf1745d8333c8aa6125db895cc9a308e5cbf8b0c820a564e6e4fe104",
-      "size": 168160
+      "sha256": "b65bb09e4d8119c446e9f986d8e22eba909b876790d0bd31543c43e5ae0f4e90",
+      "size": 168192
     },
     {
       "name": "NTSAA.runtimeconfig.json",
@@ -48,9 +48,19 @@
       "size": 163328
     },
     {
+      "name": "Serilog.Sinks.Console.dll",
+      "sha256": "dc88002ddd9f5fd0ffec9a6568ef89954671f60f2c9161593ee78932538c1e3e",
+      "size": 38400
+    },
+    {
       "name": "Serilog.Sinks.File.dll",
       "sha256": "642a271b254ca70d35a02a4ae9c6d86b38c4bb2d0656012c1dc93839bf82b8b0",
       "size": 36864
+    },
+    {
+      "name": "Tesseract.dll",
+      "sha256": "99d6318b43bad0482ac947f1a7d60c3aff439a64fb98c004f92fe60d486e6eac",
+      "size": 128512
     },
     {
       "name": "WebView2Loader.dll",
@@ -63,6 +73,41 @@
       "size": 514560
     },
     {
+      "name": "ocr/tessdata/eng.traineddata",
+      "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+      "size": 4113088
+    },
+    {
+      "name": "ocr/tessdata/vie.traineddata",
+      "sha256": "79df64caf7bcfb2a27df5042ecb6121e196eada34da774956995747636d5bfa1",
+      "size": 531275
+    },
+    {
+      "name": "ocr/x64/leptonica-1.82.0.dll",
+      "sha256": "dfcb3e6ed0b16bc55bfdbcf53543cfe42a354b87c3e35bd3a95eebf005d73e76",
+      "size": 4168192
+    },
+    {
+      "name": "ocr/x64/msvcp140.dll",
+      "sha256": "ecea4c79ff2d2461579f941c6d7fb12fc5c5c4d28400aa5f078850a16ff97a4a",
+      "size": 643440
+    },
+    {
+      "name": "ocr/x64/tesseract50.dll",
+      "sha256": "de4d04ec75095374d98f5dd7a60d14d7e2e0f76589db693eccf7ae658be8cb2b",
+      "size": 2788352
+    },
+    {
+      "name": "ocr/x64/vcruntime140.dll",
+      "sha256": "b74e36c33e556cb34bf11c9a5a80efe45aa35b555d02692204f008938f7be612",
+      "size": 178536
+    },
+    {
+      "name": "ocr/x64/vcruntime140_1.dll",
+      "sha256": "9b9a0a1a8005790e68927789460fe98f4715371e7ed5cf9bd1b16388b4fdd714",
+      "size": 50032
+    },
+    {
       "name": "runtimes/win-x64/native/WebView2Loader.dll",
       "sha256": "bf2fefaff7fd4775ea1e07328cc3142721943948f16d261fb82cbd978b7f99e2",
       "size": 160880
@@ -70,7 +115,34 @@
   ],
   "restart": {
     "name": "restart.cmd",
-    "sha256": "f5ba31dfa104f6a72f51a815fa598d7c514097a286762c436761a5b4938c6450",
-    "size": 5353
+    "sha256": "44abb953adfd49f3e4d3ae79f5e944b790dbe0e47f4bc7b01341953aa81f247f",
+    "size": 5751
+  },
+  "package": {
+    "name": "package.zip",
+    "sha256": "30e6e2e0205bc3d1bb7db07a4f6bffc6a0cd7baaeca8f3c4fa83dbd16e289816",
+    "size": 7414417
+  },
+  "runtime": {
+    "version": "8.0.33",
+    "hostfxr": {
+      "name": "dotnet/8.0.33/hostfxr.dll",
+      "sha256": "c87db2191ab72f27c8d6fabf082c97a0b90185d9e639c4e181ae0720b9687a55",
+      "size": 366376
+    },
+    "frameworks": [
+      {
+        "name": "dotnet/8.0.33/Microsoft.NETCore.App.zip",
+        "sha256": "53b09abf41de50976eb804bddb2f8f1374301dfad76d17bae5c053ac25e6fa3a",
+        "size": 33082492,
+        "target": "shared/Microsoft.NETCore.App/8.0.33"
+      },
+      {
+        "name": "dotnet/8.0.33/Microsoft.WindowsDesktop.App.zip",
+        "sha256": "7be228d87da96702fcf38fe343ea72862ccd1d03bca97c8f39494ed8aa8c649d",
+        "size": 36788203,
+        "target": "shared/Microsoft.WindowsDesktop.App/8.0.33"
+      }
+    ]
   }
 }

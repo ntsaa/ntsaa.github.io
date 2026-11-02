@@ -44,15 +44,22 @@ call :log "Old process gone (waited !WAITED! s)"
 taskkill /F /IM "!EXE_NAME!" /FI "USERNAME eq %USERNAME%" >nul 2>&1
 
 :: ----------------------------------------------------------------------------
-:: 3. Copy the new files (the script, the clean list and partial downloads stay)
+:: 3. Copy the new files, the manifest last (the script, the clean list, partial downloads and dotnet_temp stay:
+::    the .NET kept with NTSAA is moved into shared\ by the app itself, a whole folder at a time)
 :: ----------------------------------------------------------------------------
 call :log "Copying new files to !TARGET_DIR!"
-robocopy "!UPDATE_SRC!." "!TARGET_DIR!." /E /MOVE /XF "restart.cmd" "clean.txt" "*.zip" "*.part" /R:5 /W:2 /NP /NDL /NJH /NJS >> "!LOG!" 2>&1
+robocopy "!UPDATE_SRC!." "!TARGET_DIR!." /E /MOVE /XF "restart.cmd" "clean.txt" "manifest.json" "*.zip" "*.part" /XD "dotnet_temp" /R:5 /W:2 /NP /NDL /NJH /NJS >> "!LOG!" 2>&1
 set "RC=!errorlevel!"
 if !RC! geq 8 (
-    call :log "ERROR: copy failed (robocopy code !RC!)"
+    rem Incomplete: the old manifest stays, so the next setup shows "Update" and finishes it. No file is removed:
+    rem the old ones may still be needed by the files that were not replaced.
+    call :log "ERROR: copy failed (robocopy code !RC!): manifest and old files kept"
+    del /f /q "!UPDATE_SRC!clean.txt" >nul 2>&1
 ) else (
     call :log "Copy done (robocopy code !RC!)"
+    rem Last: the manifest means "this version is installed".
+    move /y "!UPDATE_SRC!manifest.json" "!TARGET_DIR!\manifest.json" >nul 2>&1
+    if errorlevel 1 (call :log "ERROR: manifest.json not moved") else (call :log "Manifest updated")
 )
 
 :: 4. Unblock the files (SmartScreen)
@@ -68,7 +75,7 @@ if not exist "!TARGET_EXE!" (
 )
 call :log "Starting !TARGET_EXE!"
 cd /d "!TARGET_DIR!"
-start "" "!TARGET_EXE!" restart
+start "" "!TARGET_EXE!" -restart
 
 :: 6. Same folder: done. Another folder: migration to %LOCALAPPDATA%\NTSAA below.
 if /i "!OLD_DIR!" equ "!TARGET_DIR!\" (
@@ -98,25 +105,12 @@ powershell -NoProfile -WindowStyle Hidden -Command ^
     "}}" >nul 2>&1
 
 :: ----------------------------------------------------------------------------
-:: 8. Migration: clean the old location
+:: 8. Migration: remove the old executable only (never its folder: since the app is no longer a single file the
+::    folder may hold other files, user data, or be a build output). A build output (\bin\) is left untouched.
 :: ----------------------------------------------------------------------------
-if exist "!OLD_DIR!Backup" rd /s /q "!OLD_DIR!Backup" >nul 2>&1
-
-set "HAS_NTSAA_NAME=0"
-echo !OLD_DIR! | findstr /i "NTSAA" >nul
-if not errorlevel 1 set "HAS_NTSAA_NAME=1"
-
-set "HAS_EXE_FILE=0"
-if exist "!OLD_EXE!" set "HAS_EXE_FILE=1"
-
-if "!HAS_NTSAA_NAME!!HAS_EXE_FILE!"=="11" (
-    rem Dedicated app folder (named NTSAA, has the exe): remove it whole
-    set "OLD_DIR_CLEAN=!OLD_DIR:~0,-1!"
-    cd /d "%TEMP%"
-    rd /s /q "!OLD_DIR_CLEAN!" >nul 2>&1
-    call :log "Old folder removed: !OLD_DIR_CLEAN!"
+if /i not "!OLD_DIR:\bin\=!"=="!OLD_DIR!" (
+    call :log "Old location is a build output: left untouched"
 ) else (
-    rem Not a dedicated folder: only the old executable
     if exist "!OLD_EXE!" del /f /q "!OLD_EXE!" >nul 2>&1
     call :log "Old executable removed: !OLD_EXE!"
 )
