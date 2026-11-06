@@ -1,6 +1,6 @@
 {
-  "version": "1.5.3.0",
-  "date": "2026-11-02 11:20:24",
+  "version": "1.5.4.0",
+  "date": "2026-11-06 15:22:14",
   "files": [
     {
       "name": "Interop.UIAutomationClient.dll",
@@ -29,12 +29,12 @@
     },
     {
       "name": "NTSAA.dll",
-      "sha256": "f73c5f641663a9119a1ec180f98a88ccc422982c74a5106348859d9cb9f92991",
-      "size": 2021120
+      "sha256": "92ec84d1e7818ae5cfc6c60fcd5b4384bf19af8ac67f24bfd8c3d4ef75a799a2",
+      "size": 2116352
     },
     {
       "name": "NTSAA.exe",
-      "sha256": "da0eb5376f93375ba318748100f1b4a2e1a2f5d50f8aa57e48edfcad1bb7baa3",
+      "sha256": "d8e36b9d886fd710036e589c18254da760a4ca7829cf1e2f473fd33f531e74d0",
       "size": 137472
     },
     {
@@ -108,15 +108,11 @@
       "size": 120904
     }
   ],
-  "restart": {
-    "name": "restart.cmd",
-    "sha256": "44abb953adfd49f3e4d3ae79f5e944b790dbe0e47f4bc7b01341953aa81f247f",
-    "size": 5751
-  },
+  "restart": null,
   "package": {
     "name": "package.zip",
-    "sha256": "7dec16f2b1b0aa47057964fdf5452ff35b2fe187d037e4507e3536abfac10954",
-    "size": 6754960
+    "sha256": "2a7c80f99293e9bd8580c0578244d70e409067faabdc86f24c7a43b1453f01e1",
+    "size": 6794782
   },
   "runtime": {
     "version": "8.0.33",
