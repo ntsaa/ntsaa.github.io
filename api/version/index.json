@@ -1,5 +1,5 @@
 {
-  "version": "1.5.4.0",
+  "version": "1.5.5.0",
   "dom_scripts_version": "1.0.0",
   "default_providers": { "image_to_text": "GOOGLE", "translator": "GOOGLE" },
   "stats": { "interval_days": 1, "totals_only": false },
