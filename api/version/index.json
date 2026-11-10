@@ -1,7 +1,8 @@
 {
-  "version": "1.5.4.0",
+  "version": "1.5.5.0",
   "dom_scripts_version": "1.0.0",
   "default_providers": { "image_to_text": "GOOGLE", "translator": "GOOGLE" },
+  "stats": { "interval_days": 1, "totals_only": false },
   "ocr_models_url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/",
   "x64": {
     "bundle_url": "https://github.com/ntsaa/ntsaa.github.io/releases/download/v1.5x/NTSAA_Bundle.exe",
