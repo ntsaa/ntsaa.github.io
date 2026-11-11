@@ -1,6 +1,6 @@
 {
-  "version": "1.5.5.1",
-  "date": "2026-11-10 18:55:07",
+  "version": "1.5.5.2",
+  "date": "2026-11-11 15:03:04",
   "files": [
     {
       "name": "Interop.UIAutomationClient.dll",
@@ -29,12 +29,12 @@
     },
     {
       "name": "NTSAA.dll",
-      "sha256": "8aa8e3c1af3edbb37627393dc7c2d4562e0970dd240195ed46805be34f64b18b",
-      "size": 2181888
+      "sha256": "eca5754e1b24287d1b48fd0690771d7660ac18b3617319327413920b8216f43f",
+      "size": 2185984
     },
     {
       "name": "NTSAA.exe",
-      "sha256": "87d5749a590ede7e5fe5c72ade413f4cfcdea4c4299a291b34d0c301f0998fc9",
+      "sha256": "df3c5bcc331d97eff3f21f8cb4b4c2b72b0f64f15d71587a286b509661646427",
       "size": 168192
     },
     {
@@ -116,28 +116,28 @@
   "restart": null,
   "package": {
     "name": "package.zip",
-    "sha256": "2e3e2616dd5b321a92b1c5c3335e3a507395f4da6b4b9c359374b77aee571ea3",
-    "size": 7481906
+    "sha256": "c2586410aa416ff06bfae0f2db8621d62cd4327b5afb51a7c16d186454275e89",
+    "size": 7483841
   },
   "runtime": {
-    "version": "8.0.33",
+    "version": "8.0.34",
     "hostfxr": {
-      "name": "dotnet/8.0.33/hostfxr.dll",
-      "sha256": "c87db2191ab72f27c8d6fabf082c97a0b90185d9e639c4e181ae0720b9687a55",
+      "name": "dotnet/8.0.34/hostfxr.dll",
+      "sha256": "ebeab9f4bbd35a009d3850752cb1373d01b848cfcbde6ae91d6dc4f95020e8d0",
       "size": 366376
     },
     "frameworks": [
       {
-        "name": "dotnet/8.0.33/Microsoft.NETCore.App.zip",
-        "sha256": "53b09abf41de50976eb804bddb2f8f1374301dfad76d17bae5c053ac25e6fa3a",
-        "size": 33082492,
-        "target": "shared/Microsoft.NETCore.App/8.0.33"
+        "name": "dotnet/8.0.34/Microsoft.NETCore.App.zip",
+        "sha256": "c44b61886fdf908608626247b880a792c82ff3ef01b582ad787a36068df37738",
+        "size": 33089105,
+        "target": "shared/Microsoft.NETCore.App/8.0.34"
       },
       {
-        "name": "dotnet/8.0.33/Microsoft.WindowsDesktop.App.zip",
-        "sha256": "7be228d87da96702fcf38fe343ea72862ccd1d03bca97c8f39494ed8aa8c649d",
-        "size": 36788203,
-        "target": "shared/Microsoft.WindowsDesktop.App/8.0.33"
+        "name": "dotnet/8.0.34/Microsoft.WindowsDesktop.App.zip",
+        "sha256": "b416ca98963fe54e21ae2b2c7f655f70cec63d03070413f5df508ec0fab03500",
+        "size": 36788977,
+        "target": "shared/Microsoft.WindowsDesktop.App/8.0.34"
       }
     ]
   }
